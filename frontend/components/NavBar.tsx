@@ -16,9 +16,9 @@ export function NavBar() {
   const pathname = usePathname();
 
   return (
-    <header className="border-b border-neutral-200 dark:border-neutral-800">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
-        <Link href="/" className="font-semibold tracking-tight">
+        <Link href="/" className="font-heading font-semibold tracking-tight text-foreground">
           AVS
         </Link>
         <nav className="flex items-center gap-4 text-sm">
@@ -28,8 +28,8 @@ export function NavBar() {
               href={link.href}
               className={
                 pathname?.startsWith(link.href)
-                  ? "font-medium text-black dark:text-white"
-                  : "text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
+                  ? "font-medium text-foreground"
+                  : "text-muted-foreground transition hover:text-foreground"
               }
             >
               {link.label}

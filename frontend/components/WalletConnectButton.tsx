@@ -27,7 +27,7 @@ export function WalletConnectButton() {
       <button
         type="button"
         onClick={() => void disconnect()}
-        className="rounded-md border border-neutral-300 px-3 py-1.5 text-sm font-medium hover:bg-neutral-50"
+        className="cursor-pointer rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted"
       >
         {shortenAddress(publicKey.toBase58())}
       </button>
@@ -35,7 +35,7 @@ export function WalletConnectButton() {
   }
 
   if (wallets.length === 0) {
-    return <span className="text-sm text-neutral-500">No Solana wallet detected</span>;
+    return <span className="text-sm text-muted-foreground">No Solana wallet detected</span>;
   }
 
   return (
@@ -46,7 +46,7 @@ export function WalletConnectButton() {
         pendingConnect.current = true;
         select(wallets[0].adapter.name);
       }}
-      className="rounded-md bg-black px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-50"
+      className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {connecting ? "Connecting…" : "Connect Wallet"}
     </button>

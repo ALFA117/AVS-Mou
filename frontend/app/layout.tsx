@@ -1,19 +1,27 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { WalletContextProvider } from "@/components/providers/WalletContextProvider";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+// Font pairing from the ui-ux-pro-max design system for AVS (web3/fintech/
+// dark, trustless-but-precise mood) — Space Grotesk for headings, Inter for
+// body, JetBrains Mono for addresses/amounts (tabular figures).
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  weight: ["500", "600", "700"],
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600"],
+});
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -29,7 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
         <WalletContextProvider>
           <NavBar />

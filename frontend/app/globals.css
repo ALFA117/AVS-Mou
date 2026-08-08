@@ -2,34 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * AVS design tokens — from ui-ux-pro-max's fintech/web3 dark-first design
+ * system (trust blue + profit green, no purple/pink — those were flagged as
+ * an anti-pattern for this product). Dark mode is the primary experience;
+ * light mode is the documented Task 083 toggle fallback.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --primary: #1e40af;
+  --primary-foreground: #ffffff;
+  --accent: #059669;
+  --accent-foreground: #ffffff;
+  --ring: #1e40af;
 }
 
 /* Task 083: user-controlled dark mode (Tailwind `class` strategy — see
    lib/theme.ts). System preference is only the *default* before the user
    picks explicitly; the .dark class always wins. */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #05060a;
+  --foreground: #f1f5f9;
+  --card: #10152a;
+  --card-foreground: #f1f5f9;
+  --muted: #131a30;
+  --muted-foreground: #94a3b8;
+  --border: rgba(255, 255, 255, 0.08);
+  --primary: #3b82f6;
+  --primary-foreground: #05060a;
+  --accent: #10b981;
+  --accent-foreground: #05060a;
+  --ring: #3b82f6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #05060a;
+    --foreground: #f1f5f9;
+    --card: #10152a;
+    --card-foreground: #f1f5f9;
+    --muted: #131a30;
+    --muted-foreground: #94a3b8;
+    --border: rgba(255, 255, 255, 0.08);
+    --primary: #3b82f6;
+    --primary-foreground: #05060a;
+    --accent: #10b981;
+    --accent-foreground: #05060a;
+    --ring: #3b82f6;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), var(--font-body), sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .font-mono-avs {
+    font-family: var(--font-mono), ui-monospace, monospace;
+  }
+}
+
+/* Ambient hero background — see components/AnimatedBackground.tsx.
+   Disabled entirely under reduced-motion per ui-ux-pro-max's animation
+   guidelines (Task 7: `reduced-motion`, `animation-optional`). */
+@keyframes avs-blob-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(4%, -6%) scale(1.08);
+  }
+  66% {
+    transform: translate(-3%, 4%) scale(0.96);
+  }
+}
+
+.avs-blob {
+  animation: avs-blob-float 18s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avs-blob {
+    animation: none;
   }
 }

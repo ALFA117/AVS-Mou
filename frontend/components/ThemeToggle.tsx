@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
 import { applyTheme, getStoredTheme, systemTheme, type Theme } from "@/lib/theme";
 
 export function ThemeToggle() {
@@ -26,9 +27,13 @@ export function ThemeToggle() {
         applyTheme(next);
       }}
       aria-label="Toggle dark mode"
-      className="flex h-8 w-8 items-center justify-center rounded-md text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
     >
-      {theme === "dark" ? "☀️" : "🌙"}
+      {theme === "dark" ? (
+        <Sun className="h-4 w-4" strokeWidth={2} />
+      ) : (
+        <Moon className="h-4 w-4" strokeWidth={2} />
+      )}
     </button>
   );
 }
