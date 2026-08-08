@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run"
   },
   "dependencies": {
     "react": "^18",
@@ -16,7 +17,11 @@
     "@solana/web3.js": "^1.95.3",
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-base": "^0.9.23",
-    "@magicblock-labs/gum-sdk": "^3.0.10"
+    "@magicblock-labs/gum-sdk": "^3.0.10",
+    "@solana/spl-token": "^0.4.15",
+    "zustand": "^5.0.14",
+    "recharts": "^3.10.1",
+    "framer-motion": "^13.0.0"
   },
   "devDependencies": {
     "typescript": "^5",
@@ -26,7 +31,11 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "eslint": "^8",
-    "eslint-config-next": "14.2.35"
+    "eslint-config-next": "14.2.35",
+    "vitest": "^4.1.10",
+    "@vitejs/plugin-react": "^6.0.5",
+    "@testing-library/react": "^16.3.2",
+    "jsdom": "^30.0.1"
   },
   "overrides": {
     "@types/react": "18.2.79",

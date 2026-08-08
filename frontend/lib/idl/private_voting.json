@@ -1,0 +1,1750 @@
+{
+  "address": "ErRYzAmuTFGHQSzZ7A38zX2rmwosGxDYTvPtPCSPq4Qs",
+  "metadata": {
+    "name": "private_voting",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "AVS private milestone voting: syndicate members cast sealed YES/NO votes, revealed simultaneously, rewards distributed via VRF"
+  },
+  "instructions": [
+    {
+      "name": "cast_vote",
+      "docs": [
+        "Cast a sealed YES/NO vote. The choice is stored on an ER-only (`eph`)",
+        "account sponsored by the milestone; nothing about the choice is ever",
+        "logged or emitted here, so it stays invisible until `reveal_milestone`.",
+        "",
+        "`member` is the real wallet this vote belongs to. `voter` (the",
+        "signer) must either *be* `member` directly, or hold a valid,",
+        "unexpired session token authorizing it to sign for `member` — see",
+        "`docs/SESSION_KEYS.md`. The `session_token` account's PDA seeds",
+        "(checked via the `#[account(seeds = ...)]` constraint below) already",
+        "prove it was minted for exactly this (program, voter, member)",
+        "triple; only expiry needs a runtime check."
+      ],
+      "discriminator": [
+        20,
+        212,
+        15,
+        189,
+        69,
+        180,
+        69,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "voter",
+          "docs": [
+            "The real member wallet directly, or a session signer authorized for",
+            "it — validated against `session_token` in `cast_vote`."
+          ],
+          "signer": true
+        },
+        {
+          "name": "session_token",
+          "docs": [
+            "Its PDA seeds bind it to exactly this (program, voter, member)",
+            "triple — see `docs/SESSION_KEYS.md`."
+          ],
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  101,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  118,
+                  50
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  205,
+                  209,
+                  38,
+                  110,
+                  248,
+                  80,
+                  184,
+                  152,
+                  165,
+                  148,
+                  148,
+                  177,
+                  0,
+                  74,
+                  254,
+                  165,
+                  116,
+                  46,
+                  97,
+                  40,
+                  4,
+                  239,
+                  73,
+                  147,
+                  28,
+                  59,
+                  116,
+                  241,
+                  61,
+                  161,
+                  191,
+                  20
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              },
+              {
+                "kind": "arg",
+                "path": "member"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                4,
+                199,
+                102,
+                62,
+                122,
+                205,
+                171,
+                45,
+                147,
+                4,
+                60,
+                163,
+                78,
+                136,
+                108,
+                183,
+                60,
+                169,
+                145,
+                142,
+                174,
+                255,
+                137,
+                190,
+                131,
+                177,
+                160,
+                119,
+                240,
+                149,
+                183,
+                134
+              ]
+            }
+          }
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone.startup",
+                "account": "Milestone"
+              },
+              {
+                "kind": "account",
+                "path": "milestone.milestone_id",
+                "account": "Milestone"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": "u64"
+        },
+        {
+          "name": "member",
+          "type": "pubkey"
+        },
+        {
+          "name": "choice",
+          "type": {
+            "defined": {
+              "name": "Choice"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "delegate_milestone",
+      "discriminator": [
+        181,
+        77,
+        149,
+        249,
+        46,
+        200,
+        255,
+        215
+      ],
+      "accounts": [
+        {
+          "name": "startup",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "buffer_milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                205,
+                209,
+                38,
+                110,
+                248,
+                80,
+                184,
+                152,
+                165,
+                148,
+                148,
+                177,
+                0,
+                74,
+                254,
+                165,
+                116,
+                46,
+                97,
+                40,
+                4,
+                239,
+                73,
+                147,
+                28,
+                59,
+                116,
+                241,
+                61,
+                161,
+                191,
+                20
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "startup"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "validator",
+          "optional": true
+        },
+        {
+          "name": "owner_program",
+          "address": "ErRYzAmuTFGHQSzZ7A38zX2rmwosGxDYTvPtPCSPq4Qs"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "init_milestone_permission",
+      "discriminator": [
+        213,
+        55,
+        108,
+        132,
+        204,
+        148,
+        174,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "startup",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "milestone"
+          ]
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "startup"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "permission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110,
+                  58
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                136,
+                161,
+                10,
+                196,
+                33,
+                152,
+                1,
+                214,
+                246,
+                106,
+                29,
+                60,
+                6,
+                152,
+                192,
+                102,
+                169,
+                175,
+                212,
+                217,
+                180,
+                252,
+                231,
+                71,
+                151,
+                141,
+                209,
+                5,
+                168,
+                212,
+                103,
+                82
+              ]
+            }
+          }
+        },
+        {
+          "name": "permission_program",
+          "address": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
+        },
+        {
+          "name": "ephemeral_vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "init_vote_permission",
+      "discriminator": [
+        13,
+        140,
+        45,
+        132,
+        168,
+        201,
+        143,
+        45
+      ],
+      "accounts": [
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone.startup",
+                "account": "Milestone"
+              },
+              {
+                "kind": "account",
+                "path": "milestone.milestone_id",
+                "account": "Milestone"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              },
+              {
+                "kind": "account",
+                "path": "vote.voter",
+                "account": "Vote"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote_permission",
+          "writable": true
+        },
+        {
+          "name": "permission_program",
+          "address": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
+        },
+        {
+          "name": "ephemeral_vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_milestone",
+      "discriminator": [
+        142,
+        73,
+        5,
+        208,
+        226,
+        196,
+        205,
+        113
+      ],
+      "accounts": [
+        {
+          "name": "startup",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "startup"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": "u64"
+        },
+        {
+          "name": "deal",
+          "type": "pubkey"
+        },
+        {
+          "name": "description_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "deadline_ts",
+          "type": "i64"
+        },
+        {
+          "name": "reward_pool",
+          "type": "u64"
+        },
+        {
+          "name": "sponsor_lamports",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "milestone_randomness_callback",
+      "discriminator": [
+        11,
+        0,
+        236,
+        16,
+        21,
+        78,
+        30,
+        144
+      ],
+      "accounts": [
+        {
+          "name": "vrf_program_identity",
+          "docs": [
+            "Scoped VRF identity PDA, bound to this program. Its presence as a signer proves",
+            "the callback was issued by the VRF program for this program."
+          ],
+          "signer": true
+        },
+        {
+          "name": "milestone",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "randomness",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "process_undelegation",
+      "discriminator": [
+        196,
+        28,
+        41,
+        206,
+        48,
+        37,
+        51,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "base_account",
+          "writable": true
+        },
+        {
+          "name": "buffer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  110,
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  101,
+                  45,
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "base_account"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                181,
+                183,
+                0,
+                225,
+                242,
+                87,
+                58,
+                192,
+                204,
+                6,
+                34,
+                1,
+                52,
+                74,
+                207,
+                151,
+                184,
+                53,
+                6,
+                235,
+                140,
+                229,
+                25,
+                152,
+                204,
+                98,
+                126,
+                24,
+                147,
+                128,
+                167,
+                62
+              ]
+            }
+          }
+        },
+        {
+          "name": "payer",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "account_seeds",
+          "type": {
+            "vec": "bytes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "request_milestone_randomness",
+      "docs": [
+        "Requests verifiable randomness that gates reward settlement — proof",
+        "that payout eligibility wasn't front-run or known in advance."
+      ],
+      "discriminator": [
+        236,
+        196,
+        253,
+        78,
+        153,
+        143,
+        185,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "milestone",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone.startup",
+                "account": "Milestone"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "oracle_queue",
+          "writable": true
+        },
+        {
+          "name": "program_identity",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  100,
+                  101,
+                  110,
+                  116,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vrf_program",
+          "address": "Vrf1RNUjXmQGjmQrQLvJHs9SNkvDJEsRVFPkfSQUwGz"
+        },
+        {
+          "name": "slot_hashes",
+          "address": "SysvarS1otHashes111111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "reveal_milestone",
+      "docs": [
+        "The reveal: after the deadline, scan every vote account and tally."
+      ],
+      "discriminator": [
+        116,
+        142,
+        226,
+        108,
+        150,
+        134,
+        53,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "startup",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "milestone"
+          ]
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone.startup",
+                "account": "Milestone"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "settle_vote",
+      "docs": [
+        "Runs once per vote after reveal + randomness fulfillment: pays out an",
+        "even share of `reward_pool` to voters on the winning side (no payout",
+        "otherwise), then closes the sealed vote account."
+      ],
+      "discriminator": [
+        28,
+        56,
+        217,
+        57,
+        155,
+        251,
+        104,
+        65
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "writable": true
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone.startup",
+                "account": "Milestone"
+              },
+              {
+                "kind": "account",
+                "path": "milestone.milestone_id",
+                "account": "Milestone"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote_permission",
+          "writable": true
+        },
+        {
+          "name": "permission_program",
+          "address": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "undelegate_milestone",
+      "discriminator": [
+        206,
+        109,
+        243,
+        17,
+        196,
+        60,
+        214,
+        194
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "milestone",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  108,
+                  101,
+                  115,
+                  116,
+                  111,
+                  110,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "milestone.startup",
+                "account": "Milestone"
+              },
+              {
+                "kind": "arg",
+                "path": "milestone_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "magic_context",
+          "writable": true,
+          "address": "MagicContext1111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "milestone_id",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Milestone",
+      "discriminator": [
+        38,
+        210,
+        239,
+        177,
+        85,
+        184,
+        10,
+        44
+      ]
+    },
+    {
+      "name": "Vote",
+      "discriminator": [
+        96,
+        91,
+        104,
+        57,
+        145,
+        35,
+        172,
+        155
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "MilestoneCreated",
+      "discriminator": [
+        151,
+        154,
+        159,
+        254,
+        50,
+        174,
+        22,
+        209
+      ]
+    },
+    {
+      "name": "MilestoneRevealed",
+      "discriminator": [
+        79,
+        121,
+        5,
+        14,
+        234,
+        47,
+        91,
+        33
+      ]
+    },
+    {
+      "name": "MilestoneSettled",
+      "discriminator": [
+        14,
+        243,
+        90,
+        90,
+        207,
+        201,
+        235,
+        116
+      ]
+    },
+    {
+      "name": "VoteCast",
+      "discriminator": [
+        39,
+        53,
+        195,
+        104,
+        188,
+        17,
+        225,
+        213
+      ]
+    },
+    {
+      "name": "VoteSettled",
+      "discriminator": [
+        200,
+        105,
+        231,
+        25,
+        223,
+        154,
+        5,
+        30
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "DeadlineInPast",
+      "msg": "deadline must be in the future"
+    },
+    {
+      "code": 6001,
+      "name": "MilestoneClosed",
+      "msg": "milestone is not open"
+    },
+    {
+      "code": 6002,
+      "name": "MilestoneStillOpen",
+      "msg": "milestone voting deadline has not passed"
+    },
+    {
+      "code": 6003,
+      "name": "MilestoneNotRevealed",
+      "msg": "milestone has not been revealed yet"
+    },
+    {
+      "code": 6004,
+      "name": "TooManyVoters",
+      "msg": "too many voters"
+    },
+    {
+      "code": 6005,
+      "name": "MissingVote",
+      "msg": "missing vote account"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidVote",
+      "msg": "invalid vote account"
+    },
+    {
+      "code": 6007,
+      "name": "DuplicateVote",
+      "msg": "duplicate vote account"
+    },
+    {
+      "code": 6008,
+      "name": "UnsettledVotes",
+      "msg": "not all votes are settled"
+    },
+    {
+      "code": 6009,
+      "name": "RandomnessNotFulfilled",
+      "msg": "VRF randomness has not been fulfilled yet"
+    },
+    {
+      "code": 6010,
+      "name": "RandomnessAlreadyFulfilled",
+      "msg": "randomness has already been fulfilled"
+    },
+    {
+      "code": 6011,
+      "name": "RewardMathOverflow",
+      "msg": "arithmetic overflow computing reward"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidSession",
+      "msg": "signer is neither the member nor a valid, unexpired session for them"
+    }
+  ],
+  "types": [
+    {
+      "name": "Choice",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Yes"
+          },
+          {
+            "name": "No"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Milestone",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "startup",
+            "docs": [
+              "Startup that proposed the milestone and funds the reward pool."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "deal",
+            "docs": [
+              "Informational link to the sealed-auction Deal PDA this syndicate came",
+              "from. Not CPI-verified in this MVP — see programs/private-voting/README.md."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "milestone_id",
+            "type": "u64"
+          },
+          {
+            "name": "description_hash",
+            "docs": [
+              "Hash of the off-chain milestone description (e.g. \"Reach $1M ARR\"),",
+              "keeps on-chain footprint small while still binding the vote to specific terms."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "deadline_ts",
+            "type": "i64"
+          },
+          {
+            "name": "reward_pool",
+            "docs": [
+              "Lamports set aside at creation time, split evenly among voters who",
+              "end up on the winning side of the outcome."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "voter_count",
+            "type": "u8"
+          },
+          {
+            "name": "closed_vote_count",
+            "type": "u8"
+          },
+          {
+            "name": "yes_count",
+            "type": "u8"
+          },
+          {
+            "name": "no_count",
+            "type": "u8"
+          },
+          {
+            "name": "outcome",
+            "type": {
+              "defined": {
+                "name": "Outcome"
+              }
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "MilestoneStatus"
+              }
+            }
+          },
+          {
+            "name": "randomness",
+            "docs": [
+              "VRF output, gates reward settlement — see `request_milestone_randomness`."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "randomness_fulfilled",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MilestoneCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "milestone",
+            "type": "pubkey"
+          },
+          {
+            "name": "startup",
+            "type": "pubkey"
+          },
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "milestone_id",
+            "type": "u64"
+          },
+          {
+            "name": "deadline_ts",
+            "type": "i64"
+          },
+          {
+            "name": "reward_pool",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MilestoneRevealed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "milestone",
+            "type": "pubkey"
+          },
+          {
+            "name": "yes_count",
+            "type": "u8"
+          },
+          {
+            "name": "no_count",
+            "type": "u8"
+          },
+          {
+            "name": "outcome",
+            "type": {
+              "defined": {
+                "name": "Outcome"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MilestoneSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "milestone",
+            "type": "pubkey"
+          },
+          {
+            "name": "outcome",
+            "type": {
+              "defined": {
+                "name": "Outcome"
+              }
+            }
+          },
+          {
+            "name": "yes_count",
+            "type": "u8"
+          },
+          {
+            "name": "no_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MilestoneStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Open"
+          },
+          {
+            "name": "Revealed"
+          },
+          {
+            "name": "Settled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Outcome",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Yes"
+          },
+          {
+            "name": "No"
+          },
+          {
+            "name": "Tie"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SessionTokenV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "target_program",
+            "type": "pubkey"
+          },
+          {
+            "name": "session_signer",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "valid_until",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vote",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "milestone",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "choice",
+            "type": {
+              "defined": {
+                "name": "Choice"
+              }
+            }
+          },
+          {
+            "name": "voter_index",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteCast",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "milestone",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter_index",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "milestone",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "voted_correctly",
+            "type": "bool"
+          },
+          {
+            "name": "reward_paid",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

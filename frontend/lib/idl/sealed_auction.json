@@ -1,0 +1,1726 @@
+{
+  "address": "Bycx3bB2yrFMYWSvi2Yjxutrt1QoVuYyzn37T6ys9YYo",
+  "metadata": {
+    "name": "sealed_auction",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "AVS sealed-bid deal auction: startups post deals, angels place private bids, equity is distributed proportionally at reveal"
+  },
+  "instructions": [
+    {
+      "name": "delegate_deal",
+      "discriminator": [
+        209,
+        218,
+        229,
+        28,
+        4,
+        73,
+        100,
+        87
+      ],
+      "accounts": [
+        {
+          "name": "startup",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "buffer_deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                163,
+                22,
+                10,
+                211,
+                83,
+                219,
+                213,
+                179,
+                133,
+                35,
+                20,
+                180,
+                38,
+                123,
+                79,
+                45,
+                196,
+                215,
+                151,
+                94,
+                6,
+                220,
+                39,
+                30,
+                0,
+                160,
+                33,
+                101,
+                141,
+                16,
+                94,
+                48
+              ]
+            }
+          }
+        },
+        {
+          "name": "delegation_record_deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "delegation_metadata_deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110,
+                  45,
+                  109,
+                  101,
+                  116,
+                  97,
+                  100,
+                  97,
+                  116,
+                  97
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              }
+            ],
+            "program": {
+              "kind": "account",
+              "path": "delegation_program"
+            }
+          }
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "startup"
+              },
+              {
+                "kind": "arg",
+                "path": "deal_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "validator",
+          "optional": true
+        },
+        {
+          "name": "owner_program",
+          "address": "Bycx3bB2yrFMYWSvi2Yjxutrt1QoVuYyzn37T6ys9YYo"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "deal_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "init_bid_permission",
+      "discriminator": [
+        36,
+        217,
+        208,
+        192,
+        111,
+        156,
+        135,
+        147
+      ],
+      "accounts": [
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.startup",
+                "account": "Deal"
+              },
+              {
+                "kind": "account",
+                "path": "deal.deal_id",
+                "account": "Deal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bid",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  105,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "bid.bidder",
+                "account": "Bid"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bid_permission",
+          "writable": true
+        },
+        {
+          "name": "permission_program",
+          "address": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
+        },
+        {
+          "name": "ephemeral_vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "deal_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "init_deal_permission",
+      "discriminator": [
+        13,
+        181,
+        152,
+        148,
+        5,
+        5,
+        51,
+        88
+      ],
+      "accounts": [
+        {
+          "name": "startup",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "startup"
+              },
+              {
+                "kind": "arg",
+                "path": "deal_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "permission",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  114,
+                  109,
+                  105,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110,
+                  58
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                136,
+                161,
+                10,
+                196,
+                33,
+                152,
+                1,
+                214,
+                246,
+                106,
+                29,
+                60,
+                6,
+                152,
+                192,
+                102,
+                169,
+                175,
+                212,
+                217,
+                180,
+                252,
+                231,
+                71,
+                151,
+                141,
+                209,
+                5,
+                168,
+                212,
+                103,
+                82
+              ]
+            }
+          }
+        },
+        {
+          "name": "permission_program",
+          "address": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
+        },
+        {
+          "name": "ephemeral_vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "deal_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_deal",
+      "discriminator": [
+        100,
+        154,
+        180,
+        148,
+        120,
+        1,
+        196,
+        122
+      ],
+      "accounts": [
+        {
+          "name": "startup",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "funding_mint"
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "startup"
+              },
+              {
+                "kind": "arg",
+                "path": "deal_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "deal_funding_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "funding_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "deal_funding_ephemeral_ata",
+          "writable": true
+        },
+        {
+          "name": "deal_funding_eata_buffer",
+          "writable": true
+        },
+        {
+          "name": "deal_funding_eata_record",
+          "writable": true
+        },
+        {
+          "name": "deal_funding_eata_metadata",
+          "writable": true
+        },
+        {
+          "name": "ephemeral_token_program",
+          "address": "SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2"
+        },
+        {
+          "name": "delegation_program",
+          "address": "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+        },
+        {
+          "name": "validator",
+          "optional": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "deal_id",
+          "type": "u64"
+        },
+        {
+          "name": "valuation",
+          "type": "u64"
+        },
+        {
+          "name": "equity_bps",
+          "type": "u16"
+        },
+        {
+          "name": "min_investment",
+          "type": "u64"
+        },
+        {
+          "name": "max_cap",
+          "type": "u64"
+        },
+        {
+          "name": "deadline_ts",
+          "type": "i64"
+        },
+        {
+          "name": "cliff_months",
+          "type": "u16"
+        },
+        {
+          "name": "vesting_months",
+          "type": "u16"
+        },
+        {
+          "name": "sponsor_lamports",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "place_bid",
+      "docs": [
+        "Place a sealed bid. The amount is stored on an ER-only (`eph`) account",
+        "sponsored by the deal; nothing about the amount is ever logged or",
+        "emitted here, so it stays invisible until `settle_bid` runs post-reveal.",
+        "",
+        "`investor` is the real wallet this bid belongs to. `bidder` (the",
+        "signer) must either *be* `investor` directly, or hold a valid,",
+        "unexpired session token authorizing it to sign for `investor` — see",
+        "the module docs and `docs/SESSION_KEYS.md`. The `session_token`",
+        "account's PDA seeds (checked via the `#[account(seeds = ...)]`",
+        "constraint below) already prove it was minted for exactly this",
+        "(program, bidder, investor) triple; only expiry needs a runtime check."
+      ],
+      "discriminator": [
+        238,
+        77,
+        148,
+        91,
+        200,
+        151,
+        92,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "bidder",
+          "docs": [
+            "The real investor wallet directly, or a session signer authorized",
+            "for it — validated against `session_token` in `place_bid`."
+          ],
+          "signer": true
+        },
+        {
+          "name": "session_token",
+          "docs": [
+            "Its PDA seeds bind it to exactly this (program, bidder, investor)",
+            "triple — see `docs/SESSION_KEYS.md`. Anchor's `seeds`/`bump`",
+            "constraint rejects the account entirely if it doesn't match, so",
+            "`place_bid` only needs to check expiry at runtime."
+          ],
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  101,
+                  115,
+                  115,
+                  105,
+                  111,
+                  110,
+                  95,
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  118,
+                  50
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  163,
+                  22,
+                  10,
+                  211,
+                  83,
+                  219,
+                  213,
+                  179,
+                  133,
+                  35,
+                  20,
+                  180,
+                  38,
+                  123,
+                  79,
+                  45,
+                  196,
+                  215,
+                  151,
+                  94,
+                  6,
+                  220,
+                  39,
+                  30,
+                  0,
+                  160,
+                  33,
+                  101,
+                  141,
+                  16,
+                  94,
+                  48
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "bidder"
+              },
+              {
+                "kind": "arg",
+                "path": "investor"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                4,
+                199,
+                102,
+                62,
+                122,
+                205,
+                171,
+                45,
+                147,
+                4,
+                60,
+                163,
+                78,
+                136,
+                108,
+                183,
+                60,
+                169,
+                145,
+                142,
+                174,
+                255,
+                137,
+                190,
+                131,
+                177,
+                160,
+                119,
+                240,
+                149,
+                183,
+                134
+              ]
+            }
+          }
+        },
+        {
+          "name": "funding_mint"
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.startup",
+                "account": "Deal"
+              },
+              {
+                "kind": "account",
+                "path": "deal.deal_id",
+                "account": "Deal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bid",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  105,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "bidder"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bidder_funding_account",
+          "writable": true
+        },
+        {
+          "name": "deal_funding_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "deal_id",
+          "type": "u64"
+        },
+        {
+          "name": "investor",
+          "type": "pubkey"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "process_undelegation",
+      "discriminator": [
+        196,
+        28,
+        41,
+        206,
+        48,
+        37,
+        51,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "base_account",
+          "writable": true
+        },
+        {
+          "name": "buffer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  110,
+                  100,
+                  101,
+                  108,
+                  101,
+                  103,
+                  97,
+                  116,
+                  101,
+                  45,
+                  98,
+                  117,
+                  102,
+                  102,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "base_account"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                181,
+                183,
+                0,
+                225,
+                242,
+                87,
+                58,
+                192,
+                204,
+                6,
+                34,
+                1,
+                52,
+                74,
+                207,
+                151,
+                184,
+                53,
+                6,
+                235,
+                140,
+                229,
+                25,
+                152,
+                204,
+                98,
+                126,
+                24,
+                147,
+                128,
+                167,
+                62
+              ]
+            }
+          }
+        },
+        {
+          "name": "payer",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "account_seeds",
+          "type": {
+            "vec": "bytes"
+          }
+        }
+      ]
+    },
+    {
+      "name": "reveal_deal",
+      "docs": [
+        "The reveal: after the deadline, scan every bid account (now readable",
+        "since we're past the deadline the permission model gates on) and sum",
+        "them. No single \"winner\" — every accepted bid becomes a syndicate",
+        "position, sized in `settle_bid`."
+      ],
+      "discriminator": [
+        67,
+        59,
+        63,
+        122,
+        163,
+        23,
+        200,
+        203
+      ],
+      "accounts": [
+        {
+          "name": "startup",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "deal"
+          ]
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.startup",
+                "account": "Deal"
+              },
+              {
+                "kind": "arg",
+                "path": "deal_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "deal_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "settle_bid",
+      "docs": [
+        "Runs once per bid after reveal: computes that bidder's proportional",
+        "equity share, forwards their payment to the startup, and closes the",
+        "(now-settled) sealed bid account. No refunds — every accepted bid",
+        "becomes a syndicate position, sized by its share of `total_raised`."
+      ],
+      "discriminator": [
+        39,
+        141,
+        108,
+        215,
+        181,
+        98,
+        229,
+        171
+      ],
+      "accounts": [
+        {
+          "name": "bidder"
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.startup",
+                "account": "Deal"
+              },
+              {
+                "kind": "account",
+                "path": "deal.deal_id",
+                "account": "Deal"
+              }
+            ]
+          }
+        },
+        {
+          "name": "bid",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  105,
+                  100
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal"
+              },
+              {
+                "kind": "account",
+                "path": "bidder"
+              }
+            ]
+          }
+        },
+        {
+          "name": "funding_mint"
+        },
+        {
+          "name": "deal_funding_account",
+          "writable": true
+        },
+        {
+          "name": "startup_funding_account",
+          "writable": true
+        },
+        {
+          "name": "bid_permission",
+          "writable": true
+        },
+        {
+          "name": "permission_program",
+          "address": "ACLseoPoyC3cBqoUtkbjZ4aDrkurZW86v19pXz2XQnp1"
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "address": "MagicVau1t999999999999999999999999999999999"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "undelegate_deal",
+      "discriminator": [
+        92,
+        22,
+        40,
+        56,
+        186,
+        37,
+        249,
+        196
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  100,
+                  101,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "deal.startup",
+                "account": "Deal"
+              },
+              {
+                "kind": "arg",
+                "path": "deal_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "magic_program",
+          "address": "Magic11111111111111111111111111111111111111"
+        },
+        {
+          "name": "magic_context",
+          "writable": true,
+          "address": "MagicContext1111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "deal_id",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Bid",
+      "discriminator": [
+        143,
+        246,
+        48,
+        245,
+        42,
+        145,
+        180,
+        88
+      ]
+    },
+    {
+      "name": "Deal",
+      "discriminator": [
+        125,
+        223,
+        160,
+        234,
+        71,
+        162,
+        182,
+        219
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "BidPlaced",
+      "discriminator": [
+        135,
+        53,
+        176,
+        83,
+        193,
+        69,
+        108,
+        61
+      ]
+    },
+    {
+      "name": "BidSettled",
+      "discriminator": [
+        234,
+        32,
+        141,
+        114,
+        0,
+        102,
+        0,
+        139
+      ]
+    },
+    {
+      "name": "DealCreated",
+      "discriminator": [
+        27,
+        18,
+        50,
+        52,
+        104,
+        175,
+        46,
+        101
+      ]
+    },
+    {
+      "name": "DealRevealed",
+      "discriminator": [
+        134,
+        64,
+        209,
+        108,
+        5,
+        176,
+        109,
+        212
+      ]
+    },
+    {
+      "name": "DealSettled",
+      "discriminator": [
+        41,
+        213,
+        235,
+        64,
+        55,
+        168,
+        51,
+        76
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidAmount",
+      "msg": "amount must be greater than zero"
+    },
+    {
+      "code": 6001,
+      "name": "BelowMinInvestment",
+      "msg": "bid is below the deal's minimum investment"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidEquityBps",
+      "msg": "equity_bps must be between 1 and 10_000"
+    },
+    {
+      "code": 6003,
+      "name": "DeadlineInPast",
+      "msg": "deadline must be in the future"
+    },
+    {
+      "code": 6004,
+      "name": "DealStillOpen",
+      "msg": "deal deadline has not passed"
+    },
+    {
+      "code": 6005,
+      "name": "DealClosed",
+      "msg": "deal is not open"
+    },
+    {
+      "code": 6006,
+      "name": "DealNotRevealed",
+      "msg": "deal has not been revealed yet"
+    },
+    {
+      "code": 6007,
+      "name": "TooManyBidders",
+      "msg": "too many bidders"
+    },
+    {
+      "code": 6008,
+      "name": "MissingBid",
+      "msg": "missing bid account"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidBid",
+      "msg": "invalid bid account"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidTokenOwner",
+      "msg": "token account is not owned by the expected authority"
+    },
+    {
+      "code": 6011,
+      "name": "MintMismatch",
+      "msg": "token account mint mismatch"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidBidEscrow",
+      "msg": "invalid bid escrow account"
+    },
+    {
+      "code": 6013,
+      "name": "DuplicateBid",
+      "msg": "duplicate bid account"
+    },
+    {
+      "code": 6014,
+      "name": "UnsettledBids",
+      "msg": "not all bid accounts are settled"
+    },
+    {
+      "code": 6015,
+      "name": "EquityMathOverflow",
+      "msg": "arithmetic overflow computing equity allocation"
+    },
+    {
+      "code": 6016,
+      "name": "BidAlreadySettled",
+      "msg": "bid has already been settled"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidSession",
+      "msg": "signer is neither the investor nor a valid, unexpired session for them"
+    }
+  ],
+  "types": [
+    {
+      "name": "Bid",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "bidder",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "bidder_index",
+            "type": "u8"
+          },
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "equity_allocated",
+            "docs": [
+              "Equity tokens allocated to this bidder, computed once during `reveal_deal`",
+              "as `amount / total_raised * equity_bps / 10_000 * EQUITY_TOTAL_SUPPLY`."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BidPlaced",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "bidder",
+            "type": "pubkey"
+          },
+          {
+            "name": "bidder_index",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "BidSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "bidder",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "equity_allocated",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "startup",
+            "docs": [
+              "Startup founder who posted the deal and receives funding-token proceeds."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "deal_id",
+            "type": "u64"
+          },
+          {
+            "name": "funding_mint",
+            "docs": [
+              "Token bidders pay with (e.g. a devnet USDC mint)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "valuation",
+            "docs": [
+              "Startup's declared valuation, in funding-token smallest units. Informational."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "equity_bps",
+            "docs": [
+              "Share of the company being offered in this round, in basis points (0-10_000)."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "min_investment",
+            "type": "u64"
+          },
+          {
+            "name": "max_cap",
+            "docs": [
+              "Soft raise target. Not enforced on-chain; surfaced for the frontend and to",
+              "flag oversubscription at reveal (see `Deal.oversubscribed`)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "deadline_ts",
+            "type": "i64"
+          },
+          {
+            "name": "bid_count",
+            "type": "u8"
+          },
+          {
+            "name": "closed_bid_count",
+            "type": "u8"
+          },
+          {
+            "name": "total_raised",
+            "docs": [
+              "Sum of all accepted bid amounts. Zero until `reveal_deal` runs."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "DealStatus"
+              }
+            }
+          },
+          {
+            "name": "oversubscribed",
+            "type": "bool"
+          },
+          {
+            "name": "cliff_months",
+            "docs": [
+              "Cliff before vesting starts, in months. Informational for MVP — on-chain",
+              "vesting enforcement is out of scope (see programs/sealed-auction README)."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "vesting_months",
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "startup",
+            "type": "pubkey"
+          },
+          {
+            "name": "deal_id",
+            "type": "u64"
+          },
+          {
+            "name": "equity_bps",
+            "type": "u16"
+          },
+          {
+            "name": "min_investment",
+            "type": "u64"
+          },
+          {
+            "name": "max_cap",
+            "type": "u64"
+          },
+          {
+            "name": "deadline_ts",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealRevealed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "bid_count",
+            "type": "u8"
+          },
+          {
+            "name": "total_raised",
+            "type": "u64"
+          },
+          {
+            "name": "oversubscribed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "deal",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_raised",
+            "type": "u64"
+          },
+          {
+            "name": "bid_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Open"
+          },
+          {
+            "name": "Revealed"
+          },
+          {
+            "name": "Settled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SessionTokenV2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "target_program",
+            "type": "pubkey"
+          },
+          {
+            "name": "session_signer",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "valid_until",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}
