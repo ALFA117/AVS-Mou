@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowLeft, CircleAlert } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useDeal } from "@/hooks/useDeal";
 import { useBids } from "@/hooks/useBids";
@@ -11,19 +13,28 @@ import { DealCharts } from "@/components/DealCharts";
 import { ShareDeal } from "@/components/ShareDeal";
 import { formatBps, formatDate, formatTokenAmount, shortenAddress } from "@/lib/format";
 
+const STATUS_STYLES: Record<string, string> = {
+  open: "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400",
+  revealed: "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-400",
+  settled: "bg-muted text-muted-foreground",
+};
+
 export default function DealDetailPage({ params }: { params: { id: string } }) {
   const { deal, loading, error, refresh } = useDeal(params.id);
   const { bids, refresh: refreshBids } = useBids(params.id);
   const { publicKey } = useWallet();
 
   if (loading) {
-    return <main className="mx-auto max-w-3xl px-6 py-10 text-neutral-500">Loading deal…</main>;
+    return <main className="mx-auto max-w-3xl px-6 py-10 text-muted-foreground">Loading deal…</main>;
   }
   if (error || !deal) {
     return (
       <main className="mx-auto max-w-3xl px-6 py-10">
-        <p className="text-red-600">Couldn&apos;t load this deal: {error ?? "not found"}</p>
-        <Link href="/deals" className="mt-4 inline-block text-sm underline">
+        <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+          <CircleAlert className="h-4 w-4" strokeWidth={2} />
+          Couldn&apos;t load this deal: {error ?? "not found"}
+        </p>
+        <Link href="/deals" className="mt-4 inline-block text-sm text-primary underline">
           Back to deals
         </Link>
       </main>
@@ -31,34 +42,35 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
+    <motion.main
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="mx-auto max-w-3xl px-6 py-10"
+    >
       <div className="flex items-center justify-between">
-        <Link href="/deals" className="text-sm text-neutral-500 hover:text-neutral-800">
-          ← All deals
+        <Link
+          href="/deals"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
+          All deals
         </Link>
       </div>
 
       <div className="mt-4 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Deal #{deal.dealId}</h1>
-          <p className="mt-1 font-mono text-sm text-neutral-500">
+          <h1 className="font-heading text-2xl font-bold text-foreground">Deal #{deal.dealId}</h1>
+          <p className="mt-1 font-mono-avs text-sm text-muted-foreground">
             Startup: {shortenAddress(deal.startup)}
           </p>
         </div>
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-medium ${
-            deal.status === "open"
-              ? "bg-green-100 text-green-800"
-              : deal.status === "revealed"
-                ? "bg-amber-100 text-amber-800"
-                : "bg-neutral-200 text-neutral-700"
-          }`}
-        >
+        <span className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLES[deal.status]}`}>
           {deal.status}
         </span>
       </div>
 
-      <dl className="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-neutral-200 p-5 sm:grid-cols-4">
+      <dl className="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-border bg-card p-5 sm:grid-cols-4">
         <Stat label="Valuation" value={formatTokenAmount(deal.valuation)} />
         <Stat label="Equity offered" value={formatBps(deal.equityBps)} />
         <Stat label="Min investment" value={formatTokenAmount(deal.minInvestment)} />
@@ -90,7 +102,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       <section className="mt-8">
-        <h2 className="text-lg font-semibold">Analytics</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground">Analytics</h2>
         <div className="mt-3">
           <DealCharts deal={deal} bids={bids} />
         </div>
@@ -98,21 +110,21 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
 
       {(deal.status === "revealed" || deal.status === "settled") && bids.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-lg font-semibold">Syndicate (revealed)</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">Syndicate (revealed)</h2>
           <div className="mt-3">
             <RevealAnimation bids={bids} currentUser={publicKey?.toBase58()} />
           </div>
         </section>
       )}
-    </main>
+    </motion.main>
   );
 }
 
 function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs text-neutral-500">{label}</dt>
-      <dd className="mt-0.5 font-medium">{value}</dd>
+      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 font-mono-avs font-medium text-card-foreground">{value}</dd>
     </div>
   );
 }

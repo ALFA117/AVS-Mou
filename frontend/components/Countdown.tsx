@@ -16,7 +16,15 @@ export function Countdown({ deadlineTs }: { deadlineTs: number }) {
   const urgent = !closed && deadlineTs * 1000 - now < 60 * 60 * 1000; // < 1h left
 
   return (
-    <span className={closed ? "text-neutral-500" : urgent ? "text-red-600" : "text-green-700"}>
+    <span
+      className={
+        closed
+          ? "text-muted-foreground"
+          : urgent
+            ? "font-mono-avs text-red-600 dark:text-red-400"
+            : "font-mono-avs text-green-700 dark:text-green-400"
+      }
+    >
       {formatCountdown(deadlineTs, now)}
     </span>
   );

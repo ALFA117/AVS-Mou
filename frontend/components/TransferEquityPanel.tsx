@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowRightLeft, CircleCheck, CircleAlert } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -51,14 +52,17 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
   }
 
   return (
-    <div className="rounded-lg border border-neutral-200 p-4">
-      <h3 className="text-sm font-medium">Transfer equity to another member</h3>
+    <div className="rounded-lg border border-border bg-card p-4">
+      <h3 className="flex items-center gap-2 font-heading text-sm font-semibold text-card-foreground">
+        <ArrowRightLeft className="h-4 w-4 text-primary" strokeWidth={2} />
+        Transfer equity to another member
+      </h3>
       <div className="mt-3 space-y-2">
         <input
           placeholder="Recipient wallet address"
           value={recipient}
           onChange={(e) => setRecipient(e.target.value)}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
         />
         <div className="flex gap-2">
           <input
@@ -66,23 +70,29 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
             placeholder="Equity amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
           />
           <button
             type="button"
             disabled={!recipient || !amount}
             onClick={() => void submit()}
-            className="whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-40"
+            className="cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Transfer
           </button>
         </div>
       </div>
       {status.kind === "success" && (
-        <p className="mt-2 text-sm text-green-700">Transfer sent.</p>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
+          <CircleCheck className="h-4 w-4" strokeWidth={2} />
+          Transfer sent.
+        </p>
       )}
       {status.kind === "error" && (
-        <p className="mt-2 text-sm text-red-600">Transfer failed: {status.message}</p>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+          <CircleAlert className="h-4 w-4" strokeWidth={2} />
+          Transfer failed: {status.message}
+        </p>
       )}
     </div>
   );

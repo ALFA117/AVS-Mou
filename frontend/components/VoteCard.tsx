@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CircleCheck, CircleAlert, Vote as VoteIcon } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
@@ -75,40 +76,49 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
   }
 
   return (
-    <div className="rounded-lg border border-neutral-200 p-5">
+    <div className="rounded-lg border border-border bg-card p-5">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold">Milestone #{milestone.milestoneId}</h3>
+        <h3 className="flex items-center gap-2 font-heading font-semibold text-card-foreground">
+          <VoteIcon className="h-4 w-4 text-primary" strokeWidth={2} />
+          Milestone #{milestone.milestoneId}
+        </h3>
         <Countdown deadlineTs={milestone.deadlineTs} />
       </div>
-      <p className="mt-2 text-sm text-neutral-500">
+      <p className="mt-2 font-mono-avs text-sm text-muted-foreground">
         Reward pool: {formatTokenAmount(milestone.rewardPool, 9)} SOL
       </p>
-      <p className="mt-1 text-xs text-neutral-400">
+      <p className="mt-1 text-xs text-muted-foreground">
         Your vote is private until reveal — {milestone.voterCount} sealed votes so far.
       </p>
       {!publicKey ? (
-        <p className="mt-4 text-sm text-neutral-500">Connect your wallet to vote.</p>
+        <p className="mt-4 text-sm text-muted-foreground">Connect your wallet to vote.</p>
       ) : (
         <div className="mt-4 flex gap-2">
           <button
             onClick={() => setPendingChoice("yes")}
-            className="flex-1 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+            className="flex-1 cursor-pointer rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700"
           >
             Vote YES
           </button>
           <button
             onClick={() => setPendingChoice("no")}
-            className="flex-1 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+            className="flex-1 cursor-pointer rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
           >
             Vote NO
           </button>
         </div>
       )}
       {status.kind === "success" && (
-        <p className="mt-2 text-sm text-green-700">Vote cast. Waiting for reveal.</p>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
+          <CircleCheck className="h-4 w-4" strokeWidth={2} />
+          Vote cast. Waiting for reveal.
+        </p>
       )}
       {status.kind === "error" && (
-        <p className="mt-2 text-sm text-red-600">Vote failed: {status.message}</p>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+          <CircleAlert className="h-4 w-4" strokeWidth={2} />
+          Vote failed: {status.message}
+        </p>
       )}
 
       {pendingChoice && (

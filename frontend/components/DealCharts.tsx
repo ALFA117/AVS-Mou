@@ -1,10 +1,13 @@
 "use client";
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts";
+import { Lock } from "lucide-react";
 import { formatTokenAmount } from "@/lib/format";
 import type { Bid, Deal } from "@/lib/types";
 
-const COLORS = ["#111827", "#4b5563", "#9ca3af", "#d1d5db", "#e5e7eb"];
+// CSS custom properties resolve fine as SVG fill values, so these charts
+// stay theme-aware without a JS-side dark-mode branch.
+const COLORS = ["var(--primary)", "var(--accent)", "var(--muted-foreground)"];
 
 export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
   const raiseData = [
@@ -19,8 +22,8 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <div className="rounded-lg border border-neutral-200 p-4">
-        <h4 className="text-sm font-medium text-neutral-700">Raise progress</h4>
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h4 className="text-sm font-medium text-card-foreground">Raise progress</h4>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -35,22 +38,23 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
         </div>
       </div>
 
-      <div className="rounded-lg border border-neutral-200 p-4">
-        <h4 className="text-sm font-medium text-neutral-700">
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h4 className="text-sm font-medium text-card-foreground">
           {deal.status === "open" ? "Sealed — visible only after reveal" : "Top bid amounts"}
         </h4>
         <div className="h-48">
           {deal.status === "open" ? (
-            <div className="flex h-full items-center justify-center text-sm text-neutral-400">
-              🔒 Hidden until reveal
+            <div className="flex h-full items-center justify-center gap-1.5 text-sm text-muted-foreground">
+              <Lock className="h-4 w-4" strokeWidth={2} />
+              Hidden until reveal
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={bidDistribution}>
-                <XAxis dataKey="name" fontSize={12} />
-                <YAxis fontSize={12} />
+                <XAxis dataKey="name" fontSize={12} stroke="var(--muted-foreground)" />
+                <YAxis fontSize={12} stroke="var(--muted-foreground)" />
                 <Tooltip />
-                <Bar dataKey="amount" fill="#111827" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="amount" fill="var(--primary)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}

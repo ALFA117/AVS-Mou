@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Download, CircleCheck, Trash2, KeyRound } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useSessionKey } from "@/hooks/useSessionKey";
 import { usePortfolio } from "@/hooks/usePortfolio";
@@ -25,20 +26,23 @@ export default function SettingsPage() {
   if (!publicKey) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-10">
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="mt-6 text-sm text-neutral-500">Connect your wallet to manage settings.</p>
+        <h1 className="font-heading text-2xl font-bold text-foreground">Settings</h1>
+        <p className="mt-6 text-sm text-muted-foreground">Connect your wallet to manage settings.</p>
       </main>
     );
   }
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="text-2xl font-bold">Settings</h1>
+      <h1 className="font-heading text-2xl font-bold text-foreground">Settings</h1>
 
       <section className="mt-6">
-        <h2 className="text-lg font-semibold">Session keys</h2>
-        <p className="text-xs text-neutral-500">
-          See <a href="/faq" className="underline">FAQ</a> — a session key lets you bid/vote
+        <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
+          <KeyRound className="h-4 w-4 text-primary" strokeWidth={2} />
+          Session keys
+        </h2>
+        <p className="text-xs text-muted-foreground">
+          See <a href="/faq" className="text-primary underline">FAQ</a> — a session key lets you bid/vote
           without a wallet popup per action, until it expires or you revoke it.
         </p>
         <div className="mt-3 space-y-2">
@@ -48,8 +52,8 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="text-lg font-semibold">Notifications</h2>
-        <label className="mt-2 flex items-center gap-2 text-sm">
+        <h2 className="font-heading text-lg font-semibold text-foreground">Notifications</h2>
+        <label className="mt-2 flex items-center gap-2 text-sm text-foreground">
           <input
             type="checkbox"
             checked={notifEnabled}
@@ -57,33 +61,35 @@ export default function SettingsPage() {
               setNotifEnabled(e.target.checked);
               window.localStorage.setItem(NOTIF_STORAGE_KEY, e.target.checked ? "on" : "off");
             }}
+            className="h-4 w-4 accent-primary"
           />
           Notify me about deal reveals and milestone results
         </label>
-        <p className="mt-1 text-xs text-neutral-400">
+        <p className="mt-1 text-xs text-muted-foreground">
           This app has no backend/push service — this preference is a placeholder for a future
           notification channel and only affects local UI state today.
         </p>
       </section>
 
       <section className="mt-8">
-        <h2 className="text-lg font-semibold">Export data</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground">Export data</h2>
         <button
           type="button"
           disabled={positions.length === 0}
           onClick={() => downloadCsv("avs-portfolio.csv", positionsToCsv(positions))}
-          className="mt-2 rounded-md border border-neutral-300 px-3 py-1.5 text-sm font-medium hover:bg-neutral-50 disabled:opacity-40"
+          className="mt-2 flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
         >
+          <Download className="h-3.5 w-3.5" strokeWidth={2} />
           Export portfolio as CSV
         </button>
       </section>
 
       <section className="mt-8">
-        <h2 className="text-lg font-semibold">Privacy</h2>
-        <p className="mt-2 text-sm text-neutral-600">
+        <h2 className="font-heading text-lg font-semibold text-foreground">Privacy</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
           This app has no backend and collects no analytics. Locally stored data (this browser
           only): your session keys and syndicate chat messages. See{" "}
-          <a href="/legal" className="underline">Legal</a> for the full privacy policy.
+          <a href="/legal" className="text-primary underline">Legal</a> for the full privacy policy.
         </p>
         <button
           type="button"
@@ -97,11 +103,17 @@ export default function SettingsPage() {
             }
             setCleared(true);
           }}
-          className="mt-3 rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
+          className="mt-3 flex cursor-pointer items-center gap-1.5 rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10"
         >
+          <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
           Clear all local data
         </button>
-        {cleared && <p className="mt-2 text-xs text-green-700">Local data cleared.</p>}
+        {cleared && (
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-green-700 dark:text-green-400">
+            <CircleCheck className="h-3.5 w-3.5" strokeWidth={2} />
+            Local data cleared.
+          </p>
+        )}
       </section>
     </main>
   );
@@ -115,19 +127,22 @@ function SessionRow({
   session: ReturnType<typeof useSessionKey>;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-md border border-neutral-200 px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground">
       <span>{programName}</span>
       {session.state.status === "active" ? (
         <span className="flex items-center gap-2">
-          <span className="text-green-700">
+          <span className="font-mono-avs text-green-700 dark:text-green-400">
             Active till {session.state.expiresAt.toLocaleTimeString()}
           </span>
-          <button onClick={() => session.revoke()} className="text-red-600 underline">
+          <button
+            onClick={() => session.revoke()}
+            className="cursor-pointer text-red-600 underline dark:text-red-400"
+          >
             Revoke
           </button>
         </span>
       ) : (
-        <span className="text-neutral-400">No active session</span>
+        <span className="text-muted-foreground">No active session</span>
       )}
     </div>
   );

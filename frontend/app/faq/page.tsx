@@ -1,3 +1,5 @@
+import { HelpCircle } from "lucide-react";
+
 const FAQS: { q: string; a: string }[] = [
   {
     q: "Is my bid really private?",
@@ -28,12 +30,15 @@ const FAQS: { q: string; a: string }[] = [
 export default function FaqPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="text-2xl font-bold">FAQ</h1>
+      <h1 className="font-heading text-2xl font-bold text-foreground">FAQ</h1>
       <div className="mt-6 space-y-6">
         {FAQS.map((item) => (
-          <div key={item.q}>
-            <h2 className="font-medium">{item.q}</h2>
-            <p className="mt-1 text-sm text-neutral-600">{item.a}</p>
+          <div key={item.q} className="rounded-lg border border-border bg-card p-4">
+            <h2 className="flex items-center gap-2 font-medium text-card-foreground">
+              <HelpCircle className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
+              {item.q}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{item.a}</p>
           </div>
         ))}
       </div>

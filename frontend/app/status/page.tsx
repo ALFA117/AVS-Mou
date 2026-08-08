@@ -1,5 +1,6 @@
 "use client";
 
+import { RefreshCw, Server, Link2 } from "lucide-react";
 import { useSystemStatus, type ServiceStatus } from "@/hooks/useSystemStatus";
 
 const PROGRAM_IDS: { name: string; id: string }[] = [
@@ -26,8 +27,12 @@ export default function StatusPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">System Status</h1>
-        <button onClick={() => void refresh()} className="text-sm text-neutral-500 hover:text-neutral-800">
+        <h1 className="font-heading text-2xl font-bold text-foreground">System Status</h1>
+        <button
+          onClick={() => void refresh()}
+          className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+        >
+          <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
           Refresh
         </button>
       </div>
@@ -45,22 +50,25 @@ export default function StatusPage() {
         />
       </div>
 
-      <p className="mt-3 text-xs text-neutral-400">
+      <p className="mt-3 text-xs text-muted-foreground">
         The ER check may show a false &quot;Unreachable&quot; if the endpoint&apos;s CORS policy
         blocks browser requests — it&apos;s a best-effort client-side ping, not a guarantee.
       </p>
 
       <section className="mt-8">
-        <h2 className="text-sm font-medium text-neutral-700">Deployed programs</h2>
+        <h2 className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+          <Server className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
+          Deployed programs
+        </h2>
         <div className="mt-2 space-y-1">
           {PROGRAM_IDS.map((p) => (
             <div key={p.id} className="flex items-center justify-between text-sm">
-              <span>{p.name}</span>
+              <span className="text-foreground">{p.name}</span>
               <a
                 href={`https://explorer.solana.com/address/${p.id}?cluster=devnet`}
                 target="_blank"
                 rel="noreferrer"
-                className="font-mono text-xs text-neutral-500 underline"
+                className="font-mono-avs text-xs text-primary underline"
               >
                 {p.id}
               </a>
@@ -70,15 +78,18 @@ export default function StatusPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="text-sm font-medium text-neutral-700">Links</h2>
+        <h2 className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+          <Link2 className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
+          Links
+        </h2>
         <ul className="mt-2 space-y-1 text-sm">
           <li>
-            <a href="https://status.solana.com" target="_blank" rel="noreferrer" className="underline">
+            <a href="https://status.solana.com" target="_blank" rel="noreferrer" className="text-primary underline">
               Solana network status
             </a>
           </li>
           <li>
-            <a href="https://docs.magicblock.gg" target="_blank" rel="noreferrer" className="underline">
+            <a href="https://docs.magicblock.gg" target="_blank" rel="noreferrer" className="text-primary underline">
               MagicBlock docs
             </a>
           </li>
@@ -98,12 +109,12 @@ function StatusRow({
   detail?: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-neutral-200 p-4">
+    <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
       <div>
-        <p className="font-medium">{label}</p>
-        {detail && <p className="text-xs text-neutral-500">{detail}</p>}
+        <p className="font-medium text-card-foreground">{label}</p>
+        {detail && <p className="font-mono-avs text-xs text-muted-foreground">{detail}</p>}
       </div>
-      <span className="flex items-center gap-2 text-sm">
+      <span className="flex items-center gap-2 text-sm text-foreground">
         <span className={`h-2 w-2 rounded-full ${STATUS_DOT[status]}`} />
         {STATUS_LABEL[status]}
       </span>

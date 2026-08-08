@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Lock, CircleCheck, CircleAlert } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -98,7 +99,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
 
   if (deal.status !== "open") {
     return (
-      <p className="rounded-md bg-neutral-100 p-4 text-sm text-neutral-600">
+      <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
         Bidding is closed for this deal.
       </p>
     );
@@ -106,20 +107,24 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
 
   if (!publicKey) {
     return (
-      <p className="rounded-md bg-neutral-100 p-4 text-sm text-neutral-600">
+      <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
         Connect your wallet to place a sealed bid.
       </p>
     );
   }
 
   return (
-    <div className="rounded-lg border border-neutral-200 p-5">
-      <h3 className="font-semibold">Place a sealed bid</h3>
-      <p className="mt-1 text-sm text-neutral-500">
+    <div className="rounded-lg border border-border bg-card p-5">
+      <h3 className="flex items-center gap-2 font-heading font-semibold text-card-foreground">
+        <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
+        Place a sealed bid
+      </h3>
+      <p className="mt-1 text-sm text-muted-foreground">
         Your amount is hidden from everyone — including other bidders — until reveal.
       </p>
       {!isStartup && (
-        <p className="mt-2 rounded-md bg-amber-50 p-2 text-xs text-amber-800">
+        <p className="mt-2 flex items-start gap-1.5 rounded-md bg-amber-500/10 p-2 text-xs text-amber-700 dark:text-amber-400">
+          <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
           Bidding currently requires a relay service (not yet deployed) unless you&apos;re
           testing with the deal&apos;s own startup wallet — see the code comment in
           BidForm.tsx.
@@ -133,22 +138,28 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder={`Min ${minInvestment}`}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
         />
         <button
           type="button"
           disabled={!amountValid}
           onClick={() => setConfirming(true)}
-          className="whitespace-nowrap rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:opacity-40"
+          className="cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           Place Bid
         </button>
       </div>
       {status.kind === "success" && (
-        <p className="mt-2 text-sm text-green-700">Bid placed. Waiting for reveal.</p>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
+          <CircleCheck className="h-4 w-4" strokeWidth={2} />
+          Bid placed. Waiting for reveal.
+        </p>
       )}
       {status.kind === "error" && (
-        <p className="mt-2 text-sm text-red-600">Bid failed: {status.message}</p>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+          <CircleAlert className="h-4 w-4" strokeWidth={2} />
+          Bid failed: {status.message}
+        </p>
       )}
 
       {confirming && (
