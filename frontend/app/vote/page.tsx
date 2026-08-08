@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useMilestones } from "@/hooks/useMilestones";
 import { VoteCard } from "@/components/VoteCard";
+import { SkeletonRow } from "@/components/Skeleton";
 
 const container = {
   hidden: {},
@@ -38,7 +39,10 @@ export default function VotePage() {
       )}
 
       {publicKey && loading && (
-        <p className="mt-10 text-center text-muted-foreground">Loading milestones…</p>
+        <div className="mt-6 space-y-4">
+          <SkeletonRow />
+          <SkeletonRow />
+        </div>
       )}
 
       {publicKey && !loading && open.length === 0 && (

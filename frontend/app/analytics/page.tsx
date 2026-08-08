@@ -5,22 +5,51 @@ import {
   PieChart,
   Pie,
   Cell,
+  Legend,
   ResponsiveContainer,
   Tooltip,
   LineChart,
   Line,
   BarChart,
   Bar,
+  LabelList,
   XAxis,
   YAxis,
 } from "recharts";
+import type { PieLabelRenderProps } from "recharts";
 import { BarChart3, CircleAlert } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePublicStats } from "@/hooks/usePublicStats";
 import { formatTokenAmount } from "@/lib/format";
+import { Skeleton, SkeletonStat } from "@/components/Skeleton";
 
 const COLORS = ["var(--primary)", "var(--accent)", "#0EA5E9", "#F59E0B", "#64748B", "#94A3B8"];
+
+// Pie slices rely on color alone unless paired with a direct % label — this
+// draws that label outside the donut so it stays legible for colorblind users.
+function renderPercentLabel(props: PieLabelRenderProps) {
+  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
+  if (cx == null || cy == null || midAngle == null || innerRadius == null || outerRadius == null) {
+    return null;
+  }
+  const RADIAN = Math.PI / 180;
+  const radius = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 1.4;
+  const x = Number(cx) + radius * Math.cos(-midAngle * RADIAN);
+  const y = Number(cy) + radius * Math.sin(-midAngle * RADIAN);
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="var(--muted-foreground)"
+      fontSize={11}
+      textAnchor={x > Number(cx) ? "start" : "end"}
+      dominantBaseline="central"
+    >
+      {`${Math.round((percent ?? 0) * 100)}%`}
+    </text>
+  );
+}
 
 export default function AnalyticsPage() {
   const { publicKey } = useWallet();
@@ -54,7 +83,20 @@ export default function AnalyticsPage() {
       </p>
 
       <section className="mt-6">
-        {statsLoading && <p className="text-sm text-muted-foreground">Loading platform stats…</p>}
+        {statsLoading && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <SkeletonStat />
+              <SkeletonStat />
+              <SkeletonStat />
+              <SkeletonStat />
+            </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <Skeleton className="h-56 w-full" />
+              <Skeleton className="h-56 w-full" />
+            </div>
+          </div>
+        )}
         {!statsLoading && !stats && (
           <p className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
             <CircleAlert className="h-4 w-4" strokeWidth={2} />
@@ -75,11 +117,13 @@ export default function AnalyticsPage() {
                 <h3 className="text-sm font-medium text-card-foreground">Deals by deadline date</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={stats.dealsOverTime}>
+                    <BarChart data={stats.dealsOverTime} margin={{ top: 16 }}>
                       <XAxis dataKey="date" fontSize={10} stroke="var(--muted-foreground)" />
                       <YAxis fontSize={12} allowDecimals={false} stroke="var(--muted-foreground)" />
                       <Tooltip />
-                      <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]}>
+                        <LabelList dataKey="count" position="top" fontSize={11} fill="var(--muted-foreground)" />
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -117,7 +161,17 @@ export default function AnalyticsPage() {
         {!publicKey ? (
           <p className="mt-4 text-sm text-muted-foreground">Connect your wallet to see your own stats.</p>
         ) : loading ? (
-          <p className="mt-4 text-sm text-muted-foreground">Loading…</p>
+          <div className="mt-4 space-y-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <SkeletonStat />
+              <SkeletonStat />
+              <SkeletonStat />
+            </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <Skeleton className="h-56 w-full" />
+              <Skeleton className="h-56 w-full" />
+            </div>
+          </div>
         ) : positions.length === 0 ? (
           <p className="mt-4 text-sm text-muted-foreground">No positions yet.</p>
         ) : (
@@ -134,11 +188,25 @@ export default function AnalyticsPage() {
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={allocation} dataKey="value" nameKey="name" outerRadius={80}>
+                      <Pie
+                        data={allocation}
+                        dataKey="value"
+                        nameKey="name"
+                        outerRadius={70}
+                        label={renderPercentLabel}
+                        labelLine={{ stroke: "var(--border)" }}
+                      >
                         {allocation.map((_, i) => (
                           <Cell key={i} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
+                      <Legend
+                        verticalAlign="bottom"
+                        height={28}
+                        iconType="circle"
+                        iconSize={8}
+                        wrapperStyle={{ fontSize: 11, color: "var(--muted-foreground)" }}
+                      />
                       <Tooltip formatter={(v) => formatTokenAmount(Number(v ?? 0))} />
                     </PieChart>
                   </ResponsiveContainer>

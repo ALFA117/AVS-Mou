@@ -11,6 +11,7 @@ import { BidForm } from "@/components/BidForm";
 import { RevealAnimation } from "@/components/RevealAnimation";
 import { DealCharts } from "@/components/DealCharts";
 import { ShareDeal } from "@/components/ShareDeal";
+import { Skeleton } from "@/components/Skeleton";
 import { formatBps, formatDate, formatTokenAmount, shortenAddress } from "@/lib/format";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -25,7 +26,20 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
   const { publicKey } = useWallet();
 
   if (loading) {
-    return <main className="mx-auto max-w-3xl px-6 py-10 text-muted-foreground">Loading deal…</main>;
+    return (
+      <main className="mx-auto max-w-3xl px-6 py-10">
+        <Skeleton className="h-4 w-20" />
+        <div className="mt-4 flex items-start justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-7 w-40" />
+            <Skeleton className="h-4 w-56" />
+          </div>
+          <Skeleton className="h-5 w-16 rounded-full" />
+        </div>
+        <Skeleton className="mt-6 h-32 w-full" />
+        <Skeleton className="mt-8 h-48 w-full" />
+      </main>
+    );
   }
   if (error || !deal) {
     return (

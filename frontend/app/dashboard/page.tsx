@@ -7,6 +7,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { formatEquity, formatTokenAmount, shortenAddress } from "@/lib/format";
 import { downloadCsv, positionsToCsv } from "@/lib/csv";
+import { SkeletonRow } from "@/components/Skeleton";
 
 const STATUS_STYLES: Record<string, string> = {
   active: "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400",
@@ -66,7 +67,13 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {loading && <p className="mt-4 text-sm text-muted-foreground">Loading positions…</p>}
+          {loading && (
+            <div className="mt-4 space-y-2">
+              <SkeletonRow />
+              <SkeletonRow />
+              <SkeletonRow />
+            </div>
+          )}
           {!loading && positions.length === 0 && (
             <p className="mt-4 text-sm text-muted-foreground">
               No positions yet.{" "}

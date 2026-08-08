@@ -6,6 +6,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useDeal } from "@/hooks/useDeal";
 import { useBids } from "@/hooks/useBids";
 import { ChatPanel, roleLabel } from "@/components/ChatPanel";
+import { Skeleton } from "@/components/Skeleton";
 import { formatEquity, shortenAddress } from "@/lib/format";
 import type { MemberRole } from "@/lib/types";
 
@@ -17,7 +18,16 @@ export default function ChatPage({ params }: { params: { syndicateId: string } }
   const isMember = bids.some((b) => b.bidder === publicKey?.toBase58());
 
   if (loading) {
-    return <main className="mx-auto max-w-4xl px-6 py-10 text-muted-foreground">Loading…</main>;
+    return (
+      <main className="mx-auto max-w-4xl px-6 py-10">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="mt-4 h-7 w-64" />
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-[1fr_240px]">
+          <Skeleton className="h-96 w-full" />
+          <Skeleton className="h-40 w-full" />
+        </div>
+      </main>
+    );
   }
   if (!deal) {
     return <main className="mx-auto max-w-4xl px-6 py-10 text-red-600 dark:text-red-400">Syndicate not found.</main>;

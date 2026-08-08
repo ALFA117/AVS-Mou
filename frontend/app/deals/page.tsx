@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Search, RefreshCw } from "lucide-react";
 import { DealCard } from "@/components/DealCard";
+import { SkeletonCard } from "@/components/Skeleton";
 import { useDeals } from "@/hooks/useDeals";
 import type { Deal } from "@/lib/types";
 
@@ -109,7 +110,13 @@ export default function DealsPage() {
         </button>
       </div>
 
-      {loading && <p className="mt-10 text-center text-muted-foreground">Loading deals…</p>}
+      {loading && (
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      )}
       {error && (
         <p className="mt-10 text-center text-red-600 dark:text-red-400">
           Couldn&apos;t load deals: {error}

@@ -9,6 +9,7 @@ import { useMilestones } from "@/hooks/useMilestones";
 import { useSyndicate } from "@/hooks/useSyndicate";
 import { Countdown } from "@/components/Countdown";
 import { TransferEquityPanel } from "@/components/TransferEquityPanel";
+import { Skeleton } from "@/components/Skeleton";
 import { formatEquity, formatTokenAmount, shortenAddress } from "@/lib/format";
 
 /** `id` is the sealed-auction Deal's public key — a syndicate is 1:1 with its deal. */
@@ -22,7 +23,15 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
   const myBid = bids.find((b) => b.bidder === publicKey?.toBase58());
 
   if (loading) {
-    return <main className="mx-auto max-w-3xl px-6 py-10 text-muted-foreground">Loading syndicate…</main>;
+    return (
+      <main className="mx-auto max-w-3xl px-6 py-10">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="mt-4 h-7 w-56" />
+        <Skeleton className="mt-2 h-4 w-40" />
+        <Skeleton className="mt-6 h-24 w-full" />
+        <Skeleton className="mt-8 h-32 w-full" />
+      </main>
+    );
   }
   if (!deal) {
     return <main className="mx-auto max-w-3xl px-6 py-10 text-red-600 dark:text-red-400">Syndicate not found.</main>;

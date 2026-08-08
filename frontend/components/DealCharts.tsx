@@ -1,6 +1,19 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  BarChart,
+  Bar,
+  LabelList,
+  XAxis,
+  YAxis,
+} from "recharts";
+import type { PieLabelRenderProps } from "recharts";
 import { Lock } from "lucide-react";
 import { formatTokenAmount } from "@/lib/format";
 import type { Bid, Deal } from "@/lib/types";
@@ -8,6 +21,31 @@ import type { Bid, Deal } from "@/lib/types";
 // CSS custom properties resolve fine as SVG fill values, so these charts
 // stay theme-aware without a JS-side dark-mode branch.
 const COLORS = ["var(--primary)", "var(--accent)", "var(--muted-foreground)"];
+
+// Pie slices rely on color alone unless paired with a direct % label — this
+// draws that label outside the donut so it stays legible for colorblind users.
+function renderPercentLabel(props: PieLabelRenderProps) {
+  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
+  if (cx == null || cy == null || midAngle == null || innerRadius == null || outerRadius == null) {
+    return null;
+  }
+  const RADIAN = Math.PI / 180;
+  const radius = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 1.4;
+  const x = Number(cx) + radius * Math.cos(-midAngle * RADIAN);
+  const y = Number(cy) + radius * Math.sin(-midAngle * RADIAN);
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="var(--muted-foreground)"
+      fontSize={11}
+      textAnchor={x > Number(cx) ? "start" : "end"}
+      dominantBaseline="central"
+    >
+      {`${Math.round((percent ?? 0) * 100)}%`}
+    </text>
+  );
+}
 
 export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
   const raiseData = [
@@ -24,14 +62,30 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <div className="rounded-lg border border-border bg-card p-4">
         <h4 className="text-sm font-medium text-card-foreground">Raise progress</h4>
-        <div className="h-48">
+        <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={raiseData} dataKey="value" innerRadius={45} outerRadius={70} paddingAngle={2}>
+              <Pie
+                data={raiseData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={45}
+                outerRadius={70}
+                paddingAngle={2}
+                label={renderPercentLabel}
+                labelLine={{ stroke: "var(--border)" }}
+              >
                 {raiseData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
+              <Legend
+                verticalAlign="bottom"
+                height={28}
+                iconType="circle"
+                iconSize={8}
+                wrapperStyle={{ fontSize: 11, color: "var(--muted-foreground)" }}
+              />
               <Tooltip formatter={(v) => formatTokenAmount(Number(v ?? 0))} />
             </PieChart>
           </ResponsiveContainer>
@@ -50,11 +104,19 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={bidDistribution}>
+              <BarChart data={bidDistribution} margin={{ top: 16 }}>
                 <XAxis dataKey="name" fontSize={12} stroke="var(--muted-foreground)" />
                 <YAxis fontSize={12} stroke="var(--muted-foreground)" />
                 <Tooltip />
-                <Bar dataKey="amount" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="amount" fill="var(--primary)" radius={[4, 4, 0, 0]}>
+                  <LabelList
+                    dataKey="amount"
+                    position="top"
+                    fontSize={11}
+                    fill="var(--muted-foreground)"
+                    formatter={(v) => Number(v ?? 0).toFixed(2)}
+                  />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           )}
