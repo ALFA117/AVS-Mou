@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, CircleCheck, CircleAlert } from "lucide-react";
+import { Lock, CircleCheck, CircleAlert, Link2 } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -12,7 +12,8 @@ import {
   SEALED_AUCTION_PROGRAM_ID,
 } from "@/lib/programs";
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
-import { fetchRelaySponsorPubkey, submitViaRelay } from "@/lib/relayClient";
+import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/lib/relayClient";
+import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
 import { formatTokenAmount } from "@/lib/format";
 import { BidConfirmModal } from "@/components/BidConfirmModal";
 import type { Deal } from "@/lib/types";
@@ -22,9 +23,10 @@ const MAGIC_PROGRAM = new PublicKey("Magic11111111111111111111111111111111111111
 
 export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () => void }) {
   const { connection } = useConnection();
-  const { publicKey, wallet, signTransaction } = useWallet();
+  const { publicKey, wallet, signTransaction, sendTransaction } = useWallet();
   const [amount, setAmount] = useState("");
   const [confirming, setConfirming] = useState(false);
+  const [delegating, setDelegating] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
     kind: "idle",
   });
@@ -46,9 +48,30 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
       const sessionSigner = useSession && session ? sessionKeypairFrom(session) : null;
       const bidderPubkey = sessionSigner?.publicKey ?? publicKey;
 
+      const bidderFundingAccount = getAssociatedTokenAddressSync(fundingMint, publicKey);
+
+      // place_bid runs on MagicBlock's Private Ephemeral Rollup (bid is an
+      // ER-only account) and the SPL transfer inside it reads the ER's copy
+      // of bidderFundingAccount, not L1's — that copy only exists once this
+      // investor has delegated their funding account there. One-time per
+      // (investor, funding mint), paid by the investor's own wallet since
+      // it isn't part of any single bid — see docs/RELAY.md.
+      const alreadyDelegated = await isFundingAccountDelegated(connection, bidderFundingAccount);
+      if (!alreadyDelegated) {
+        if (!sendTransaction) throw new Error("Wallet does not support sending transactions");
+        setDelegating(true);
+        await delegateFundingAccount({
+          connection,
+          owner: publicKey,
+          mint: fundingMint,
+          amount: BigInt(Math.round(parsedAmount * 10 ** 6)),
+          sendTransaction: (tx) => sendTransaction(tx, connection),
+        });
+        setDelegating(false);
+      }
+
       const program = sealedAuctionProgram(connection, wallet.adapter as never);
       const bid = bidPda(dealPk, publicKey); // keyed by the investor, not whoever signs
-      const bidderFundingAccount = getAssociatedTokenAddressSync(fundingMint, publicKey);
       const dealFundingAccount = getAssociatedTokenAddressSync(fundingMint, dealPk, true);
       const sessionToken = sessionSigner
         ? sessionTokenPda(SEALED_AUCTION_PROGRAM_ID, sessionSigner.publicKey, publicKey)
@@ -80,7 +103,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         .transaction();
 
       tx.feePayer = sponsorPubkey;
-      tx.recentBlockhash = (await connection.getLatestBlockhash("confirmed")).blockhash;
+      tx.recentBlockhash = await fetchRelayBlockhash();
 
       if (sessionSigner) {
         tx.partialSign(sessionSigner);
@@ -89,13 +112,15 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         tx = await signTransaction(tx);
       }
 
-      const sig = await submitViaRelay(tx);
-      await connection.confirmTransaction(sig, "confirmed");
+      // The relay confirms server-side (it holds the only TEE auth on our
+      // side) before returning, so no client-side confirmTransaction here.
+      await submitViaRelay(tx);
 
       setStatus({ kind: "success" });
       setAmount("");
       onBidPlaced?.();
     } catch (err) {
+      setDelegating(false);
       setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
     }
   }
@@ -144,6 +169,12 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
           Place Bid
         </button>
       </div>
+      {delegating && (
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Link2 className="h-4 w-4 animate-pulse" strokeWidth={2} />
+          One-time setup: approving your wallet for gasless bidding…
+        </p>
+      )}
       {status.kind === "success" && (
         <p className="mt-2 flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
           <CircleCheck className="h-4 w-4" strokeWidth={2} />

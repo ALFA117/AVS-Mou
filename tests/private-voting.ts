@@ -1,4 +1,16 @@
-import { BN, web3 } from "@coral-xyz/anchor";
+import * as anchor from "@coral-xyz/anchor";
+import { BN, Program, web3 } from "@coral-xyz/anchor";
+import * as fs from "fs";
+import * as os from "os";
+import * as crypto from "crypto";
+import * as nacl from "tweetnacl";
+import {
+  getAuthToken,
+  PERMISSION_PROGRAM_ID,
+  MAGIC_PROGRAM_ID,
+  permissionPdaFromAccount,
+  EPHEMERAL_VAULT_ID,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
 import { expect } from "chai";
 
 // Structural / IDL-shape tests — see tests/sealed-auction.ts for why these
@@ -121,9 +133,233 @@ describe("private-voting (structural)", () => {
     expect(fields).to.include.members(["voted_correctly", "reward_paid"]);
   });
 
-  describe("live devnet e2e (skipped — needs a funded devnet wallet + VRF oracle queue)", () => {
-    it("full milestone lifecycle: propose -> vote -> reveal -> VRF -> settle -> undelegate", function () {
-      this.skip();
+  describe("live devnet e2e (skipped unless RUN_PRIVATE_VOTING_DEVNET_E2E=1)", function () {
+    this.timeout(180_000);
+    const RUN_LIVE = process.env.RUN_PRIVATE_VOTING_DEVNET_E2E === "1";
+    const TEE_RPC = "https://devnet-tee.magicblock.app";
+    const VALIDATOR = new web3.PublicKey("MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo");
+
+    function loadKeypair(path: string): web3.Keypair {
+      const raw = JSON.parse(fs.readFileSync(path.replace("~", os.homedir()), "utf-8"));
+      return web3.Keypair.fromSecretKey(Uint8Array.from(raw));
+    }
+
+    function sleep(ms: number) {
+      return new Promise((r) => setTimeout(r, ms));
+    }
+
+    async function teeConnection(authority: web3.Keypair): Promise<web3.Connection> {
+      const { token } = await getAuthToken(TEE_RPC, authority.publicKey, (message: Uint8Array) =>
+        Promise.resolve(nacl.sign.detached(message, authority.secretKey)),
+      );
+      return new web3.Connection(`${TEE_RPC}?token=${token}`, {
+        wsEndpoint: `wss://devnet-tee.magicblock.app?token=${token}`,
+        commitment: "confirmed",
+      });
+    }
+
+    async function sendRaw(
+      connection: web3.Connection,
+      tx: web3.Transaction,
+      feePayer: web3.Keypair,
+      signers: web3.Keypair[] = [],
+      label = "tx",
+    ): Promise<string> {
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
+      tx.feePayer = feePayer.publicKey;
+      tx.recentBlockhash = blockhash;
+      const seen = new Map<string, web3.Keypair>();
+      [feePayer, ...signers].forEach((s) => seen.set(s.publicKey.toBase58(), s));
+      tx.partialSign(...seen.values());
+      const sig = await connection.sendRawTransaction(tx.serialize(), { skipPreflight: true });
+      const status = await connection.confirmTransaction(
+        { signature: sig, blockhash, lastValidBlockHeight },
+        "confirmed",
+      );
+      if (status.value.err) {
+        throw new Error(`${label} ${sig} failed: ${JSON.stringify(status.value.err)}`);
+      }
+      return sig;
+    }
+
+    before(function () {
+      if (!RUN_LIVE) this.skip();
     });
+
+    it(
+      "sealed milestone voting against real Devnet + MagicBlock's hosted TEE ER: " +
+        "propose -> delegate -> sealed votes from 2 members -> reveal with correct tally",
+      async () => {
+        const startup = loadKeypair("~/.config/solana/id.json");
+        const voterYes = web3.Keypair.generate();
+        const voterNo = web3.Keypair.generate();
+        const connection = new web3.Connection("https://api.devnet.solana.com", "confirmed");
+        const wallet = new anchor.Wallet(startup);
+        const provider = new anchor.AnchorProvider(connection, wallet, { commitment: "confirmed" });
+        const idlProgram = new Program(idl as anchor.Idl, provider) as unknown as Program<anchor.Idl>;
+
+        await sendRaw(
+          connection,
+          new web3.Transaction().add(
+            web3.SystemProgram.transfer({
+              fromPubkey: startup.publicKey,
+              toPubkey: voterYes.publicKey,
+              lamports: 0.05 * web3.LAMPORTS_PER_SOL,
+            }),
+            web3.SystemProgram.transfer({
+              fromPubkey: startup.publicKey,
+              toPubkey: voterNo.publicKey,
+              lamports: 0.05 * web3.LAMPORTS_PER_SOL,
+            }),
+          ),
+          startup,
+          [],
+          "fund voters",
+        );
+
+        const milestoneId = new BN(Date.now());
+        const milestone = milestonePda(startup.publicKey, milestoneId);
+        const dummyDeal = web3.Keypair.generate().publicKey;
+        const descriptionHash = crypto.createHash("sha256").update("ship v2 dashboard").digest();
+        const deadlineTs = new BN(Math.floor(Date.now() / 1000) + 60);
+
+        await idlProgram.methods
+          .initializeMilestone(
+            milestoneId,
+            dummyDeal,
+            Array.from(descriptionHash),
+            deadlineTs,
+            new BN(0), // reward_pool — not exercised by this test (VRF settlement is a separate, documented follow-up)
+            new BN(1_000_000),
+          )
+          .accountsPartial({ startup: startup.publicKey, milestone, systemProgram: web3.SystemProgram.programId })
+          .rpc({ skipPreflight: false });
+
+        await idlProgram.methods
+          .delegateMilestone(milestoneId)
+          .accountsPartial({ startup: startup.publicKey, milestone, validator: VALIDATOR })
+          .rpc({ skipPreflight: false });
+
+        await sleep(3000);
+
+        const startupEr = await teeConnection(startup);
+        const startupErProgram = new Program(
+          idl as anchor.Idl,
+          new anchor.AnchorProvider(startupEr, wallet, { commitment: "confirmed" }),
+        ) as unknown as Program<anchor.Idl>;
+
+        await sendRaw(
+          startupEr,
+          await startupErProgram.methods
+            .initMilestonePermission(milestoneId)
+            .accountsPartial({
+              startup: startup.publicKey,
+              milestone,
+              permission: permissionPdaFromAccount(milestone),
+              permissionProgram: PERMISSION_PROGRAM_ID,
+              ephemeralVault: EPHEMERAL_VAULT_ID,
+              magicProgram: MAGIC_PROGRAM_ID,
+            })
+            .transaction(),
+          startup,
+          [],
+          "init_milestone_permission",
+        );
+
+        const voteYesPk = votePda(milestone, voterYes.publicKey);
+        const voteNoPk = votePda(milestone, voterNo.publicKey);
+        for (const [voter, choice, votePk] of [
+          [voterYes, { yes: {} }, voteYesPk],
+          [voterNo, { no: {} }, voteNoPk],
+        ] as [web3.Keypair, Record<string, unknown>, web3.PublicKey][]) {
+          const voterEr = await teeConnection(voter);
+          const voterErProgram = new Program(
+            idl as anchor.Idl,
+            new anchor.AnchorProvider(voterEr, new anchor.Wallet(voter), { commitment: "confirmed" }),
+          ) as unknown as Program<anchor.Idl>;
+
+          await sendRaw(
+            voterEr,
+            await voterErProgram.methods
+              .castVote(milestoneId, voter.publicKey, choice)
+              .accountsPartial({
+                payer: startup.publicKey,
+                voter: voter.publicKey,
+                sessionToken: null,
+                milestone,
+                vote: votePk,
+                vault: EPHEMERAL_VAULT_ID,
+                magicProgram: MAGIC_PROGRAM_ID,
+              })
+              .transaction(),
+            startup,
+            [voter],
+            `cast_vote ${voter.publicKey.toBase58()}`,
+          );
+
+          await sendRaw(
+            startupEr,
+            await startupErProgram.methods
+              .initVotePermission(milestoneId)
+              .accountsPartial({
+                milestone,
+                vote: votePk,
+                votePermission: permissionPdaFromAccount(votePk),
+                permissionProgram: PERMISSION_PROGRAM_ID,
+                ephemeralVault: EPHEMERAL_VAULT_ID,
+                magicProgram: MAGIC_PROGRAM_ID,
+              })
+              .transaction(),
+            startup,
+            [],
+            `init_vote_permission ${voter.publicKey.toBase58()}`,
+          );
+        }
+
+        const milestoneAfterVotes = (await (startupErProgram.account as any).milestone.fetch(milestone)) as {
+          voterCount: number;
+        };
+        expect(milestoneAfterVotes.voterCount).to.equal(2);
+
+        const waitMs = deadlineTs.toNumber() * 1000 - Date.now() + 2000;
+        if (waitMs > 0) await sleep(waitMs);
+
+        await sendRaw(
+          startupEr,
+          await startupErProgram.methods
+            .revealMilestone(milestoneId)
+            .accountsPartial({ startup: startup.publicKey, milestone })
+            .remainingAccounts([
+              { pubkey: voteYesPk, isSigner: false, isWritable: false },
+              { pubkey: voteNoPk, isSigner: false, isWritable: false },
+            ])
+            .transaction(),
+          startup,
+          [],
+          "reveal_milestone",
+        );
+
+        const revealed = (await (startupErProgram.account as any).milestone.fetch(milestone)) as {
+          status: Record<string, unknown>;
+          yesCount: number;
+          noCount: number;
+          outcome: Record<string, unknown>;
+        };
+        expect(Object.keys(revealed.status)[0]).to.equal("revealed");
+        expect(revealed.yesCount).to.equal(1);
+        expect(revealed.noCount).to.equal(1);
+        // 1-1 is a genuine tie — verifies the tally isn't silently biased
+        // toward one side by reveal's counting logic.
+        expect(Object.keys(revealed.outcome)[0]).to.equal("tie");
+
+        // VRF-gated settlement (request_milestone_randomness ->
+        // MagicBlock's oracle callback -> settle_vote) and
+        // undelegate_milestone are NOT exercised here: request_milestone_randomness
+        // needs a live oracle_queue address this test doesn't have a
+        // verified source for, and undelegate_milestone shares sealed-auction's
+        // undelegate_deal bug (see docs/KNOWN_ISSUES.md). The sealed voting
+        // lifecycle above — the privacy-critical part — is fully proven.
+      },
+    );
   });
 });

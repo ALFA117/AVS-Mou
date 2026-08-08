@@ -534,6 +534,13 @@ pub mod sealed_auction {
         let total_raised = ctx.accounts.deal.total_raised;
         let bid_count = ctx.accounts.deal.bid_count;
 
+        // Mutate before the commit CPI, not after — see docs/RELAY.md's
+        // sibling note in undelegate_milestone; this ordering is required
+        // even though it alone didn't resolve the live
+        // ExternalAccountDataModified issue tracked in
+        // docs/KNOWN_ISSUES.md.
+        ctx.accounts.deal.status = DealStatus::Settled;
+
         MagicIntentBundleBuilder::new(
             ctx.accounts.payer.to_account_info(),
             ctx.accounts.magic_context.to_account_info(),
@@ -541,8 +548,6 @@ pub mod sealed_auction {
         )
         .commit_and_undelegate(&[ctx.accounts.deal.to_account_info()])
         .build_and_invoke()?;
-
-        ctx.accounts.deal.status = DealStatus::Settled;
 
         emit!(DealSettled {
             deal: deal_key,

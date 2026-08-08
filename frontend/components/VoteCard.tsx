@@ -7,7 +7,7 @@ import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import { votePda, privateVotingProgram, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
-import { fetchRelaySponsorPubkey, submitViaRelay } from "@/lib/relayClient";
+import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/lib/relayClient";
 import { Countdown } from "@/components/Countdown";
 import { VoteConfirmModal } from "@/components/VoteConfirmModal";
 import { formatTokenAmount } from "@/lib/format";
@@ -63,7 +63,10 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
         .transaction();
 
       tx.feePayer = sponsorPubkey;
-      tx.recentBlockhash = (await connection.getLatestBlockhash("confirmed")).blockhash;
+      // cast_vote runs on MagicBlock's Private Ephemeral Rollup (vote is an
+      // ER-only account) — the blockhash must be valid there, not on L1.
+      // See docs/RELAY.md and docs/KNOWN_ISSUES.md.
+      tx.recentBlockhash = await fetchRelayBlockhash();
 
       if (sessionSigner) {
         tx.partialSign(sessionSigner);
@@ -72,8 +75,9 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
         tx = await signTransaction(tx);
       }
 
-      const sig = await submitViaRelay(tx);
-      await connection.confirmTransaction(sig, "confirmed");
+      // The relay confirms server-side (it holds the only TEE auth on our
+      // side) before returning, so no client-side confirmTransaction here.
+      await submitViaRelay(tx);
 
       setStatus({ kind: "success" });
       onVoted?.();

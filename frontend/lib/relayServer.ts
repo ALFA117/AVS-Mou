@@ -1,4 +1,6 @@
 import { Connection, Keypair, Transaction, PublicKey, clusterApiUrl } from "@solana/web3.js";
+import * as nacl from "tweetnacl";
+import { getAuthToken, verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
 import { SEALED_AUCTION_PROGRAM_ID, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
 
 /**
@@ -8,6 +10,12 @@ import { SEALED_AUCTION_PROGRAM_ID, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/prog
  */
 
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl("devnet");
+
+// place_bid/cast_vote only ever exist on MagicBlock's Private Ephemeral
+// Rollup (bid/vote are `eph`-only accounts) — see docs/RELAY.md and
+// docs/KNOWN_ISSUES.md for why L1 alone was never enough.
+const TEE_RPC_URL = "https://devnet-tee.magicblock.app";
+const TEE_WS_URL = "wss://devnet-tee.magicblock.app";
 
 // The sponsor only ever pays rent/fees for place_bid and cast_vote — never
 // acts as a generic fee-payer for arbitrary transactions.
@@ -31,6 +39,34 @@ export function relaySponsorKeypair(): Keypair {
 
 export function relayConnection(): Connection {
   return new Connection(RPC_URL, "confirmed");
+}
+
+let cachedErConnection: { connection: Connection; expiresAt: number } | null = null;
+
+/**
+ * A TEE-authenticated connection to MagicBlock's hosted Private Ephemeral
+ * Rollup, authenticated as the relay sponsor. Tokens expire (SDK's
+ * SESSION_DURATION) — cached and refreshed a bit early rather than per-call.
+ */
+export async function relayErConnection(): Promise<Connection> {
+  const now = Date.now();
+  if (cachedErConnection && cachedErConnection.expiresAt > now) {
+    return cachedErConnection.connection;
+  }
+
+  await verifyTeeRpcIntegrity(TEE_RPC_URL);
+  const sponsor = relaySponsorKeypair();
+  const { token, expiresAt } = await getAuthToken(TEE_RPC_URL, sponsor.publicKey, (message: Uint8Array) =>
+    Promise.resolve(nacl.sign.detached(message, sponsor.secretKey)),
+  );
+
+  const connection = new Connection(`${TEE_RPC_URL}?token=${token}`, {
+    wsEndpoint: `${TEE_WS_URL}?token=${token}`,
+    commitment: "confirmed",
+  });
+  // expiresAt is in seconds per the SDK; refresh 60s early.
+  cachedErConnection = { connection, expiresAt: expiresAt * 1000 - 60_000 };
+  return connection;
 }
 
 export class RelayRejectedError extends Error {}

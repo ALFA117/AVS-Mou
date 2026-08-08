@@ -524,6 +524,10 @@ pub mod private_voting {
         let yes_count = ctx.accounts.milestone.yes_count;
         let no_count = ctx.accounts.milestone.no_count;
 
+        // Mutate before the commit CPI — see sealed-auction's
+        // undelegate_deal for why (ExternalAccountDataModified otherwise).
+        ctx.accounts.milestone.status = MilestoneStatus::Settled;
+
         MagicIntentBundleBuilder::new(
             ctx.accounts.payer.to_account_info(),
             ctx.accounts.magic_context.to_account_info(),
@@ -531,8 +535,6 @@ pub mod private_voting {
         )
         .commit_and_undelegate(&[ctx.accounts.milestone.to_account_info()])
         .build_and_invoke()?;
-
-        ctx.accounts.milestone.status = MilestoneStatus::Settled;
 
         emit!(MilestoneSettled {
             milestone: milestone_key,
