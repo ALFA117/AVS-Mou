@@ -7,8 +7,16 @@
   --foreground: #171717;
 }
 
+/* Task 083: user-controlled dark mode (Tailwind `class` strategy — see
+   lib/theme.ts). System preference is only the *default* before the user
+   picks explicitly; the .dark class always wins. */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light):not(.dark) {
     --background: #0a0a0a;
     --foreground: #ededed;
   }

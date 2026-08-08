@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const LINKS = [
   { href: "/deals", label: "Deals" },
@@ -15,7 +16,7 @@ export function NavBar() {
   const pathname = usePathname();
 
   return (
-    <header className="border-b border-neutral-200">
+    <header className="border-b border-neutral-200 dark:border-neutral-800">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
         <Link href="/" className="font-semibold tracking-tight">
           AVS
@@ -27,15 +28,18 @@ export function NavBar() {
               href={link.href}
               className={
                 pathname?.startsWith(link.href)
-                  ? "font-medium text-black"
-                  : "text-neutral-500 hover:text-black"
+                  ? "font-medium text-black dark:text-white"
+                  : "text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white"
               }
             >
               {link.label}
             </Link>
           ))}
         </nav>
-        <WalletConnectButton />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <WalletConnectButton />
+        </div>
       </div>
     </header>
   );

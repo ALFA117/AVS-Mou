@@ -1,0 +1,134 @@
+"use client";
+
+import { useState } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useSessionKey } from "@/hooks/useSessionKey";
+import { usePortfolio } from "@/hooks/usePortfolio";
+import { SEALED_AUCTION_PROGRAM_ID, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
+import { downloadCsv, positionsToCsv } from "@/lib/csv";
+
+const NOTIF_STORAGE_KEY = "avs.settings.notifications";
+
+function loadNotifPref(): boolean {
+  if (typeof window === "undefined") return true;
+  return window.localStorage.getItem(NOTIF_STORAGE_KEY) !== "off";
+}
+
+export default function SettingsPage() {
+  const { publicKey } = useWallet();
+  const { positions } = usePortfolio();
+  const bidSession = useSessionKey(SEALED_AUCTION_PROGRAM_ID);
+  const voteSession = useSessionKey(PRIVATE_VOTING_PROGRAM_ID);
+  const [notifEnabled, setNotifEnabled] = useState(loadNotifPref);
+  const [cleared, setCleared] = useState(false);
+
+  if (!publicKey) {
+    return (
+      <main className="mx-auto max-w-2xl px-6 py-10">
+        <h1 className="text-2xl font-bold">Settings</h1>
+        <p className="mt-6 text-sm text-neutral-500">Connect your wallet to manage settings.</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="mx-auto max-w-2xl px-6 py-10">
+      <h1 className="text-2xl font-bold">Settings</h1>
+
+      <section className="mt-6">
+        <h2 className="text-lg font-semibold">Session keys</h2>
+        <p className="text-xs text-neutral-500">
+          See <a href="/faq" className="underline">FAQ</a> — a session key lets you bid/vote
+          without a wallet popup per action, until it expires or you revoke it.
+        </p>
+        <div className="mt-3 space-y-2">
+          <SessionRow programName="Bidding (sealed-auction)" session={bidSession} />
+          <SessionRow programName="Voting (private-voting)" session={voteSession} />
+        </div>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold">Notifications</h2>
+        <label className="mt-2 flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={notifEnabled}
+            onChange={(e) => {
+              setNotifEnabled(e.target.checked);
+              window.localStorage.setItem(NOTIF_STORAGE_KEY, e.target.checked ? "on" : "off");
+            }}
+          />
+          Notify me about deal reveals and milestone results
+        </label>
+        <p className="mt-1 text-xs text-neutral-400">
+          This app has no backend/push service — this preference is a placeholder for a future
+          notification channel and only affects local UI state today.
+        </p>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold">Export data</h2>
+        <button
+          type="button"
+          disabled={positions.length === 0}
+          onClick={() => downloadCsv("avs-portfolio.csv", positionsToCsv(positions))}
+          className="mt-2 rounded-md border border-neutral-300 px-3 py-1.5 text-sm font-medium hover:bg-neutral-50 disabled:opacity-40"
+        >
+          Export portfolio as CSV
+        </button>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold">Privacy</h2>
+        <p className="mt-2 text-sm text-neutral-600">
+          This app has no backend and collects no analytics. Locally stored data (this browser
+          only): your session keys and syndicate chat messages. See{" "}
+          <a href="/legal" className="underline">Legal</a> for the full privacy policy.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            bidSession.revoke();
+            voteSession.revoke();
+            for (const key of Object.keys(window.localStorage)) {
+              if (key.startsWith("avs.chat.") || key.startsWith("avs.sessionKey.")) {
+                window.localStorage.removeItem(key);
+              }
+            }
+            setCleared(true);
+          }}
+          className="mt-3 rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
+        >
+          Clear all local data
+        </button>
+        {cleared && <p className="mt-2 text-xs text-green-700">Local data cleared.</p>}
+      </section>
+    </main>
+  );
+}
+
+function SessionRow({
+  programName,
+  session,
+}: {
+  programName: string;
+  session: ReturnType<typeof useSessionKey>;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-md border border-neutral-200 px-3 py-2 text-sm">
+      <span>{programName}</span>
+      {session.state.status === "active" ? (
+        <span className="flex items-center gap-2">
+          <span className="text-green-700">
+            Active till {session.state.expiresAt.toLocaleTimeString()}
+          </span>
+          <button onClick={() => session.revoke()} className="text-red-600 underline">
+            Revoke
+          </button>
+        </span>
+      ) : (
+        <span className="text-neutral-400">No active session</span>
+      )}
+    </div>
+  );
+}

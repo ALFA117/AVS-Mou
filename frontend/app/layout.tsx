@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { WalletContextProvider } from "@/components/providers/WalletContextProvider";
 import { NavBar } from "@/components/NavBar";
+import { Footer } from "@/components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,6 +34,7 @@ export default function RootLayout({
         <WalletContextProvider>
           <NavBar />
           {children}
+          <Footer />
         </WalletContextProvider>
       </body>
     </html>
