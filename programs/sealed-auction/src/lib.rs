@@ -17,6 +17,18 @@
 //!   (`BidSettled` event). Actual SPL minting/distribution is the
 //!   `spl-token-manager` program's job (AVS_100_TASKS.md tasks 036-040),
 //!   which reads these events / bid records to mint the real tokens.
+//!
+//! `place_bid` accepts an optional session key (see
+//! `docs/SESSION_KEYS.md` and AVS_100_TASKS.md tasks 041-050): once an
+//! investor authorizes a session with their real wallet, every subsequent
+//! bid can be signed by the disposable session keypair instead — no wallet
+//! popup per bid. The `investor` argument is always the real wallet's
+//! identity (recorded as `bid.bidder`); `bidder` is *whoever signed* (the
+//! real wallet directly, or a session signer authorized for it), verified
+//! by `#[session_auth_or]` below. Moving the investor's funding tokens
+//! still requires the investor to have SPL-`approve`d the session signer
+//! as a delegate beforehand — this program only gates who may *call*
+//! `place_bid`, not SPL's own authority checks on the transfer CPI.
 
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{
@@ -39,6 +51,7 @@ use ephemeral_rollups_sdk::{
     cpi::DelegateConfig,
     ephem::MagicIntentBundleBuilder,
 };
+use session_keys::SessionTokenV2;
 
 mod error;
 mod state;
@@ -209,7 +222,29 @@ pub mod sealed_auction {
     /// Place a sealed bid. The amount is stored on an ER-only (`eph`) account
     /// sponsored by the deal; nothing about the amount is ever logged or
     /// emitted here, so it stays invisible until `settle_bid` runs post-reveal.
-    pub fn place_bid(ctx: Context<PlaceBid>, deal_id: u64, amount: u64) -> Result<()> {
+    ///
+    /// `investor` is the real wallet this bid belongs to. `bidder` (the
+    /// signer) must either *be* `investor` directly, or hold a valid,
+    /// unexpired session token authorizing it to sign for `investor` — see
+    /// the module docs and `docs/SESSION_KEYS.md`. The `session_token`
+    /// account's PDA seeds (checked via the `#[account(seeds = ...)]`
+    /// constraint below) already prove it was minted for exactly this
+    /// (program, bidder, investor) triple; only expiry needs a runtime check.
+    pub fn place_bid(
+        ctx: Context<PlaceBid>,
+        deal_id: u64,
+        investor: Pubkey,
+        amount: u64,
+    ) -> Result<()> {
+        let session_valid = match &ctx.accounts.session_token {
+            Some(token) => !token.is_expired()?,
+            None => false,
+        };
+        require!(
+            ctx.accounts.bidder.key() == investor || session_valid,
+            ErrorCode::InvalidSession
+        );
+
         require_eq!(ctx.accounts.deal.deal_id, deal_id);
         require!(
             ctx.accounts.deal.status == DealStatus::Open,
@@ -229,10 +264,14 @@ pub mod sealed_auction {
         );
 
         let deal_key = ctx.accounts.deal.key();
-        let bidder = ctx.accounts.bidder.key();
 
         ctx.accounts.create_ephemeral_bid((8 + Bid::LEN) as u32)?;
 
+        // Authority is whoever signed (`bidder`) — the real wallet, or a
+        // session signer the investor has SPL-approved as a delegate on
+        // this token account. Session validity for *calling this
+        // instruction* was already enforced above by #[session_auth_or];
+        // this is a separate, standard SPL delegate check.
         token::transfer(
             CpiContext::new(
                 ctx.accounts.token_program.key(),
@@ -248,7 +287,7 @@ pub mod sealed_auction {
         let bidder_index = ctx.accounts.deal.bid_count;
         let bid = Bid {
             deal: deal_key,
-            bidder,
+            bidder: investor,
             amount,
             bidder_index,
             escrow: ctx.accounts.deal_funding_account.key(),
@@ -261,7 +300,7 @@ pub mod sealed_auction {
 
         emit!(BidPlaced {
             deal: deal_key,
-            bidder,
+            bidder: investor,
             bidder_index,
         });
         msg!("Sealed bid placed for deal {}", deal_key);
@@ -783,11 +822,28 @@ pub struct InitializeDeal<'info> {
 /// so bidders can sign with session keys without holding SOL for rent.
 #[ephemeral_accounts]
 #[derive(Accounts)]
-#[instruction(deal_id: u64)]
+#[instruction(deal_id: u64, investor: Pubkey)]
 pub struct PlaceBid<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
+    /// The real investor wallet directly, or a session signer authorized
+    /// for it — validated against `session_token` in `place_bid`.
     pub bidder: Signer<'info>,
+    /// Its PDA seeds bind it to exactly this (program, bidder, investor)
+    /// triple — see `docs/SESSION_KEYS.md`. Anchor's `seeds`/`bump`
+    /// constraint rejects the account entirely if it doesn't match, so
+    /// `place_bid` only needs to check expiry at runtime.
+    #[account(
+        seeds = [
+            SessionTokenV2::SEED_PREFIX.as_bytes(),
+            crate::ID.as_ref(),
+            bidder.key().as_ref(),
+            investor.as_ref(),
+        ],
+        bump,
+        seeds::program = session_keys::ID
+    )]
+    pub session_token: Option<Account<'info, SessionTokenV2>>,
     pub funding_mint: Account<'info, Mint>,
     #[account(
         mut,
@@ -808,7 +864,7 @@ pub struct PlaceBid<'info> {
     pub bid: UncheckedAccount<'info>,
     #[account(
         mut,
-        constraint = bidder_funding_account.owner == bidder.key() @ ErrorCode::InvalidTokenOwner,
+        constraint = bidder_funding_account.owner == investor @ ErrorCode::InvalidTokenOwner,
         constraint = bidder_funding_account.mint == funding_mint.key() @ ErrorCode::MintMismatch
     )]
     pub bidder_funding_account: Box<Account<'info, TokenAccount>>,

@@ -26,4 +26,6 @@ pub enum ErrorCode {
     RandomnessAlreadyFulfilled,
     #[msg("arithmetic overflow computing reward")]
     RewardMathOverflow,
+    #[msg("signer is neither the member nor a valid, unexpired session for them")]
+    InvalidSession,
 }

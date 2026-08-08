@@ -35,6 +35,7 @@ use ephemeral_rollups_sdk::{
         types::SerializableAccountMeta,
     },
 };
+use session_keys::SessionTokenV2;
 
 mod error;
 mod state;
@@ -166,7 +167,29 @@ pub mod private_voting {
     /// Cast a sealed YES/NO vote. The choice is stored on an ER-only (`eph`)
     /// account sponsored by the milestone; nothing about the choice is ever
     /// logged or emitted here, so it stays invisible until `reveal_milestone`.
-    pub fn cast_vote(ctx: Context<CastVote>, milestone_id: u64, choice: Choice) -> Result<()> {
+    ///
+    /// `member` is the real wallet this vote belongs to. `voter` (the
+    /// signer) must either *be* `member` directly, or hold a valid,
+    /// unexpired session token authorizing it to sign for `member` — see
+    /// `docs/SESSION_KEYS.md`. The `session_token` account's PDA seeds
+    /// (checked via the `#[account(seeds = ...)]` constraint below) already
+    /// prove it was minted for exactly this (program, voter, member)
+    /// triple; only expiry needs a runtime check.
+    pub fn cast_vote(
+        ctx: Context<CastVote>,
+        milestone_id: u64,
+        member: Pubkey,
+        choice: Choice,
+    ) -> Result<()> {
+        let session_valid = match &ctx.accounts.session_token {
+            Some(token) => !token.is_expired()?,
+            None => false,
+        };
+        require!(
+            ctx.accounts.voter.key() == member || session_valid,
+            ErrorCode::InvalidSession
+        );
+
         require_eq!(ctx.accounts.milestone.milestone_id, milestone_id);
         require!(
             ctx.accounts.milestone.status == MilestoneStatus::Open,
@@ -182,14 +205,13 @@ pub mod private_voting {
         );
 
         let milestone_key = ctx.accounts.milestone.key();
-        let voter = ctx.accounts.voter.key();
 
         ctx.accounts.create_ephemeral_vote((8 + Vote::LEN) as u32)?;
 
         let voter_index = ctx.accounts.milestone.voter_count;
         let vote = Vote {
             milestone: milestone_key,
-            voter,
+            voter: member,
             choice,
             voter_index,
             bump: ctx.bumps.vote,
@@ -200,7 +222,7 @@ pub mod private_voting {
 
         emit!(VoteCast {
             milestone: milestone_key,
-            voter,
+            voter: member,
             voter_index,
         });
         msg!("Sealed vote cast for milestone {}", milestone_key);
@@ -629,11 +651,26 @@ pub struct InitializeMilestone<'info> {
 /// sponsor pattern (see that program's PlaceBid doc comment).
 #[ephemeral_accounts]
 #[derive(Accounts)]
-#[instruction(milestone_id: u64)]
+#[instruction(milestone_id: u64, member: Pubkey)]
 pub struct CastVote<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
+    /// The real member wallet directly, or a session signer authorized for
+    /// it — validated against `session_token` in `cast_vote`.
     pub voter: Signer<'info>,
+    /// Its PDA seeds bind it to exactly this (program, voter, member)
+    /// triple — see `docs/SESSION_KEYS.md`.
+    #[account(
+        seeds = [
+            SessionTokenV2::SEED_PREFIX.as_bytes(),
+            crate::ID.as_ref(),
+            voter.key().as_ref(),
+            member.as_ref(),
+        ],
+        bump,
+        seeds::program = session_keys::ID
+    )]
+    pub session_token: Option<Account<'info, SessionTokenV2>>,
     #[account(
         mut,
         sponsor,

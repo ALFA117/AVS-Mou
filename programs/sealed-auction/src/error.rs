@@ -36,4 +36,6 @@ pub enum ErrorCode {
     EquityMathOverflow,
     #[msg("bid has already been settled")]
     BidAlreadySettled,
+    #[msg("signer is neither the investor nor a valid, unexpired session for them")]
+    InvalidSession,
 }

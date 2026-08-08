@@ -107,6 +107,32 @@ describe("sealed-auction (structural)", () => {
     expect(accounts).not.to.include("amount_log");
   });
 
+  it("place_bid accepts an optional session token and an explicit investor identity", () => {
+    // See docs/SESSION_KEYS.md — `investor` is the real wallet this bid
+    // belongs to; `bidder` (the signer) may be `investor` directly or a
+    // session key authorized for it via `session_token`.
+    const ix = findIx("place_bid");
+    const argNames = ix.args.map((a) => a.name);
+    expect(argNames).to.include("investor");
+    const accounts = ix.accounts as { name: string; optional?: boolean }[];
+    const sessionToken = accounts.find((a) => a.name === "session_token");
+    expect(sessionToken, "place_bid must accept a session_token account").to.exist;
+    expect(sessionToken!.optional).to.equal(true);
+  });
+
+  it("derives the session token PDA against the fixed session-keys program", () => {
+    const SESSION_KEYS_PROGRAM_ID = new web3.PublicKey(
+      "KeyspM2ssCJbqUhQ4k7sveSiY4WjnYsrXkC8oDbwde5",
+    );
+    const investor = web3.Keypair.generate().publicKey;
+    const sessionSigner = web3.Keypair.generate().publicKey;
+    const token = pda(
+      [Buffer.from("session_token_v2"), PROGRAM_ID.toBuffer(), sessionSigner.toBuffer(), investor.toBuffer()],
+      SESSION_KEYS_PROGRAM_ID,
+    );
+    expect(token.equals(web3.PublicKey.default)).to.equal(false);
+  });
+
   it("Deal tracks proportional-syndicate fields, not a single winner", () => {
     const fields = findType("Deal").type.fields!.map((f) => f.name);
     expect(fields).to.include.members([

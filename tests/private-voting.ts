@@ -80,6 +80,19 @@ describe("private-voting (structural)", () => {
     expect(argNames).not.to.include("voting_power");
   });
 
+  it("cast_vote accepts an optional session token and an explicit member identity", () => {
+    // See docs/SESSION_KEYS.md — `member` is the real wallet this vote
+    // belongs to; `voter` (the signer) may be `member` directly or a
+    // session key authorized for it via `session_token`.
+    const ix = findIx("cast_vote");
+    const argNames = ix.args.map((a) => a.name);
+    expect(argNames).to.include("member");
+    const accounts = ix.accounts as { name: string; optional?: boolean }[];
+    const sessionToken = accounts.find((a) => a.name === "session_token");
+    expect(sessionToken, "cast_vote must accept a session_token account").to.exist;
+    expect(sessionToken!.optional).to.equal(true);
+  });
+
   it("Milestone tallies yes/no counts and gates settlement on VRF fulfillment", () => {
     const fields = findType("Milestone").type.fields!.map((f) => f.name);
     expect(fields).to.include.members([
