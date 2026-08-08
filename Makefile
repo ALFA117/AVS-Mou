@@ -23,7 +23,10 @@ build:
 	done
 
 idl:
-	anchor idl build
+	mkdir -p target/idl target/types
+	anchor idl build -p sealed_auction -o target/idl/sealed_auction.json -t target/types/sealed_auction.ts
+	anchor idl build -p private_voting -o target/idl/private_voting.json -t target/types/private_voting.ts
+	anchor idl build -p spl_token_manager -o target/idl/spl_token_manager.json -t target/types/spl_token_manager.ts
 
 test:
 	anchor test --skip-local-validator --provider.cluster devnet

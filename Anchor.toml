@@ -5,14 +5,14 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-sealed_auction = "SeALaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-binary_prediction = "BiNPredXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-spl_token_manager = "SpLMgrXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+sealed_auction = "Bycx3bB2yrFMYWSvi2Yjxutrt1QoVuYyzn37T6ys9YYo"
+private_voting = "ErRYzAmuTFGHQSzZ7A38zX2rmwosGxDYTvPtPCSPq4Qs"
+spl_token_manager = "fNkSCkp2szKMND8ouKwfxNpGqhAsnCdQ4PTzsxnDKa3"
 
 [programs.testnet]
-sealed_auction = "SeALaXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-binary_prediction = "BiNPredXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-spl_token_manager = "SpLMgrXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+sealed_auction = "Bycx3bB2yrFMYWSvi2Yjxutrt1QoVuYyzn37T6ys9YYo"
+private_voting = "ErRYzAmuTFGHQSzZ7A38zX2rmwosGxDYTvPtPCSPq4Qs"
+spl_token_manager = "fNkSCkp2szKMND8ouKwfxNpGqhAsnCdQ4PTzsxnDKa3"
 
 [registry]
 url = "https://api.apr.dev"
