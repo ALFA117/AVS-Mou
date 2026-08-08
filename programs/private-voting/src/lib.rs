@@ -647,8 +647,10 @@ pub struct InitializeMilestone<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// Payer must equal the milestone's startup — mirrors sealed-auction's
-/// sponsor pattern (see that program's PlaceBid doc comment).
+/// `payer` is unconstrained on purpose — mirrors sealed-auction's PlaceBid
+/// (see that program's doc comment): any funded signer can cover the vote
+/// account's rent + tx fee, which is what lets the relay backend sponsor
+/// real member votes (docs/RELAY.md).
 #[ephemeral_accounts]
 #[derive(Accounts)]
 #[instruction(milestone_id: u64, member: Pubkey)]
@@ -675,7 +677,6 @@ pub struct CastVote<'info> {
         mut,
         sponsor,
         seeds = [MILESTONE_SEED, milestone.startup.as_ref(), &milestone.milestone_id.to_le_bytes()],
-        constraint = milestone.startup == payer.key() @ ErrorCode::InvalidVote,
         bump = milestone.bump
     )]
     pub milestone: Account<'info, Milestone>,

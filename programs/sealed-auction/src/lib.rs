@@ -815,11 +815,12 @@ pub struct InitializeDeal<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// Payer must equal the deal's startup — mirrors the vendor sealed-auction's
-/// sponsor pattern (the deal PDA sponsors the bid account's rent, and the
-/// CPI that authorizes that charge is signed against this identity). In
-/// production this would be a relay wallet the startup's backend controls,
-/// so bidders can sign with session keys without holding SOL for rent.
+/// `payer` is unconstrained on purpose — any funded signer can cover the
+/// bid account's rent + tx fee, which is what lets AVS's relay backend
+/// (see docs/RELAY.md, frontend/app/api/relay/) sponsor real investor bids
+/// so they never need their own SOL. `deal` still carries the `sponsor`
+/// macro attribute below for the ephemeral-rollups CPI's own bookkeeping —
+/// that's a separate concept from who pays L1 rent.
 #[ephemeral_accounts]
 #[derive(Accounts)]
 #[instruction(deal_id: u64, investor: Pubkey)]
@@ -849,7 +850,6 @@ pub struct PlaceBid<'info> {
         mut,
         sponsor,
         seeds = [DEAL_SEED, deal.startup.as_ref(), &deal.deal_id.to_le_bytes()],
-        constraint = deal.startup == payer.key() @ ErrorCode::InvalidBid,
         constraint = deal.funding_mint == funding_mint.key() @ ErrorCode::MintMismatch,
         bump = deal.bump
     )]

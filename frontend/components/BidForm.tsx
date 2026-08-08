@@ -12,6 +12,7 @@ import {
   SEALED_AUCTION_PROGRAM_ID,
 } from "@/lib/programs";
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
+import { fetchRelaySponsorPubkey, submitViaRelay } from "@/lib/relayClient";
 import { formatTokenAmount } from "@/lib/format";
 import { BidConfirmModal } from "@/components/BidConfirmModal";
 import type { Deal } from "@/lib/types";
@@ -21,7 +22,7 @@ const MAGIC_PROGRAM = new PublicKey("Magic11111111111111111111111111111111111111
 
 export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () => void }) {
   const { connection } = useConnection();
-  const { publicKey, wallet, sendTransaction } = useWallet();
+  const { publicKey, wallet, signTransaction } = useWallet();
   const [amount, setAmount] = useState("");
   const [confirming, setConfirming] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
@@ -31,7 +32,6 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
   const minInvestment = formatTokenAmount(deal.minInvestment);
   const parsedAmount = Number(amount);
   const amountValid = parsedAmount > 0 && parsedAmount >= Number(minInvestment);
-  const isStartup = publicKey?.toBase58() === deal.startup;
 
   async function submitBid() {
     if (!publicKey || !wallet?.adapter) return;
@@ -54,22 +54,19 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         ? sessionTokenPda(SEALED_AUCTION_PROGRAM_ID, sessionSigner.publicKey, publicKey)
         : null;
       const amountLamports = new BN(Math.round(parsedAmount * 10 ** 6));
+      const sponsorPubkey = new PublicKey(await fetchRelaySponsorPubkey());
 
-      const tx = await program.methods
+      let tx = await program.methods
         .placeBid(new BN(deal.dealId), publicKey, amountLamports)
         // accountsPartial (not accounts): `session_token`, `bid`, etc. carry
         // PDA seed metadata in the IDL, so Anchor's strict `.accounts()`
         // type excludes them as "auto-resolved" — but session_token is
         // optional and we need to explicitly control Some/None.
         .accountsPartial({
-          // NOTE: sealed-auction's PlaceBid requires `payer` to equal the
-          // deal's startup (the rent-sponsor pattern — see
-          // programs/sealed-auction/src/lib.rs's doc comment on PlaceBid).
-          // With no relay backend built yet, this only succeeds on-chain
-          // when the connected wallet IS the deal's startup. Real investor
-          // bids need a relay service that co-signs as the startup —
-          // tracked as follow-up work, not implemented in this pass.
-          payer: publicKey,
+          // The relay's sponsor keypair pays bid-account rent (a few
+          // thousand lamports) and the tx fee, so investors never need
+          // their own SOL — see docs/RELAY.md and app/api/relay/.
+          payer: sponsorPubkey,
           bidder: bidderPubkey,
           sessionToken,
           fundingMint,
@@ -82,11 +79,17 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         })
         .transaction();
 
-      const sig = await sendTransaction(
-        tx,
-        connection,
-        sessionSigner ? { signers: [sessionSigner] } : undefined,
-      );
+      tx.feePayer = sponsorPubkey;
+      tx.recentBlockhash = (await connection.getLatestBlockhash("confirmed")).blockhash;
+
+      if (sessionSigner) {
+        tx.partialSign(sessionSigner);
+      } else {
+        if (!signTransaction) throw new Error("Wallet does not support transaction signing");
+        tx = await signTransaction(tx);
+      }
+
+      const sig = await submitViaRelay(tx);
       await connection.confirmTransaction(sig, "confirmed");
 
       setStatus({ kind: "success" });
@@ -122,14 +125,6 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
       <p className="mt-1 text-sm text-muted-foreground">
         Your amount is hidden from everyone — including other bidders — until reveal.
       </p>
-      {!isStartup && (
-        <p className="mt-2 flex items-start gap-1.5 rounded-md bg-amber-500/10 p-2 text-xs text-amber-700 dark:text-amber-400">
-          <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-          Bidding currently requires a relay service (not yet deployed) unless you&apos;re
-          testing with the deal&apos;s own startup wallet — see the code comment in
-          BidForm.tsx.
-        </p>
-      )}
       <div className="mt-4 flex items-center gap-2">
         <input
           type="number"

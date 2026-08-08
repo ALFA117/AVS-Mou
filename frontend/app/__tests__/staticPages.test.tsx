@@ -16,7 +16,7 @@ describe("static pages (Task 085)", () => {
   it("/faq renders every question", () => {
     render(<FaqPage />);
     expect(screen.getByText("Is my bid really private?")).toBeTruthy();
-    expect(screen.getByText("Why can't I place a real bid right now?")).toBeTruthy();
+    expect(screen.getByText("Do I need SOL in my wallet to bid or vote?")).toBeTruthy();
   });
 
   it("/legal renders the disclaimer, terms, and privacy sections", () => {

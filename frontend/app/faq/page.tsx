@@ -22,8 +22,8 @@ const FAQS: { q: string; a: string }[] = [
     a: "Session keys — once you authorize a disposable signing key with one wallet signature, it can sign bids/votes on your behalf until it expires (default 1 hour) or you revoke it. See the Authorize/Revoke controls when you place a bid or vote.",
   },
   {
-    q: "Why can't I place a real bid right now?",
-    a: "sealed-auction's place_bid currently requires the deal's own startup wallet to co-sign as rent-sponsor. A relay backend that lets any investor bid is planned but not built yet — see the project README for status.",
+    q: "Do I need SOL in my wallet to bid or vote?",
+    a: "No. A relay service sponsors the small rent + transaction fee for every bid and vote, so you only need SPL tokens for the bid amount itself — never SOL. Your wallet (or session key) still signs the bid/vote content; the relay only ever pays, it can never see or alter what you're bidding or voting.",
   },
 ];
 

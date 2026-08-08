@@ -7,6 +7,7 @@ import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import { votePda, privateVotingProgram, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
+import { fetchRelaySponsorPubkey, submitViaRelay } from "@/lib/relayClient";
 import { Countdown } from "@/components/Countdown";
 import { VoteConfirmModal } from "@/components/VoteConfirmModal";
 import { formatTokenAmount } from "@/lib/format";
@@ -17,7 +18,7 @@ const MAGIC_PROGRAM = new PublicKey("Magic11111111111111111111111111111111111111
 
 export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted?: () => void }) {
   const { connection } = useConnection();
-  const { publicKey, wallet, sendTransaction } = useWallet();
+  const { publicKey, wallet, signTransaction } = useWallet();
   const [pendingChoice, setPendingChoice] = useState<Choice | null>(null);
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
     kind: "idle",
@@ -42,16 +43,16 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
         : null;
 
       const choiceArg = choice === "yes" ? { yes: {} } : { no: {} };
-      const tx = await program.methods
+      const sponsorPubkey = new PublicKey(await fetchRelaySponsorPubkey());
+
+      let tx = await program.methods
         .castVote(new BN(milestone.milestoneId), publicKey, choiceArg)
         // accountsPartial: see BidForm.tsx for why (session_token carries
         // PDA seed metadata, excluded from the strict `.accounts()` type).
         .accountsPartial({
-          // NOTE: same sponsor-pattern caveat as sealed-auction's
-          // PlaceBid — `payer` must equal the milestone's startup. See
-          // programs/private-voting/src/lib.rs's PlaceBid-mirrored doc
-          // comment on CastVote.
-          payer: publicKey,
+          // The relay's sponsor keypair pays vote-account rent and the tx
+          // fee — see docs/RELAY.md and app/api/relay/.
+          payer: sponsorPubkey,
           voter: voterPubkey,
           sessionToken,
           milestone: milestonePk,
@@ -61,11 +62,17 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
         })
         .transaction();
 
-      const sig = await sendTransaction(
-        tx,
-        connection,
-        sessionSigner ? { signers: [sessionSigner] } : undefined,
-      );
+      tx.feePayer = sponsorPubkey;
+      tx.recentBlockhash = (await connection.getLatestBlockhash("confirmed")).blockhash;
+
+      if (sessionSigner) {
+        tx.partialSign(sessionSigner);
+      } else {
+        if (!signTransaction) throw new Error("Wallet does not support transaction signing");
+        tx = await signTransaction(tx);
+      }
+
+      const sig = await submitViaRelay(tx);
       await connection.confirmTransaction(sig, "confirmed");
 
       setStatus({ kind: "success" });
