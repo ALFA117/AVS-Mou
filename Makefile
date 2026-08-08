@@ -1,26 +1,38 @@
-.PHONY: setup validator er build test test-e2e deploy-testnet frontend clean
+.PHONY: setup devnet-setup build idl test test-e2e deploy-devnet deploy-testnet frontend clean
 
 # --- Setup ---
+# `anchor build` panics on native Windows (cargo-build-sbf subprocess bug —
+# see docs/WINDOWS_NOTES.md). Build each program with `cargo build-sbf`
+# directly instead (works fine), then generate the IDL separately.
 setup:
 	cd frontend && npm install
-	anchor build
 
-# --- Local infra ---
-validator:
-	solana-test-validator --reset
-
-er:
-	@echo "Start the MagicBlock Ephemeral Rollup instance (see docs/AVS_100_TASKS.md task 009)"
+devnet-setup:
+	solana config set --url devnet
+	solana-keygen new --no-bip39-passphrase --outfile ~/.config/solana/id.json --force
+	solana airdrop 2
 
 # --- Contracts ---
+# Builds every program under /programs (each with its own Cargo.toml).
 build:
-	anchor build
+	@for dir in programs/*/; do \
+		if [ -f "$$dir/Cargo.toml" ]; then \
+			echo "Building $$dir"; \
+			(cd "$$dir" && cargo build-sbf) || exit 1; \
+		fi; \
+	done
+
+idl:
+	anchor idl build
 
 test:
-	anchor test
+	anchor test --skip-local-validator --provider.cluster devnet
 
 test-e2e:
 	cd tests && npx playwright test
+
+deploy-devnet:
+	anchor deploy --provider.cluster devnet
 
 deploy-testnet:
 	anchor deploy --provider.cluster testnet

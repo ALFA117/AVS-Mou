@@ -35,12 +35,20 @@ AVS lets startups post investment deals and angel investors place **sealed (encr
 
 ## Getting started
 
+> Developed on native Windows. `solana-test-validator` and `anchor build`
+> both have unfixed native-Windows bugs — see
+> [`docs/WINDOWS_NOTES.md`](docs/WINDOWS_NOTES.md) for the root causes and
+> the workarounds baked into the commands below. Short version: no local
+> validator (dev/test targets Devnet instead), and contracts build via
+> `cargo build-sbf` rather than `anchor build`.
+
 ```bash
-make setup       # install deps + anchor build
-make validator   # local Solana test validator
-make er          # start Ephemeral Rollup instance
-make test         # anchor test
-make frontend     # next dev
+make setup          # install frontend deps
+make devnet-setup   # point solana CLI at devnet + airdrop a dev wallet
+make build          # compile all programs (cargo build-sbf, not anchor build)
+make idl             # generate IDL (anchor idl build)
+make test            # anchor test against devnet
+make frontend         # next dev
 ```
 
 Copy `.env.local.example` → `.env.local` (and `.env.testnet.example` → `.env.testnet`) and fill in real values before running anything.
@@ -49,6 +57,7 @@ Copy `.env.local.example` → `.env.local` (and `.env.testnet.example` → `.env
 
 - [`docs/AVS_PROJECT_MASTER.md`](docs/AVS_PROJECT_MASTER.md) — architecture, requirements, demo script
 - [`docs/AVS_100_TASKS.md`](docs/AVS_100_TASKS.md) — full 100-task build roadmap
+- [`docs/WINDOWS_NOTES.md`](docs/WINDOWS_NOTES.md) — native-Windows toolchain issues and workarounds
 
 ## Status
 
