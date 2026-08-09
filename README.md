@@ -6,32 +6,50 @@ Built for **Solana Blitz V7 Hackathon** (Collaboration Track).
 
 ## What is AVS?
 
-AVS lets startups post investment deals and angel investors place **sealed (encrypted) bids** with zero visibility into competitors' amounts. At the deadline, all bids reveal simultaneously, equity is distributed proportionally, and syndicate members can privately vote on milestones — all gasless, in ~10ms, via MagicBlock's Ephemeral Rollup.
+AVS lets startups post investment deals and angel investors place **sealed
+bids** with zero visibility into competitors' amounts — not other bidders,
+not even the startup. At the deadline, all bids reveal simultaneously,
+equity is distributed proportionally, and syndicate members can privately
+vote on milestones — all gasless, via MagicBlock's Ephemeral Rollup.
+
+"Sealed" here means **access-controlled, not encrypted**: bid and vote
+amounts are never ciphertext. They live on a MagicBlock Private Ephemeral
+Rollup behind a Permission account that names only the bidder and the
+startup as readers, until an on-chain reveal instruction runs after the
+deadline and makes the tally public. See
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for exactly how that works.
 
 ## Core flow
 
-1. **Post a deal** — startup publishes encrypted terms (valuation, equity %, vesting).
-2. **Sealed bidding** — angels bid via Session Keys (no wallet popups); bids stay encrypted in the ER.
-3. **Simultaneous reveal** — bids decrypt at deadline; equity distributed proportionally as SPL tokens.
-4. **Private milestone voting** — syndicate members vote YES/NO (encrypted); rewards distributed via VRF.
-5. **Syndicate chat & treasury** — encrypted group coordination, gasless transfers.
+1. **Post a deal** — startup publishes terms (valuation, equity %, vesting).
+2. **Sealed bidding** — angels bid via session keys (no wallet popup per
+   bid); amounts are hidden by access control on the Ephemeral Rollup, not
+   client-side encryption.
+3. **Simultaneous reveal** — every bid becomes visible at once after the
+   deadline; equity distributed proportionally as SPL tokens.
+4. **Private milestone voting** — syndicate members vote YES/NO (sealed the
+   same way); rewards gated on a verifiable random function so payout order
+   can't be front-run.
+5. **Syndicate chat & equity transfers** — a local per-browser chat (not
+   yet on-chain — see `frontend/lib/chatStore.ts`), gasless SPL transfers
+   for equity.
 
 ## Monorepo layout
 
 ```
-/programs   Anchor smart contracts (sealed-auction, binary-prediction, spl-token-manager)
+/programs   Anchor smart contracts (sealed-auction, private-voting, spl-token-manager)
 /frontend   Next.js + TypeScript app
-/tests      Integration & e2e tests
-/docs       Specs: AVS_PROJECT_MASTER.md, AVS_100_TASKS.md
+/tests      Integration & e2e tests (structural + live-Devnet, see docs/ARCHITECTURE.md)
+/docs       Architecture, setup, and design docs — see the Docs section below
 /scripts    Deployment & seed scripts
 /vendor     Reference clone of magicblock-engine-examples (gitignored)
 ```
 
 ## Stack
 
-- **Contracts**: Anchor + Rust, `spl-token`, `orao-solana-vrf`, `gpl-session-keys`
+- **Contracts**: Anchor + Rust, `spl-token`, `ephemeral-rollups-sdk`'s own VRF (`#[vrf]`/`#[vrf_callback]` — not `orao-solana-vrf`), `session-keys`
 - **Frontend**: Next.js 14, React 18, `@solana/web3.js`, `@solana/wallet-adapter-react`, Tailwind, Recharts, Framer Motion
-- **Execution**: MagicBlock Ephemeral Rollup (10ms blocks, gasless), Query Filtering Service for privacy
+- **Execution**: MagicBlock Private Ephemeral Rollup Permissions — gasless, access-controlled reads (see `docs/ARCHITECTURE.md`; no Query Filtering Service — that's only for the local `mb-stack` simulation layer, not the hosted devnet ER this project targets)
 
 ## Getting started
 
@@ -65,7 +83,13 @@ Copy `.env.local.example` → `.env.local` (and `.env.testnet.example` → `.env
 
 ## Status
 
-🔄 In development — see `docs/AVS_100_TASKS.md` for progress.
+All three programs are deployed to Devnet. The full deal lifecycle —
+create a deal, place sealed bids, reveal, settle — and sealed milestone
+voting both work end-to-end through the actual app (not just scripts),
+verified live in `tests/*.ts`. A few known issues remain, mostly around
+undelegating state back to L1 after settlement — see
+[`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md). See
+`docs/AVS_100_TASKS.md` for the full task-by-task progress log.
 
 ## License
 

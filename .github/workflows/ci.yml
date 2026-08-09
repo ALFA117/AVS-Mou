@@ -8,7 +8,13 @@ on:
 
 env:
   SOLANA_VERSION: 1.18.26
-  ANCHOR_VERSION: 0.31.0
+  # Must match the anchor-lang version pinned in programs/*/Cargo.toml —
+  # anchor-cli refuses to run against a mismatched anchor-lang version, and
+  # will tell you to `avm install` whatever version parses out of Cargo.toml
+  # rather than the one you actually have active. Check
+  # programs/*/Cargo.toml's `anchor-lang = { version = "=X.Y.Z" }` line
+  # before bumping this.
+  ANCHOR_VERSION: 1.0.2
   NODE_VERSION: 18
 
 jobs:
@@ -68,13 +74,40 @@ jobs:
           avm install ${{ env.ANCHOR_VERSION }}
           avm use ${{ env.ANCHOR_VERSION }}
 
-      - name: Run Anchor tests
+      - name: Install ts-mocha deps
+        run: npm ci
+
+      # Not `anchor build` / `anchor test`: this project's programs use
+      # MagicBlock's Ephemeral Rollup features that a bare
+      # solana-test-validator can't run anyway (see docs/WINDOWS_NOTES.md —
+      # the same reasoning applies on Linux CI, not just Windows dev
+      # machines), so there's no local-validator target worth spinning up
+      # here. `target/` is gitignored, so target/idl/*.json (which
+      # tests/*.ts require()) must be regenerated from source every run.
+      - name: Build programs
         run: |
-          if [ -f Anchor.toml ] && [ -d programs ] && [ -n "$(ls -A programs 2>/dev/null)" ]; then
-            anchor test
-          else
-            echo "No programs yet — skipping anchor test"
-          fi
+          for dir in programs/*/; do
+            if [ -f "$dir/Cargo.toml" ]; then
+              echo "Building $dir"
+              (cd "$dir" && cargo build-sbf)
+            fi
+          done
+
+      - name: Generate IDLs
+        run: |
+          mkdir -p target/idl target/types
+          anchor idl build -p sealed_auction -o target/idl/sealed_auction.json -t target/types/sealed_auction.ts
+          anchor idl build -p private_voting -o target/idl/private_voting.json -t target/types/private_voting.ts
+          anchor idl build -p spl_token_manager -o target/idl/spl_token_manager.json -t target/types/spl_token_manager.ts
+
+      # Structural/offline tests only — the live Devnet suites
+      # (tests/*.ts's "live devnet e2e" describe blocks) self-skip unless
+      # RUN_*_DEVNET_E2E=1, which CI intentionally never sets: they need a
+      # funded devnet wallet and RELAY_SPONSOR_SECRET_KEY that don't belong
+      # in CI secrets for a hackathon-scoped project. Run those locally via
+      # `make test-devnet-e2e` instead — see docs/KNOWN_ISSUES.md.
+      - name: Run structural tests
+        run: npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts
 
   build-frontend:
     name: Build Frontend
