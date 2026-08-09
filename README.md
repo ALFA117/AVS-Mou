@@ -55,9 +55,13 @@ Copy `.env.local.example` → `.env.local` (and `.env.testnet.example` → `.env
 
 ## Docs
 
-- [`docs/AVS_PROJECT_MASTER.md`](docs/AVS_PROJECT_MASTER.md) — architecture, requirements, demo script
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — system design: on-chain programs, the Ephemeral Rollup/privacy model, session keys, the relay backend, frontend layout
+- [`docs/AVS_PROJECT_MASTER.md`](docs/AVS_PROJECT_MASTER.md) — original architecture, requirements, demo script
 - [`docs/AVS_100_TASKS.md`](docs/AVS_100_TASKS.md) — full 100-task build roadmap
 - [`docs/WINDOWS_NOTES.md`](docs/WINDOWS_NOTES.md) — native-Windows toolchain issues and workarounds
+- [`docs/SESSION_KEYS.md`](docs/SESSION_KEYS.md) — session key design and security tradeoffs
+- [`docs/RELAY.md`](docs/RELAY.md) — gasless bidding/voting relay backend
+- [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md) — open bugs, with repro steps
 
 ## Status
 
