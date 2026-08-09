@@ -40,7 +40,11 @@ export function WalletConnectButton() {
   }
 
   if (wallets.length === 0) {
-    return <span className="text-sm text-muted-foreground">{t("walletConnect.noWallet")}</span>;
+    return (
+      <span className="max-w-[6.5rem] truncate text-xs text-muted-foreground sm:max-w-none sm:whitespace-nowrap sm:text-sm">
+        {t("walletConnect.noWallet")}
+      </span>
+    );
   }
 
   return (

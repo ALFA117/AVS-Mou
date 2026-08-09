@@ -1,10 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
 import { Lock, Vote, Zap, ShieldCheck } from "lucide-react";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { useTranslation } from "@/lib/LanguageContext";
+
+// WebGL has no server-side representation — load client-only, and reserve
+// the same footprint via the fallback so it doesn't shift layout (CLS)
+// once the real canvas mounts.
+const Hero3D = dynamic(() => import("@/components/Hero3D").then((m) => m.Hero3D), {
+  ssr: false,
+  loading: () => <div className="mx-auto h-56 w-full max-w-sm sm:h-72 md:h-80" />,
+});
 
 export default function Home() {
   const reduceMotion = useReducedMotion();
@@ -45,6 +54,10 @@ export default function Home() {
           >
             <ShieldCheck className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
             {t("home.badge")}
+          </motion.div>
+
+          <motion.div variants={item} className="mt-4 sm:mt-6">
+            <Hero3D />
           </motion.div>
 
           <motion.h1
