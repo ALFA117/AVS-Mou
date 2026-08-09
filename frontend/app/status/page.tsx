@@ -1,6 +1,7 @@
 "use client";
 
-import { RefreshCw, Server, Link2 } from "lucide-react";
+import { RefreshCw, Server, Link2, Droplet } from "lucide-react";
+import { useConnection } from "@solana/wallet-adapter-react";
 import { useSystemStatus, type ServiceStatus } from "@/hooks/useSystemStatus";
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -18,6 +19,7 @@ const STATUS_DOT: Record<ServiceStatus, string> = {
 
 export default function StatusPage() {
   const { status, refresh, erEndpoint } = useSystemStatus();
+  const { connection } = useConnection();
   const { t } = useTranslation();
 
   const STATUS_LABEL: Record<ServiceStatus, string> = {
@@ -44,7 +46,11 @@ export default function StatusPage() {
           label={t("status.solanaLabel")}
           status={status.solana}
           statusLabel={STATUS_LABEL}
-          detail={status.solanaSlot ? t("status.slot", { slot: status.solanaSlot.toLocaleString() }) : undefined}
+          detail={
+            status.solanaSlot
+              ? `${t("status.slot", { slot: status.solanaSlot.toLocaleString() })} · ${connection.rpcEndpoint}`
+              : connection.rpcEndpoint
+          }
         />
         <StatusRow
           label={t("status.magicblockLabel")}
@@ -80,10 +86,36 @@ export default function StatusPage() {
 
       <section className="mt-8">
         <h2 className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+          <Droplet className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
+          {t("status.faucetTitle")}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">{t("status.faucetNote")}</p>
+        <a
+          href="https://faucet.solana.com/"
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2 inline-block text-sm text-primary underline"
+        >
+          {t("status.faucetLink")}
+        </a>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="flex items-center gap-1.5 text-sm font-medium text-foreground">
           <Link2 className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
           {t("status.links")}
         </h2>
         <ul className="mt-2 space-y-1 text-sm">
+          <li>
+            <a
+              href="https://explorer.solana.com/?cluster=devnet"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary underline"
+            >
+              {t("status.explorerLink")}
+            </a>
+          </li>
           <li>
             <a href="https://status.solana.com" target="_blank" rel="noreferrer" className="text-primary underline">
               {t("status.solanaStatusLink")}
@@ -92,6 +124,16 @@ export default function StatusPage() {
           <li>
             <a href="https://docs.magicblock.gg" target="_blank" rel="noreferrer" className="text-primary underline">
               {t("status.magicblockDocsLink")}
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/ALFA117/AVS-Mou"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary underline"
+            >
+              {t("status.githubLink")}
             </a>
           </li>
         </ul>
