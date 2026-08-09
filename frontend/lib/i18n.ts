@@ -73,6 +73,7 @@ const en = {
     noResults: "No {status} deals match your search.",
     noResultsAny: "No deals match your search.",
     emptyTitle: "No deals found",
+    showMore: "Show more ({remaining} left)",
   },
   dealCard: {
     equityOffered: "Equity offered",
@@ -485,6 +486,7 @@ const es = {
     noResults: "Ningún deal {status} coincide con tu búsqueda.",
     noResultsAny: "Ningún deal coincide con tu búsqueda.",
     emptyTitle: "No se encontraron deals",
+    showMore: "Mostrar más ({remaining} restantes)",
   },
   dealCard: {
     equityOffered: "Equity ofrecido",
@@ -896,6 +898,7 @@ const pt = {
     noResults: "Nenhum deal {status} corresponde à sua busca.",
     noResultsAny: "Nenhum deal corresponde à sua busca.",
     emptyTitle: "Nenhum deal encontrado",
+    showMore: "Mostrar mais ({remaining} restantes)",
   },
   dealCard: {
     equityOffered: "Equity oferecido",

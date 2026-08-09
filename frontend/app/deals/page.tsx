@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Search, RefreshCw, Rocket, PackageSearch } from "lucide-react";
@@ -23,11 +23,14 @@ const item = {
 type StatusFilter = "all" | Deal["status"];
 type SortKey = "deadline" | "valuation" | "popularity";
 
+const PAGE_SIZE = 12;
+
 export default function DealsPage() {
   const { deals, loading, error, refresh } = useDeals();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("deadline");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const reducedMotion = useReducedMotion();
   const { t } = useTranslation();
 
@@ -65,6 +68,12 @@ export default function DealsPage() {
     }
     return sorted;
   }, [deals, statusFilter, search, sortKey]);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [statusFilter, search, sortKey]);
+
+  const visible = filtered.slice(0, visibleCount);
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
@@ -171,12 +180,23 @@ export default function DealsPage() {
         animate={reducedMotion ? undefined : "show"}
         className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {filtered.map((deal) => (
+        {visible.map((deal) => (
           <motion.div key={deal.publicKey} variants={reducedMotion ? undefined : item}>
             <DealCard deal={deal} />
           </motion.div>
         ))}
       </motion.div>
+
+      {visibleCount < filtered.length && (
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={() => setVisibleCount((v) => v + PAGE_SIZE)}
+            className="cursor-pointer rounded-full border border-border px-5 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+          >
+            {t("deals.showMore", { remaining: filtered.length - visibleCount })}
+          </button>
+        </div>
+      )}
     </main>
   );
 }
