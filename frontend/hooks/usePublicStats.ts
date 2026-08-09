@@ -2,10 +2,23 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { sealedAuctionProgram } from "@/lib/programs";
+import { ER_PUBLIC_RPC_URL } from "@/lib/ephemeralRollup";
 import { mapBid, mapDeal } from "@/lib/mappers";
 import type { Deal } from "@/lib/types";
+
+let erConnection: Connection | null = null;
+function getErConnection(): Connection {
+  erConnection ??= new Connection(ER_PUBLIC_RPC_URL, "confirmed");
+  return erConnection;
+}
+
+function mergeByPubkey<T extends { publicKey: PublicKey }>(l1: T[], er: T[]): T[] {
+  const byPubkey = new Map(l1.map((a) => [a.publicKey.toBase58(), a]));
+  for (const a of er) byPubkey.set(a.publicKey.toBase58(), a);
+  return Array.from(byPubkey.values());
+}
 
 const READONLY_WALLET = {
   publicKey: PublicKey.default,
@@ -52,15 +65,22 @@ export function usePublicStats() {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const program = sealedAuctionProgram(
-        connection,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (wallet?.adapter as any) ?? READONLY_WALLET,
-      );
-      const [dealAccounts, bidAccounts] = await Promise.all([
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const readonlyWallet = (wallet?.adapter as any) ?? READONLY_WALLET;
+      const program = sealedAuctionProgram(connection, readonlyWallet);
+      const erProgram = sealedAuctionProgram(getErConnection(), readonlyWallet);
+
+      // See useDeals.ts — a Deal's L1 owner moves to the delegation program
+      // the instant it's created, and Bid accounts are only ever created on
+      // the ER, so an L1-only query misses almost everything live.
+      const [l1Deals, erDeals, l1Bids, erBids] = await Promise.all([
         program.account.deal.all(),
-        program.account.bid.all(),
+        erProgram.account.deal.all().catch(() => []),
+        program.account.bid.all().catch(() => []),
+        erProgram.account.bid.all().catch(() => []),
       ]);
+      const dealAccounts = mergeByPubkey(l1Deals, erDeals);
+      const bidAccounts = mergeByPubkey(l1Bids, erBids);
       const deals: Deal[] = dealAccounts.map((a) => mapDeal(a.publicKey, a.account));
       const bids = bidAccounts.map((a) => mapBid(a.publicKey, a.account));
 
