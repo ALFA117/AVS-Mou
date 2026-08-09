@@ -16,6 +16,7 @@
     "@magicblock-labs/gum-sdk": "^3.0.10",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
+    "@react-three/postprocessing": "^2.19.1",
     "@solana/spl-token": "^0.4.15",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",
