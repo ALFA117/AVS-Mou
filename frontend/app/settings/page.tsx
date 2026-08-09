@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Download, CircleCheck, Trash2, KeyRound } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useSessionKey } from "@/hooks/useSessionKey";
@@ -129,6 +129,31 @@ function SessionRow({
   session: ReturnType<typeof useSessionKey>;
 }) {
   const { t } = useTranslation();
+  const [confirming, setConfirming] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimer.current) clearTimeout(resetTimer.current);
+    };
+  }, []);
+
+  function handleRevokeClick() {
+    if (!confirming) {
+      setConfirming(true);
+      // Revoking invalidates the session key immediately — re-authorizing
+      // costs the user a fresh wallet signature — so a single misclick
+      // shouldn't trigger it. A short-lived "click again to confirm" avoids
+      // the heavier friction of a full modal for what's still a reversible,
+      // low-stakes action.
+      resetTimer.current = setTimeout(() => setConfirming(false), 3000);
+      return;
+    }
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+    setConfirming(false);
+    session.revoke();
+  }
+
   return (
     <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground">
       <span>{programName}</span>
@@ -138,10 +163,14 @@ function SessionRow({
             {t("settings.activeUntil", { time: session.state.expiresAt.toLocaleTimeString() })}
           </span>
           <button
-            onClick={() => session.revoke()}
-            className="cursor-pointer text-red-600 underline dark:text-red-400"
+            onClick={handleRevokeClick}
+            className={
+              confirming
+                ? "cursor-pointer rounded-full bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition-colors duration-200 hover:bg-red-700"
+                : "cursor-pointer text-red-600 underline dark:text-red-400"
+            }
           >
-            {t("settings.revoke")}
+            {confirming ? t("settings.revokeConfirm") : t("settings.revoke")}
           </button>
         </span>
       ) : session.state.status === "authorizing" ? (

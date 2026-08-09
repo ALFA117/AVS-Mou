@@ -21,7 +21,7 @@ import { BarChart3, CircleAlert } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePublicStats } from "@/hooks/usePublicStats";
-import { formatTokenAmount } from "@/lib/format";
+import { formatTokenAmount, shortenAddress } from "@/lib/format";
 import { Skeleton, SkeletonStat } from "@/components/Skeleton";
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -137,17 +137,26 @@ export default function AnalyticsPage() {
                   {stats.leaderboard.length === 0 && (
                     <p className="text-sm text-muted-foreground">{t("analytics.noBidsSettled")}</p>
                   )}
-                  {stats.leaderboard.map((entry, i) => (
-                    <div key={entry.investor} className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        #{i + 1} <span className="font-mono-avs">{entry.investor}</span>
-                      </span>
-                      <span className="font-mono-avs text-foreground">
-                        {formatTokenAmount(entry.totalInvested)} ·{" "}
-                        {t("analytics.dealsSuffix", { count: entry.dealCount, plural: entry.dealCount === 1 ? "" : "s" })}
-                      </span>
-                    </div>
-                  ))}
+                  {stats.leaderboard.map((entry, i) => {
+                    const isYou = publicKey && entry.investor === publicKey.toBase58();
+                    return (
+                      <div
+                        key={entry.investor}
+                        className={`flex items-center justify-between rounded-md text-sm ${
+                          isYou ? "bg-primary-subdued px-2 py-1 -mx-2" : ""
+                        }`}
+                      >
+                        <span className={isYou ? "text-foreground" : "text-muted-foreground"}>
+                          #{i + 1} <span className="font-mono-avs">{shortenAddress(entry.investor)}</span>
+                          {isYou && <span className="ml-1 font-medium text-primary">{t("common.you")}</span>}
+                        </span>
+                        <span className="font-mono-avs text-foreground">
+                          {formatTokenAmount(entry.totalInvested)} ·{" "}
+                          {t("analytics.dealsSuffix", { count: entry.dealCount, plural: entry.dealCount === 1 ? "" : "s" })}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

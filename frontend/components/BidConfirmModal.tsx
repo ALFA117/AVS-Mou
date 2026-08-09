@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { formatBps } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -19,15 +20,7 @@ export function BidConfirmModal({
 }) {
   const { t } = useTranslation();
   const cancelRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    cancelRef.current?.focus();
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onCancel();
-    }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onCancel]);
+  const dialogRef = useFocusTrap<HTMLDivElement>(onCancel, cancelRef);
 
   return (
     <motion.div
@@ -38,6 +31,7 @@ export function BidConfirmModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
     >
       <motion.div
+        ref={dialogRef}
         initial={{ opacity: 0, scale: 0.94, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 320, damping: 26 }}

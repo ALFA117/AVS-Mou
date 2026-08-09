@@ -101,14 +101,25 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
               {t("syndicatePage.memberListSettled", { count: deal.bidCount })}
             </p>
           ) : (
-            bids.map((b) => (
-              <div key={b.publicKey} className="flex justify-between rounded-md bg-muted px-3 py-2 text-sm">
-                <span className="font-mono-avs text-muted-foreground">{shortenAddress(b.bidder)}</span>
-                <span className="text-foreground">
-                  {Number(b.equityAllocated) > 0 ? formatEquity(b.equityAllocated) : "—"}
-                </span>
-              </div>
-            ))
+            bids.map((b) => {
+              const isYou = publicKey && b.bidder === publicKey.toBase58();
+              return (
+                <div
+                  key={b.publicKey}
+                  className={`flex justify-between rounded-md px-3 py-2 text-sm ${
+                    isYou ? "border border-primary/40 bg-primary-subdued" : "bg-muted"
+                  }`}
+                >
+                  <span className={isYou ? "font-mono-avs text-foreground" : "font-mono-avs text-muted-foreground"}>
+                    {shortenAddress(b.bidder)}
+                    {isYou && <span className="ml-1 font-medium text-primary">{t("common.you")}</span>}
+                  </span>
+                  <span className="text-foreground">
+                    {Number(b.equityAllocated) > 0 ? formatEquity(b.equityAllocated) : "—"}
+                  </span>
+                </div>
+              );
+            })
           )}
         </div>
       </section>
