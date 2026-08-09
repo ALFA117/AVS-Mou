@@ -427,6 +427,16 @@ const en = {
     toggleDarkMode: "Toggle dark mode",
     changeLanguage: "Change language",
   },
+  notFound: {
+    title: "Page not found",
+    subtitle: "The page you're looking for doesn't exist or has moved.",
+    backHome: "Back to home",
+  },
+  errorPage: {
+    title: "Something went wrong",
+    subtitle: "An unexpected error occurred while loading this page. It's been logged.",
+    retry: "Try again",
+  },
 };
 
 export type Dictionary = typeof en;
@@ -856,6 +866,16 @@ const es = {
     toggleDarkMode: "Cambiar a modo oscuro/claro",
     changeLanguage: "Cambiar idioma",
   },
+  notFound: {
+    title: "Página no encontrada",
+    subtitle: "La página que buscas no existe o fue movida.",
+    backHome: "Volver al inicio",
+  },
+  errorPage: {
+    title: "Algo salió mal",
+    subtitle: "Ocurrió un error inesperado al cargar esta página. Ya quedó registrado.",
+    retry: "Reintentar",
+  },
 } satisfies Dictionary;
 
 const pt = {
@@ -1281,6 +1301,16 @@ const pt = {
   a11y: {
     toggleDarkMode: "Alternar modo escuro/claro",
     changeLanguage: "Mudar idioma",
+  },
+  notFound: {
+    title: "Página não encontrada",
+    subtitle: "A página que você procura não existe ou foi movida.",
+    backHome: "Voltar ao início",
+  },
+  errorPage: {
+    title: "Algo deu errado",
+    subtitle: "Ocorreu um erro inesperado ao carregar esta página. Já foi registrado.",
+    retry: "Tentar novamente",
   },
 } satisfies Dictionary;
 
