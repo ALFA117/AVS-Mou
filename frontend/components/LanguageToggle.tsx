@@ -42,7 +42,7 @@ export function LanguageToggle() {
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
             role="listbox"
-            className="absolute right-0 top-full z-50 mt-2 min-w-36 overflow-hidden rounded-md border border-border bg-card p-1 shadow-lg"
+            className="absolute right-0 top-full z-50 mt-2 min-w-36 overflow-hidden rounded-md border border-border bg-surface-elevated p-1 shadow-lg"
           >
             {LOCALES.map((l) => (
               <button

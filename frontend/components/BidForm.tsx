@@ -150,7 +150,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
 
   return (
     <div className="avs-elevate rounded-xl border border-border bg-card p-5">
-      <h3 className="flex items-center gap-2.5 font-heading font-semibold text-card-foreground">
+      <h3 className="flex items-center gap-2.5 font-heading font-semibold tracking-tight text-card-foreground">
         <span className="avs-icon-badge h-8 w-8">
           <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
         </span>

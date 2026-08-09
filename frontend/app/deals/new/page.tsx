@@ -179,7 +179,7 @@ export default function NewDealPage() {
       transition={{ type: "spring", stiffness: 260, damping: 26 }}
       className="mx-auto max-w-xl px-6 py-10"
     >
-      <h1 className="flex items-center gap-2 font-heading text-2xl font-bold text-foreground">
+      <h1 className="flex items-center gap-2 font-heading text-2xl font-bold tracking-tight text-foreground">
         <Rocket className="h-5 w-5 text-primary" strokeWidth={2} />
         {t("newDeal.title")}
       </h1>

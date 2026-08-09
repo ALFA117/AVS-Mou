@@ -40,7 +40,7 @@ export default function Home() {
 
   return (
     <main>
-      <section className="relative overflow-hidden px-6 py-12 sm:py-20 md:py-28">
+      <section className="relative overflow-hidden px-6 py-12 sm:py-20 md:py-24">
         <AnimatedBackground />
         <motion.div
           initial="hidden"

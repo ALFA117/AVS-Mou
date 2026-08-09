@@ -28,7 +28,7 @@ export default function SettingsPage() {
   if (!publicKey) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-10">
-        <h1 className="font-heading text-2xl font-bold text-foreground">{t("settings.title")}</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{t("settings.title")}</h1>
         <p className="mt-6 text-sm text-muted-foreground">{t("settings.connectPrompt")}</p>
       </main>
     );
@@ -36,10 +36,10 @@ export default function SettingsPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground">{t("settings.title")}</h1>
+      <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{t("settings.title")}</h1>
 
       <section className="mt-6">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
+        <h2 className="flex items-center gap-2 font-heading text-lg font-semibold tracking-tight text-foreground">
           <KeyRound className="h-4 w-4 text-primary" strokeWidth={2} />
           {t("settings.sessionKeysTitle")}
         </h2>
@@ -54,7 +54,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold text-foreground">{t("settings.notifications")}</h2>
+        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("settings.notifications")}</h2>
         <label className="mt-2 flex items-center gap-2 text-sm text-foreground">
           <input
             type="checkbox"
@@ -71,7 +71,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold text-foreground">{t("settings.exportData")}</h2>
+        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("settings.exportData")}</h2>
         <button
           type="button"
           disabled={positions.length === 0}
@@ -84,7 +84,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold text-foreground">{t("settings.privacy")}</h2>
+        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("settings.privacy")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           {t("settings.privacyText")}{" "}
           <a href="/legal" className="text-primary underline">{t("settings.legalLinkLabel")}</a>{" "}

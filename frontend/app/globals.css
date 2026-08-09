@@ -13,6 +13,7 @@
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
+  --surface-elevated: #ffffff;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
   --border: #e2e8f0;
@@ -34,6 +35,7 @@
   --foreground: #f1f5f9;
   --card: #10152a;
   --card-foreground: #f1f5f9;
+  --surface-elevated: #161d3a;
   --muted: #131a30;
   --muted-foreground: #94a3b8;
   --border: rgba(255, 255, 255, 0.08);

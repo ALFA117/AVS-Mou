@@ -63,7 +63,7 @@ export default function ChatPage({ params }: { params: { syndicateId: string } }
         {t("chatPage.syndicate")}
       </Link>
 
-      <h1 className="mt-4 font-heading text-2xl font-bold text-foreground">
+      <h1 className="mt-4 font-heading text-2xl font-bold tracking-tight text-foreground">
         {t("chatPage.title", { id: deal.dealId })}
       </h1>
       <p className="text-xs text-muted-foreground">{t("chatPage.localOnlyNote")}</p>

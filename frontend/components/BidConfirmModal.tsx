@@ -30,9 +30,9 @@ export function BidConfirmModal({
         initial={{ opacity: 0, scale: 0.94, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 320, damping: 26 }}
-        className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg"
+        className="w-full max-w-sm rounded-xl border border-border bg-surface-elevated p-6 shadow-lg"
       >
-        <h3 className="flex items-center gap-2 font-heading text-lg font-semibold text-card-foreground">
+        <h3 className="flex items-center gap-2 font-heading text-lg font-semibold tracking-tight text-card-foreground">
           <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
           {t("bidConfirmModal.title")}
         </h3>

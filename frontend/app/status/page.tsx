@@ -29,7 +29,7 @@ export default function StatusPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-bold text-foreground">{t("status.title")}</h1>
+        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{t("status.title")}</h1>
         <button
           onClick={() => void refresh()}
           className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"

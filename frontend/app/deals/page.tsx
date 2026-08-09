@@ -69,7 +69,7 @@ export default function DealsPage() {
     <main className="mx-auto max-w-5xl px-6 py-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-foreground">{t("deals.title")}</h1>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{t("deals.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("deals.subtitle")}</p>
         </div>
         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>

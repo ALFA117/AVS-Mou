@@ -13,7 +13,7 @@ export default function FaqPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground">{t("faq.title")}</h1>
+      <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{t("faq.title")}</h1>
       <div className="mt-6 space-y-6">
         {FAQS.map((item) => (
           <div key={item.q} className="avs-elevate rounded-xl border border-border bg-card p-4">
