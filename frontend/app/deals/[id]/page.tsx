@@ -8,6 +8,7 @@ import { useDeal } from "@/hooks/useDeal";
 import { useBids } from "@/hooks/useBids";
 import { Countdown } from "@/components/Countdown";
 import { BidForm } from "@/components/BidForm";
+import { RevealSettlePanel } from "@/components/RevealSettlePanel";
 import { RevealAnimation } from "@/components/RevealAnimation";
 import { DealCharts } from "@/components/DealCharts";
 import { ShareDeal } from "@/components/ShareDeal";
@@ -110,10 +111,18 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
         />
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8 space-y-4">
         <BidForm
           deal={deal}
           onBidPlaced={() => {
+            void refresh();
+            void refreshBids();
+          }}
+        />
+        <RevealSettlePanel
+          deal={deal}
+          bids={bids}
+          onChanged={() => {
             void refresh();
             void refreshBids();
           }}
