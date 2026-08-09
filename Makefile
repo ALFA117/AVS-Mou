@@ -1,4 +1,4 @@
-.PHONY: setup devnet-setup build idl test test-e2e deploy-devnet deploy-testnet frontend clean
+.PHONY: setup devnet-setup build idl test test-e2e test-devnet-e2e deploy-devnet deploy-testnet frontend clean
 
 # --- Setup ---
 # `anchor build` panics on native Windows (cargo-build-sbf subprocess bug —
@@ -32,7 +32,15 @@ test:
 	anchor test --skip-local-validator --provider.cluster devnet
 
 test-e2e:
-	cd tests && npx playwright test
+	cd frontend && npm run build && npm run test:e2e
+
+# Live devnet integration suite (sealed-auction/private-voting/
+# spl-token-manager/session-keys/load-test) — opt-in per file via
+# RUN_*_DEVNET_E2E=1, see tests/*.ts and docs/KNOWN_ISSUES.md.
+test-devnet-e2e:
+	RUN_SEALED_AUCTION_DEVNET_E2E=1 RUN_PRIVATE_VOTING_DEVNET_E2E=1 \
+	RUN_SPL_TOKEN_MANAGER_DEVNET_E2E=1 RUN_SESSION_KEY_DEVNET_E2E=1 \
+	npx ts-mocha -p ./tsconfig.json -t 300000 tests/**/*.ts
 
 deploy-devnet:
 	anchor deploy --provider.cluster devnet
