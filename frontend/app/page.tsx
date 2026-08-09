@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { Lock, Vote, Zap, ShieldCheck, Dices, ArrowRight } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Lock, Vote, Zap, ShieldCheck, Dices, ArrowRight, ChevronDown } from "lucide-react";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { DealsMockup } from "@/components/DealsMockup";
 import { StatsBand } from "@/components/StatsBand";
@@ -11,6 +12,7 @@ import { useTranslation } from "@/lib/LanguageContext";
 export default function Home() {
   const reduceMotion = useReducedMotion();
   const { t } = useTranslation();
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const FEATURES = [
     { icon: Lock, title: t("home.feature1Title"), description: t("home.feature1Desc") },
@@ -194,13 +196,42 @@ export default function Home() {
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">{t("home.faqTeaserSubtitle")}</p>
         </motion.div>
-        <motion.div variants={item} className="mt-8 space-y-4">
-          {FAQ_PREVIEW.map((f) => (
-            <div key={f.q} className="avs-elevate rounded-xl border border-border bg-card p-5">
-              <h3 className="font-heading text-base font-medium text-card-foreground">{f.q}</h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">{f.a}</p>
-            </div>
-          ))}
+        <motion.div variants={item} className="mt-8 space-y-3">
+          {FAQ_PREVIEW.map((f, i) => {
+            const open = openFaq === i;
+            return (
+              <div key={f.q} className="avs-elevate overflow-hidden rounded-xl border border-border bg-card">
+                <button
+                  type="button"
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  aria-expanded={open}
+                  className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left"
+                >
+                  <h3 className="font-heading text-base font-medium text-card-foreground">{f.q}</h3>
+                  <motion.span
+                    animate={reduceMotion ? undefined : { rotate: open ? 180 : 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 24 }}
+                    className="shrink-0"
+                  >
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" strokeWidth={2} />
+                  </motion.span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {open && (
+                    <motion.div
+                      initial={reduceMotion ? undefined : { height: 0, opacity: 0 }}
+                      animate={reduceMotion ? undefined : { height: "auto", opacity: 1 }}
+                      exit={reduceMotion ? undefined : { height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <p className="px-5 pb-5 text-sm text-muted-foreground">{f.a}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </motion.div>
         <motion.div variants={item} className="mt-6 text-center">
           <Link

@@ -39,20 +39,16 @@ const en = {
     browseDeals: "Browse Deals",
     myDashboard: "My Dashboard",
     feature1Title: "Sealed bids",
-    feature1Desc:
-      "Amounts are hidden by an on-chain access-control permission — not client-side encryption — invisible to everyone, including the startup, until reveal.",
+    feature1Desc: "Bid amounts stay hidden on-chain — invisible to everyone, including the startup, until reveal.",
     feature2Title: "Private milestone votes",
-    feature2Desc:
-      "Syndicate members vote YES/NO in secret. Outcomes reveal simultaneously, and rewards settle only once verifiable randomness gates payout.",
+    feature2Desc: "Members vote YES/NO in secret; outcomes reveal at once and rewards settle only after.",
     feature3Title: "Gasless, one-tap signing",
-    feature3Desc:
-      "Session keys let you bid and vote without a wallet popup per action, running on MagicBlock's Ephemeral Rollups at ~10ms latency.",
+    feature3Desc: "Session keys skip the wallet popup per action — running on MagicBlock at ~10ms latency.",
     mockupTitle: "See it in action",
     mockupSubtitle: "A real look at the deals board — sealed bids stay hidden until reveal.",
     statsTitle: "Live on Solana",
     feature4Title: "Verifiable, front-run-proof payouts",
-    feature4Desc:
-      "Milestone rewards settle only once a verifiable random function (VRF) gates the payout order on-chain, so nobody — not even a validator — can see or reorder settlement ahead of time.",
+    feature4Desc: "A verifiable random function (VRF) gates payout order on-chain — nobody can front-run settlement.",
     faqTeaserSubtitle: "The most common questions about how sealed bids and reveals actually work.",
     viewAllFaq: "See all questions",
     ctaTitle: "Ready to join a syndicate?",
@@ -421,19 +417,19 @@ const es = {
     myDashboard: "Mi panel",
     feature1Title: "Pujas selladas",
     feature1Desc:
-      "Los montos se ocultan mediante un permiso de control de acceso on-chain — no encriptación del lado del cliente — invisibles para todos, incluida la startup, hasta el reveal.",
+      "Los montos de las pujas se ocultan on-chain — invisibles para todos, incluida la startup, hasta el reveal.",
     feature2Title: "Votos privados por hito",
     feature2Desc:
-      "Los miembros del sindicato votan SÍ/NO en secreto. Los resultados se revelan simultáneamente, y las recompensas se liquidan solo cuando una aleatoriedad verificable habilita el pago.",
+      "Los miembros votan SÍ/NO en secreto; los resultados se revelan a la vez y las recompensas se liquidan después.",
     feature3Title: "Firma sin gas, de un toque",
     feature3Desc:
-      "Las session keys te permiten pujar y votar sin un popup de wallet por cada acción, corriendo sobre los Ephemeral Rollups de MagicBlock con ~10ms de latencia.",
+      "Las session keys evitan el popup de wallet por acción — corriendo en MagicBlock con ~10ms de latencia.",
     mockupTitle: "Así se ve en acción",
     mockupSubtitle: "Una vista real del tablero de deals — las pujas selladas permanecen ocultas hasta el reveal.",
     statsTitle: "En vivo en Solana",
     feature4Title: "Pagos verificables, a prueba de front-running",
     feature4Desc:
-      "Las recompensas de hitos se liquidan solo cuando una función aleatoria verificable (VRF) habilita el orden de pago on-chain, así que nadie — ni siquiera un validador — puede ver o reordenar la liquidación de antemano.",
+      "Una función aleatoria verificable (VRF) habilita el orden de pago on-chain — nadie puede adelantarse (front-run).",
     faqTeaserSubtitle: "Las preguntas más comunes sobre cómo funcionan realmente las pujas selladas y los reveals.",
     viewAllFaq: "Ver todas las preguntas",
     ctaTitle: "¿Listo para unirte a un sindicato?",
@@ -801,19 +797,19 @@ const pt = {
     myDashboard: "Meu painel",
     feature1Title: "Lances selados",
     feature1Desc:
-      "Os valores ficam ocultos por uma permissão de controle de acesso on-chain — não por criptografia no cliente — invisíveis para todos, inclusive a startup, até a revelação.",
+      "Os valores dos lances ficam ocultos on-chain — invisíveis para todos, inclusive a startup, até a revelação.",
     feature2Title: "Votos privados por marco",
     feature2Desc:
-      "Membros do sindicato votam SIM/NÃO em segredo. Os resultados são revelados simultaneamente, e as recompensas só são liquidadas quando uma aleatoriedade verificável libera o pagamento.",
+      "Os membros votam SIM/NÃO em segredo; os resultados são revelados de uma vez e as recompensas são liquidadas depois.",
     feature3Title: "Assinatura sem gas, em um toque",
     feature3Desc:
-      "As session keys permitem dar lances e votar sem um popup da carteira a cada ação, rodando nos Ephemeral Rollups da MagicBlock com ~10ms de latência.",
+      "As session keys evitam o popup da carteira por ação — rodando na MagicBlock com ~10ms de latência.",
     mockupTitle: "Veja em ação",
     mockupSubtitle: "Uma visão real do painel de deals — os lances selados ficam ocultos até a revelação.",
     statsTitle: "Ao vivo na Solana",
     feature4Title: "Pagamentos verificáveis, à prova de front-running",
     feature4Desc:
-      "As recompensas de marcos só são liquidadas quando uma função aleatória verificável (VRF) libera a ordem de pagamento on-chain, então ninguém — nem mesmo um validador — pode ver ou reordenar a liquidação antecipadamente.",
+      "Uma função aleatória verificável (VRF) libera a ordem de pagamento on-chain — ninguém pode se antecipar (front-run).",
     faqTeaserSubtitle: "As perguntas mais comuns sobre como lances selados e revelações realmente funcionam.",
     viewAllFaq: "Ver todas as perguntas",
     ctaTitle: "Pronto para entrar em um sindicato?",
