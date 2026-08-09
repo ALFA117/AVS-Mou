@@ -61,7 +61,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <div className="rounded-lg border border-border bg-card p-4">
-        <h4 className="text-sm font-medium text-card-foreground">Raise progress</h4>
+        <h3 className="text-sm font-medium text-card-foreground">Raise progress</h3>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -93,9 +93,9 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-4">
-        <h4 className="text-sm font-medium text-card-foreground">
+        <h3 className="text-sm font-medium text-card-foreground">
           {deal.status === "open" ? "Sealed — visible only after reveal" : "Top bid amounts"}
-        </h4>
+        </h3>
         <div className="h-48">
           {deal.status === "open" ? (
             <div className="flex h-full items-center justify-center gap-1.5 text-sm text-muted-foreground">

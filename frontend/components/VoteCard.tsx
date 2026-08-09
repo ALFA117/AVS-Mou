@@ -20,6 +20,7 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
   const { connection } = useConnection();
   const { publicKey, wallet, signTransaction } = useWallet();
   const [pendingChoice, setPendingChoice] = useState<Choice | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
     kind: "idle",
   });
@@ -27,6 +28,7 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
   async function submitVote(choice: Choice) {
     if (!publicKey || !wallet?.adapter) return;
     setPendingChoice(null);
+    setSubmitting(true);
     setStatus({ kind: "idle" });
 
     try {
@@ -83,6 +85,8 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
       onVoted?.();
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -106,16 +110,18 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
       ) : (
         <div className="mt-4 flex gap-2">
           <button
+            disabled={submitting}
             onClick={() => setPendingChoice("yes")}
-            className="flex-1 cursor-pointer rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700"
+            className="flex-1 cursor-pointer rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Vote YES
+            {submitting ? "Submitting…" : "Vote YES"}
           </button>
           <button
+            disabled={submitting}
             onClick={() => setPendingChoice("no")}
-            className="flex-1 cursor-pointer rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+            className="flex-1 cursor-pointer rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Vote NO
+            {submitting ? "Submitting…" : "Vote NO"}
           </button>
         </div>
       )}

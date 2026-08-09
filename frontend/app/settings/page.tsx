@@ -94,6 +94,13 @@ export default function SettingsPage() {
         <button
           type="button"
           onClick={() => {
+            if (
+              !window.confirm(
+                "Clear all local data? This revokes your session keys and deletes syndicate chat history stored in this browser. This can't be undone.",
+              )
+            ) {
+              return;
+            }
             bidSession.revoke();
             voteSession.revoke();
             for (const key of Object.keys(window.localStorage)) {
@@ -127,7 +134,7 @@ function SessionRow({
   session: ReturnType<typeof useSessionKey>;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground">
+    <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground">
       <span>{programName}</span>
       {session.state.status === "active" ? (
         <span className="flex items-center gap-2">
@@ -141,8 +148,20 @@ function SessionRow({
             Revoke
           </button>
         </span>
+      ) : session.state.status === "authorizing" ? (
+        <span className="text-muted-foreground">Waiting for wallet signature…</span>
       ) : (
-        <span className="text-muted-foreground">No active session</span>
+        <span className="flex items-center gap-2">
+          {session.state.status === "error" && (
+            <span className="text-xs text-red-600 dark:text-red-400">{session.state.message}</span>
+          )}
+          <button
+            onClick={() => session.authorize()}
+            className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition hover:opacity-90"
+          >
+            Authorize (one-time)
+          </button>
+        </span>
       )}
     </div>
   );

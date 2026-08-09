@@ -27,9 +27,9 @@ export function DealCard({ deal }: { deal: Deal }) {
             {deal.status}
           </span>
         </div>
-        <h3 className="mt-2 font-heading text-lg font-semibold text-card-foreground">
+        <h2 className="mt-2 font-heading text-lg font-semibold text-card-foreground">
           Deal #{deal.dealId}
-        </h3>
+        </h2>
         <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
           <div>
             <dt className="text-muted-foreground">Equity offered</dt>

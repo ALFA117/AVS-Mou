@@ -16,7 +16,7 @@ export function ThemeToggle() {
   }, []);
 
   // Avoid a hydration flash: render nothing until we know the real theme.
-  if (!mounted) return <div className="h-8 w-8" />;
+  if (!mounted) return <div className="h-11 w-11" />;
 
   return (
     <button
@@ -27,7 +27,7 @@ export function ThemeToggle() {
         applyTheme(next);
       }}
       aria-label="Toggle dark mode"
-      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+      className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
     >
       {theme === "dark" ? (
         <Sun className="h-4 w-4" strokeWidth={2} />

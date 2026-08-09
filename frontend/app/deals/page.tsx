@@ -79,7 +79,7 @@ export default function DealsPage() {
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`cursor-pointer rounded-full px-3 py-1 text-sm font-medium transition ${
+            className={`flex min-h-11 cursor-pointer items-center rounded-full px-3 text-sm font-medium transition ${
               statusFilter === s
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:bg-border"

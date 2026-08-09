@@ -114,7 +114,7 @@ export default function AnalyticsPage() {
 
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="rounded-lg border border-border bg-card p-4">
-                <h3 className="text-sm font-medium text-card-foreground">Deals by deadline date</h3>
+                <h2 className="text-sm font-medium text-card-foreground">Deals by deadline date</h2>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={stats.dealsOverTime} margin={{ top: 16 }}>
@@ -130,10 +130,10 @@ export default function AnalyticsPage() {
               </div>
 
               <div className="rounded-lg border border-border bg-card p-4">
-                <h3 className="flex items-center gap-1.5 text-sm font-medium text-card-foreground">
+                <h2 className="flex items-center gap-1.5 text-sm font-medium text-card-foreground">
                   <BarChart3 className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
                   Leaderboard (anonymous, by total invested)
-                </h3>
+                </h2>
                 <div className="mt-2 space-y-1">
                   {stats.leaderboard.length === 0 && (
                     <p className="text-sm text-muted-foreground">No sealed bids settled yet.</p>

@@ -22,19 +22,23 @@ export function NavBar() {
           AVS
         </Link>
         <nav className="flex items-center gap-4 text-sm">
-          {LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={
-                pathname?.startsWith(link.href)
-                  ? "font-medium text-foreground"
-                  : "text-muted-foreground transition hover:text-foreground"
-              }
-            >
-              {link.label}
-            </Link>
-          ))}
+          {LINKS.map((link) => {
+            const active = pathname?.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className={
+                  active
+                    ? "border-b-2 border-primary font-medium text-foreground"
+                    : "border-b-2 border-transparent text-muted-foreground transition hover:text-foreground"
+                }
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />

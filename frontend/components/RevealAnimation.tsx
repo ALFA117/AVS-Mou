@@ -22,19 +22,19 @@ export function RevealAnimation({ bids, currentUser }: { bids: Bid[]; currentUse
               initial={{ opacity: 0, rotateY: 90 }}
               animate={{ opacity: 1, rotateY: 0 }}
               transition={{ delay: index * 0.08, duration: 0.4 }}
-              className={`rounded-lg border p-4 ${
-                isYou ? "border-black bg-neutral-50" : "border-neutral-200"
+              className={`rounded-lg border bg-card p-4 ${
+                isYou ? "border-primary/40" : "border-border"
               }`}
             >
               <div className="flex items-center justify-between text-sm">
-                <span className="font-mono text-neutral-500">
+                <span className="font-mono text-muted-foreground">
                   {shortenAddress(bid.bidder)}
                   {isYou && " (you)"}
                 </span>
-                <span className="text-xs text-neutral-400">#{index + 1}</span>
+                <span className="text-xs text-muted-foreground">#{index + 1}</span>
               </div>
-              <p className="mt-2 text-xl font-semibold">{formatTokenAmount(bid.amount)}</p>
-              <p className="mt-1 text-xs text-neutral-500">
+              <p className="mt-2 text-xl font-semibold text-card-foreground">{formatTokenAmount(bid.amount)}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
                 {Number(bid.equityAllocated) > 0
                   ? `${formatEquity(bid.equityAllocated)} equity`
                   : "Equity pending settlement"}

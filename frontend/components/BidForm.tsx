@@ -26,6 +26,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
   const { publicKey, wallet, signTransaction, sendTransaction } = useWallet();
   const [amount, setAmount] = useState("");
   const [confirming, setConfirming] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [delegating, setDelegating] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
     kind: "idle",
@@ -38,6 +39,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
   async function submitBid() {
     if (!publicKey || !wallet?.adapter) return;
     setConfirming(false);
+    setSubmitting(true);
     setStatus({ kind: "idle" });
 
     try {
@@ -122,6 +124,8 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
     } catch (err) {
       setDelegating(false);
       setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -162,17 +166,23 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         />
         <button
           type="button"
-          disabled={!amountValid}
+          disabled={!amountValid || submitting}
           onClick={() => setConfirming(true)}
           className="cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Place Bid
+          {submitting ? "Placing bid…" : "Place Bid"}
         </button>
       </div>
       {delegating && (
         <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
           <Link2 className="h-4 w-4 animate-pulse" strokeWidth={2} />
           One-time setup: approving your wallet for gasless bidding…
+        </p>
+      )}
+      {submitting && !delegating && (
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Lock className="h-4 w-4 animate-pulse" strokeWidth={2} />
+          Submitting sealed bid…
         </p>
       )}
       {status.kind === "success" && (

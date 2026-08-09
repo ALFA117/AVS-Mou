@@ -50,12 +50,12 @@ export function ChatPanel({
                   : "bg-muted text-foreground"
               }`}
             >
-              <p className="font-mono-avs text-[10px] opacity-70">{shortenAddress(m.senderId)}</p>
+              <p className="font-mono-avs text-xs opacity-70">{shortenAddress(m.senderId)}</p>
               <p>{m.content}</p>
               {m.senderId === currentUser && (
                 <button
                   onClick={() => deleteMessage(syndicateId, m.id, currentUser)}
-                  className="mt-1 flex cursor-pointer items-center gap-1 text-xs opacity-0 underline transition group-hover:opacity-70"
+                  className="mt-1 flex cursor-pointer items-center gap-1 text-xs opacity-0 underline transition group-hover:opacity-70 group-focus-within:opacity-70 focus-visible:opacity-100"
                 >
                   <Trash2 className="h-3 w-3" strokeWidth={2} />
                   Delete

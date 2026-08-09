@@ -20,12 +20,14 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
   const { publicKey, wallet, sendTransaction } = useWallet();
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
     kind: "idle",
   });
 
   async function submit() {
     if (!publicKey || !wallet?.adapter) return;
+    setSubmitting(true);
     setStatus({ kind: "idle" });
     try {
       const mint = new PublicKey(syndicate.equityMint);
@@ -48,6 +50,8 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
       setAmount("");
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -57,28 +61,44 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
         <ArrowRightLeft className="h-4 w-4 text-primary" strokeWidth={2} />
         Transfer equity to another member
       </h3>
-      <div className="mt-3 space-y-2">
-        <input
-          placeholder="Recipient wallet address"
-          value={recipient}
-          onChange={(e) => setRecipient(e.target.value)}
-          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
-        />
-        <div className="flex gap-2">
+      <div className="mt-3 space-y-3">
+        <div>
+          <label htmlFor="transfer-recipient" className="text-xs text-muted-foreground">
+            Recipient wallet address
+          </label>
           <input
-            type="number"
-            placeholder="Equity amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+            id="transfer-recipient"
+            placeholder="e.g. 7xKX...gAsU"
+            value={recipient}
+            onChange={(e) => setRecipient(e.target.value)}
+            className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
           />
+        </div>
+        <div className="flex gap-2">
+          <div className="w-full">
+            <label htmlFor="transfer-amount" className="text-xs text-muted-foreground">
+              Equity amount
+            </label>
+            <input
+              id="transfer-amount"
+              type="number"
+              placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
           <button
             type="button"
-            disabled={!recipient || !amount}
-            onClick={() => void submit()}
-            className="cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={!recipient || !amount || submitting}
+            onClick={() => {
+              if (window.confirm(`Transfer ${amount} equity to ${recipient}? This can't be undone.`)) {
+                void submit();
+              }
+            }}
+            className="mt-5 h-11 cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Transfer
+            {submitting ? "Transferring…" : "Transfer"}
           </button>
         </div>
       </div>
