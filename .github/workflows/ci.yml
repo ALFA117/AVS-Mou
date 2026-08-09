@@ -7,7 +7,13 @@ on:
     branches: [main]
 
 env:
-  SOLANA_VERSION: 1.18.26
+  # 1.18.26 (this project's original pin) bundles a platform-tools Rust
+  # toolchain from Feb 2024 (1.75.0) — too old to compile current crates.io
+  # dependency versions (hit "feature `edition2024` is required" trying to
+  # build a 2026-era `toml_edit`). 4.1.2 matches the Solana CLI version
+  # already verified working for every build in this repo's own
+  # development (`solana --version` on the dev machine).
+  SOLANA_VERSION: 4.1.2
   # Must match the anchor-lang version pinned in programs/*/Cargo.toml —
   # anchor-cli refuses to run against a mismatched anchor-lang version, and
   # will tell you to `avm install` whatever version parses out of Cargo.toml
