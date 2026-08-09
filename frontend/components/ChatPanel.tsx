@@ -35,7 +35,7 @@ export function ChatPanel({
         <span className="avs-icon-badge h-7 w-7">
           <MessageSquare className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
         </span>
-        <h3 className="font-heading text-sm font-semibold text-card-foreground">
+        <h3 className="font-heading text-sm font-normal text-card-foreground">
           {t("chatPanel.title")}
         </h3>
       </div>
@@ -93,7 +93,7 @@ export function ChatPanel({
           type="submit"
           whileTap={{ scale: 0.94 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="flex cursor-pointer items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+          className="flex cursor-pointer items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
         >
           <Send className="h-3.5 w-3.5" strokeWidth={2} />
           {t("chatPanel.send")}

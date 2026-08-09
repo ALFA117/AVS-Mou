@@ -179,7 +179,7 @@ export default function NewDealPage() {
       transition={{ type: "spring", stiffness: 260, damping: 26 }}
       className="mx-auto max-w-xl px-6 py-10"
     >
-      <h1 className="flex items-center gap-2 font-heading text-2xl font-bold tracking-tight text-foreground">
+      <h1 className="flex items-center gap-2 font-heading text-2xl font-light tracking-tight text-foreground">
         <Rocket className="h-5 w-5 text-primary" strokeWidth={2} />
         {t("newDeal.title")}
       </h1>
@@ -262,7 +262,7 @@ export default function NewDealPage() {
           onClick={() => void submit()}
           whileTap={valid && !busy ? { scale: 0.98 } : undefined}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="w-full cursor-pointer avs-glow-primary rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full cursor-pointer avs-glow-primary rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {busy ? <StepLabel step={step} /> : t("newDeal.createDeal")}
         </motion.button>

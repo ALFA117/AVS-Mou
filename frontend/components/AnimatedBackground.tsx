@@ -1,37 +1,47 @@
 "use client";
 
 /**
- * Ambient hero background — ui-ux-pro-max "Modern Dark (Cinema)" style
- * (see memory/feedback_ui_ux_pro_max_skill.md): softly oscillating blurred
- * gradient blobs behind hero content, not a literal 3D scene (no WebGL
- * dependency, keeps bundle/perf light per the skill's Performance
- * guidelines — `image-optimization`/`main-thread-budget`). Motion is
- * CSS-driven (`.avs-blob` in globals.css) and fully disabled under
- * `prefers-reduced-motion` there, so no JS branching is needed here.
+ * Stripe-style "gradient mesh" backdrop — per the Stripe DESIGN.md reference
+ * (VoltAgent/awesome-design-md): "a wide horizontal band of pastel cream,
+ * sherbet orange, lavender, electric indigo, and ruby pink occupies the
+ * upper third of nearly every marketing page... Do: apply the gradient
+ * mesh to every marketing hero; bare-canvas heroes feel off-brand."
+ *
+ * Replaces the previous dark-fintech blob treatment entirely — this is a
+ * light-canvas wash sitting behind the hero content, not a full-bleed dark
+ * background. Motion is CSS-driven (`.avs-blob`, disabled under
+ * `prefers-reduced-motion` in globals.css) so no JS branching is needed.
  */
 export function AnimatedBackground() {
   return (
-    <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <div
+      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem] overflow-hidden dark:opacity-30"
+      aria-hidden="true"
+    >
       <div
-        className="avs-blob absolute -left-24 -top-24 h-[28rem] w-[28rem] rounded-full opacity-20 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--primary), transparent 70%)" }}
+        className="avs-blob absolute -left-20 top-[-8rem] h-[26rem] w-[26rem] rounded-full opacity-70 blur-3xl"
+        style={{ background: "radial-gradient(circle, #f5e9d4, transparent 70%)" }}
       />
       <div
-        className="avs-blob absolute -bottom-32 -right-16 h-[32rem] w-[32rem] rounded-full opacity-20 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--accent), transparent 70%)", animationDelay: "-6s" }}
+        className="avs-blob absolute left-[8%] top-[-4rem] h-[24rem] w-[24rem] rounded-full opacity-60 blur-3xl"
+        style={{ background: "radial-gradient(circle, #f0b969, transparent 70%)", animationDelay: "-4s" }}
       />
       <div
-        className="avs-blob absolute left-1/3 top-1/2 h-[20rem] w-[20rem] -translate-y-1/2 rounded-full opacity-10 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--primary), transparent 70%)", animationDelay: "-12s" }}
+        className="avs-blob absolute left-1/3 top-[-6rem] h-[28rem] w-[28rem] rounded-full opacity-70 blur-3xl"
+        style={{ background: "radial-gradient(circle, #b9b9f9, transparent 70%)", animationDelay: "-9s" }}
       />
-      {/* Faint grid — precision/fintech cue from the style guide, kept subtle */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
+        className="avs-blob absolute right-[18%] top-[-8rem] h-[30rem] w-[30rem] rounded-full opacity-70 blur-3xl"
+        style={{ background: "radial-gradient(circle, #533afd, transparent 70%)", animationDelay: "-14s" }}
+      />
+      <div
+        className="avs-blob absolute -right-16 top-[-4rem] h-[24rem] w-[24rem] rounded-full opacity-50 blur-3xl"
+        style={{ background: "radial-gradient(circle, #ea2261, transparent 70%)", animationDelay: "-6s" }}
+      />
+      {/* Soften the mesh into the white canvas below rather than cutting off hard */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-40"
+        style={{ background: "linear-gradient(to bottom, transparent, var(--background))" }}
       />
     </div>
   );

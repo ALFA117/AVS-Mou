@@ -1,19 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
 import { Lock, Vote, Zap, ShieldCheck } from "lucide-react";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { useTranslation } from "@/lib/LanguageContext";
-
-// WebGL has no server-side representation — load client-only, and reserve
-// the same footprint via the fallback so it doesn't shift layout (CLS)
-// once the real canvas mounts.
-const Hero3D = dynamic(() => import("@/components/Hero3D").then((m) => m.Hero3D), {
-  ssr: false,
-  loading: () => <div className="mx-auto h-64 w-full max-w-md sm:h-80 md:h-96" />,
-});
 
 export default function Home() {
   const reduceMotion = useReducedMotion();
@@ -40,7 +31,7 @@ export default function Home() {
 
   return (
     <main>
-      <section className="relative overflow-hidden px-6 py-12 sm:py-20 md:py-24">
+      <section className="relative overflow-hidden px-6 py-16 sm:py-20 md:py-24">
         <AnimatedBackground />
         <motion.div
           initial="hidden"
@@ -50,28 +41,24 @@ export default function Home() {
         >
           <motion.div
             variants={item}
-            className="mx-auto flex w-fit items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur"
+            className="mx-auto flex w-fit items-center gap-2 rounded-full bg-primary-subdued px-3 py-1 text-xs text-primary-deep"
           >
-            <ShieldCheck className="h-3.5 w-3.5 text-accent" strokeWidth={2} />
+            <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
             {t("home.badge")}
-          </motion.div>
-
-          <motion.div variants={item} className="mt-4 sm:mt-6">
-            <Hero3D />
           </motion.div>
 
           <motion.h1
             variants={item}
-            className="mt-4 font-heading text-4xl font-bold tracking-tight text-foreground sm:mt-6 sm:text-6xl"
+            className="mt-6 font-heading text-5xl font-light tracking-tight text-foreground sm:text-6xl md:text-7xl"
           >
             {t("home.title")}
           </motion.h1>
 
-          <motion.p variants={item} className="mx-auto mt-3 max-w-xl text-lg text-muted-foreground sm:mt-5">
+          <motion.p variants={item} className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
             {t("home.subtitle")}
           </motion.p>
 
-          <motion.div variants={item} className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-9">
+          <motion.div variants={item} className="mt-9 flex flex-wrap justify-center gap-3">
             <motion.div
               whileHover={reduceMotion ? undefined : { scale: 1.03 }}
               whileTap={reduceMotion ? undefined : { scale: 0.97 }}
@@ -79,7 +66,7 @@ export default function Home() {
             >
               <Link
                 href="/deals"
-                className="avs-glow-primary block rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+                className="avs-glow-primary block rounded-full bg-primary px-6 py-2.5 text-base font-normal text-primary-foreground transition-colors duration-200 hover:bg-primary-deep"
               >
                 {t("home.browseDeals")}
               </Link>
@@ -91,7 +78,7 @@ export default function Home() {
             >
               <Link
                 href="/dashboard"
-                className="block rounded-lg border border-border bg-card/60 px-5 py-2.5 text-sm font-medium text-foreground backdrop-blur transition-colors duration-200 hover:bg-card"
+                className="block rounded-full border border-primary px-6 py-2.5 text-base font-normal text-primary transition-colors duration-200 hover:bg-primary-subdued"
               >
                 {t("home.myDashboard")}
               </Link>
@@ -114,12 +101,12 @@ export default function Home() {
               variants={item}
               whileHover={reduceMotion ? undefined : { y: -4 }}
               transition={{ type: "spring", stiffness: 300, damping: 24 }}
-              className="rounded-xl border border-border bg-card p-6 transition-shadow duration-200 hover:shadow-md hover:shadow-primary/5"
+              className="avs-elevate rounded-xl border border-border bg-card p-8"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+              <div className="avs-icon-badge h-9 w-9">
                 <f.icon className="h-5 w-5 text-primary" strokeWidth={2} />
               </div>
-              <h3 className="mt-4 font-heading text-base font-semibold text-card-foreground">
+              <h3 className="mt-4 font-heading text-lg font-light text-card-foreground">
                 {f.title}
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">{f.description}</p>

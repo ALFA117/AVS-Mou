@@ -55,7 +55,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
         </Link>
       </div>
 
-      <h1 className="mt-4 font-heading text-2xl font-bold tracking-tight text-foreground">
+      <h1 className="mt-4 font-heading text-2xl font-light tracking-tight text-foreground">
         {t("syndicatePage.title", { id: deal.dealId })}
       </h1>
       <p className="font-mono-avs text-sm text-muted-foreground">
@@ -64,7 +64,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
 
       {myBid && (
         <div className="mt-6 rounded-lg border border-primary/40 bg-card p-5">
-          <h2 className="font-heading font-semibold tracking-tight text-card-foreground">{t("syndicatePage.yourPosition")}</h2>
+          <h2 className="font-heading font-light tracking-tight text-card-foreground">{t("syndicatePage.yourPosition")}</h2>
           <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
             <div>
               <dt className="text-muted-foreground">{t("syndicatePage.bidAmount")}</dt>
@@ -83,7 +83,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
       )}
 
       <section className="mt-8">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-semibold tracking-tight text-foreground">
+        <h2 className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-foreground">
           <Users className="h-4 w-4 text-primary" strokeWidth={2} />
           {t("syndicatePage.members")}
         </h2>
@@ -109,7 +109,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
 
       <section className="mt-8">
         <div className="flex items-center justify-between">
-          <h2 className="flex items-center gap-2 font-heading text-lg font-semibold tracking-tight text-foreground">
+          <h2 className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-foreground">
             <MilestoneIcon className="h-4 w-4 text-primary" strokeWidth={2} />
             {t("syndicatePage.milestones")}
           </h2>
@@ -137,7 +137,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
 
       {myBid && syndicate && (
         <section className="mt-8">
-          <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("syndicatePage.managePosition")}</h2>
+          <h2 className="font-heading text-lg font-light tracking-tight text-foreground">{t("syndicatePage.managePosition")}</h2>
           <div className="mt-3">
             <TransferEquityPanel syndicate={syndicate} />
           </div>
@@ -148,7 +148,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
         <div className="mt-8">
           <Link
             href={`/chat/${deal.publicKey}`}
-            className="inline-flex items-center gap-1.5 avs-glow-primary rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+            className="inline-flex items-center gap-1.5 avs-glow-primary rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
           >
             <MessageSquare className="h-3.5 w-3.5" strokeWidth={2} />
             {t("syndicatePage.openChat")}

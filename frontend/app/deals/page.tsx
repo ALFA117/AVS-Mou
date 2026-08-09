@@ -69,13 +69,13 @@ export default function DealsPage() {
     <main className="mx-auto max-w-5xl px-6 py-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{t("deals.title")}</h1>
+          <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">{t("deals.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("deals.subtitle")}</p>
         </div>
         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
           <Link
             href="/deals/new"
-            className="flex items-center gap-1.5 avs-glow-primary rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+            className="flex items-center gap-1.5 avs-glow-primary rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
           >
             <Rocket className="h-3.5 w-3.5" strokeWidth={2} />
             {t("deals.createDeal")}

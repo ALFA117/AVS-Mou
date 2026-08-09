@@ -28,7 +28,7 @@ export default function SettingsPage() {
   if (!publicKey) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-10">
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{t("settings.title")}</h1>
+        <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">{t("settings.title")}</h1>
         <p className="mt-6 text-sm text-muted-foreground">{t("settings.connectPrompt")}</p>
       </main>
     );
@@ -36,10 +36,10 @@ export default function SettingsPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">{t("settings.title")}</h1>
+      <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">{t("settings.title")}</h1>
 
       <section className="mt-6">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-semibold tracking-tight text-foreground">
+        <h2 className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-foreground">
           <KeyRound className="h-4 w-4 text-primary" strokeWidth={2} />
           {t("settings.sessionKeysTitle")}
         </h2>
@@ -54,7 +54,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("settings.notifications")}</h2>
+        <h2 className="font-heading text-lg font-light tracking-tight text-foreground">{t("settings.notifications")}</h2>
         <label className="mt-2 flex items-center gap-2 text-sm text-foreground">
           <input
             type="checkbox"
@@ -71,12 +71,12 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("settings.exportData")}</h2>
+        <h2 className="font-heading text-lg font-light tracking-tight text-foreground">{t("settings.exportData")}</h2>
         <button
           type="button"
           disabled={positions.length === 0}
           onClick={() => downloadCsv("avs-portfolio.csv", positionsToCsv(positions))}
-          className="mt-2 flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+          className="mt-2 flex cursor-pointer items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Download className="h-3.5 w-3.5" strokeWidth={2} />
           {t("settings.exportPortfolio")}
@@ -84,7 +84,7 @@ export default function SettingsPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("settings.privacy")}</h2>
+        <h2 className="font-heading text-lg font-light tracking-tight text-foreground">{t("settings.privacy")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           {t("settings.privacyText")}{" "}
           <a href="/legal" className="text-primary underline">{t("settings.legalLinkLabel")}</a>{" "}
@@ -153,7 +153,7 @@ function SessionRow({
           )}
           <button
             onClick={() => session.authorize()}
-            className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+            className="cursor-pointer rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
           >
             {t("settings.authorize")}
           </button>

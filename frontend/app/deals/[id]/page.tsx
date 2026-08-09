@@ -76,7 +76,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
 
       <div className="mt-4 flex items-start justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">Deal #{deal.dealId}</h1>
+          <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">Deal #{deal.dealId}</h1>
           <p className="mt-1 font-mono-avs text-sm text-muted-foreground">
             {t("dealDetail.startup", { address: shortenAddress(deal.startup) })}
           </p>
@@ -121,7 +121,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("dealDetail.analytics")}</h2>
+        <h2 className="font-heading text-lg font-light tracking-tight text-foreground">{t("dealDetail.analytics")}</h2>
         <div className="mt-3">
           <DealCharts deal={deal} bids={bids} />
         </div>
@@ -129,7 +129,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
 
       {(deal.status === "revealed" || deal.status === "settled") && bids.length > 0 && (
         <section className="mt-8">
-          <h2 className="font-heading text-lg font-semibold tracking-tight text-foreground">{t("dealDetail.syndicateRevealed")}</h2>
+          <h2 className="font-heading text-lg font-light tracking-tight text-foreground">{t("dealDetail.syndicateRevealed")}</h2>
           <div className="mt-3">
             <RevealAnimation bids={bids} currentUser={publicKey?.toBase58()} />
           </div>

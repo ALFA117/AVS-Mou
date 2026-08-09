@@ -27,7 +27,7 @@ export function NavBar() {
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3 sm:px-6">
         <Link
           href="/"
-          className="flex items-center gap-2 font-heading font-semibold tracking-tight text-foreground"
+          className="flex items-center gap-2 font-heading text-lg font-medium tracking-tight text-foreground"
         >
           <motion.span
             className="avs-icon-badge avs-glow-primary h-8 w-8"
@@ -50,13 +50,13 @@ export function NavBar() {
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={`relative rounded-full px-3 py-2 transition-colors duration-200 ${
-                  active ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground"
+                  active ? "font-medium text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {active && (
                   <motion.span
                     layoutId="nav-active-pill"
-                    className="absolute inset-0 rounded-full bg-primary/10"
+                    className="absolute inset-0 rounded-full bg-primary-subdued"
                     transition={{ type: "spring", stiffness: 380, damping: 32 }}
                   />
                 )}
@@ -116,7 +116,7 @@ export function NavBar() {
                     aria-current={active ? "page" : undefined}
                     className={`rounded-md px-3 py-2.5 text-sm transition-colors duration-200 ${
                       active
-                        ? "bg-primary/10 font-medium text-foreground"
+                        ? "bg-primary-subdued font-medium text-primary"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >

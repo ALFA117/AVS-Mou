@@ -59,7 +59,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
 
   return (
     <div className="avs-elevate rounded-xl border border-border bg-card p-4">
-      <h3 className="flex items-center gap-2.5 font-heading text-sm font-semibold text-card-foreground">
+      <h3 className="flex items-center gap-2.5 font-heading text-sm font-normal text-card-foreground">
         <span className="avs-icon-badge h-7 w-7">
           <ArrowRightLeft className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
         </span>
@@ -100,7 +100,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
                 void submit();
               }
             }}
-            className="mt-5 h-11 cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-5 h-11 cursor-pointer whitespace-nowrap rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {submitting ? t("transferEquity.transferring") : t("transferEquity.transfer")}
           </button>

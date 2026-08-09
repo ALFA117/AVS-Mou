@@ -3,69 +3,83 @@
 @tailwind utilities;
 
 /*
- * AVS design tokens — from ui-ux-pro-max's fintech/web3 dark-first design
- * system (trust blue + profit green, no purple/pink — those were flagged as
- * an anti-pattern for this product). Dark mode is the primary experience;
- * light mode is the documented Task 083 toggle fallback.
+ * AVS design tokens — rebuilt against the Stripe DESIGN.md reference
+ * (VoltAgent/awesome-design-md), per explicit user direction: light
+ * canvas as the primary surface, indigo as the single brand accent,
+ * ink navy for body text (never pure black), hairline borders, pill
+ * buttons. Dark mode is restyled to Stripe's own brand-dark-900 navy
+ * rather than removed, so the existing user-toggle keeps working.
  */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #ffffff;
+  --foreground: #0d253d;
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #0d253d;
   --surface-elevated: #ffffff;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --border: #e2e8f0;
-  --primary: #1e40af;
+  --muted: #f6f9fc;
+  --muted-foreground: #64748d;
+  --border: #e3e8ee;
+  --primary: #533afd;
+  --primary-deep: #4434d4;
+  --primary-press: #2e2b8c;
+  --primary-subdued: #ece9fe;
   --primary-foreground: #ffffff;
-  --accent: #059669;
+  --accent: #0f9d58;
   --accent-foreground: #ffffff;
-  --ring: #1e40af;
-  --shadow-ambient: rgba(15, 23, 42, 0.08);
-  --shadow-ambient-strong: rgba(15, 23, 42, 0.14);
-  --primary-glow: rgba(30, 64, 175, 0.16);
+  --ring: #533afd;
+  --font-heading: var(--font-body);
+  --shadow-ambient: rgba(0, 55, 112, 0.08);
+  --shadow-ambient-strong: rgba(0, 55, 112, 0.12);
+  --primary-glow: rgba(83, 58, 253, 0.14);
 }
 
 /* Task 083: user-controlled dark mode (Tailwind `class` strategy — see
    lib/theme.ts). System preference is only the *default* before the user
-   picks explicitly; the .dark class always wins. */
+   picks explicitly; the .dark class always wins. Restyled to Stripe's
+   own brand-dark-900 navy (#1c1e54), not the app's old near-black. */
 .dark {
-  --background: #05060a;
-  --foreground: #f1f5f9;
-  --card: #10152a;
-  --card-foreground: #f1f5f9;
-  --surface-elevated: #161d3a;
-  --muted: #131a30;
-  --muted-foreground: #94a3b8;
-  --border: rgba(255, 255, 255, 0.08);
-  --primary: #3b82f6;
-  --primary-foreground: #05060a;
-  --accent: #10b981;
-  --accent-foreground: #05060a;
-  --ring: #3b82f6;
-  --shadow-ambient: rgba(0, 0, 0, 0.45);
-  --shadow-ambient-strong: rgba(0, 0, 0, 0.6);
-  --primary-glow: rgba(59, 130, 246, 0.28);
+  --background: #1c1e54;
+  --foreground: #ffffff;
+  --card: #242764;
+  --card-foreground: #ffffff;
+  --surface-elevated: #2b2e72;
+  --muted: #26295f;
+  --muted-foreground: #b9b9f9;
+  --border: rgba(255, 255, 255, 0.12);
+  --primary: #665efd;
+  --primary-deep: #8b85ff;
+  --primary-press: #4434d4;
+  --primary-subdued: rgba(102, 94, 253, 0.18);
+  --primary-foreground: #1c1e54;
+  --accent: #34d399;
+  --accent-foreground: #0d253d;
+  --ring: #665efd;
+  --shadow-ambient: rgba(0, 0, 0, 0.35);
+  --shadow-ambient-strong: rgba(0, 0, 0, 0.5);
+  --primary-glow: rgba(102, 94, 253, 0.3);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
-    --background: #05060a;
-    --foreground: #f1f5f9;
-    --card: #10152a;
-    --card-foreground: #f1f5f9;
-    --muted: #131a30;
-    --muted-foreground: #94a3b8;
-    --border: rgba(255, 255, 255, 0.08);
-    --primary: #3b82f6;
-    --primary-foreground: #05060a;
-    --accent: #10b981;
-    --accent-foreground: #05060a;
-    --ring: #3b82f6;
-    --shadow-ambient: rgba(0, 0, 0, 0.45);
-    --shadow-ambient-strong: rgba(0, 0, 0, 0.6);
-    --primary-glow: rgba(59, 130, 246, 0.28);
+    --background: #1c1e54;
+    --foreground: #ffffff;
+    --card: #242764;
+    --card-foreground: #ffffff;
+    --surface-elevated: #2b2e72;
+    --muted: #26295f;
+    --muted-foreground: #b9b9f9;
+    --border: rgba(255, 255, 255, 0.12);
+    --primary: #665efd;
+    --primary-deep: #8b85ff;
+    --primary-press: #4434d4;
+    --primary-subdued: rgba(102, 94, 253, 0.18);
+    --primary-foreground: #1c1e54;
+    --accent: #34d399;
+    --accent-foreground: #0d253d;
+    --ring: #665efd;
+    --shadow-ambient: rgba(0, 0, 0, 0.35);
+    --shadow-ambient-strong: rgba(0, 0, 0, 0.5);
+    --primary-glow: rgba(102, 94, 253, 0.3);
   }
 }
 
@@ -83,10 +97,19 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  /* Stripe DESIGN.md: ss01 stylistic set enabled globally on the body. */
+  font-feature-settings: "ss01";
 }
 
+/* Stripe's editorial signature: thin (300) display weight with negative
+   tracking, scaling down from -1.4px at the largest size to -0.2px at
+   the smallest heading tier. Space Grotesk (this app's previous display
+   face) is dropped in favor of a single Inter family end to end, per the
+   reference system's own "one family" typographic model. */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), var(--font-body), sans-serif;
+  font-family: var(--font-body), sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.02em;
 }
 
 @layer utilities {
@@ -98,14 +121,12 @@ h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-mono), ui-monospace, monospace;
   }
 
-  /* Elevation scale — resting depth + a lift on hover, so cards read as
-     physical surfaces instead of flat bordered boxes. Shadow color is a
-     theme-aware token (ambient black in dark mode, ambient slate in light)
-     so the same class works in both themes without a dark: variant. */
+  /* Elevation scale — Stripe's own Level 1/2 shadow spec, tinted with
+     shadow-blue rather than a neutral black, so cards read as physical
+     surfaces instead of flat bordered boxes. */
   .avs-elevate {
     box-shadow:
-      0 1px 2px var(--shadow-ambient),
-      0 8px 24px -14px var(--shadow-ambient-strong);
+      0 1px 3px var(--shadow-ambient);
     transition:
       transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -115,8 +136,8 @@ h1, h2, h3, h4, h5, h6 {
   .avs-elevate:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 2px 4px var(--shadow-ambient),
-      0 20px 32px -14px var(--shadow-ambient-strong);
+      0 8px 24px var(--shadow-ambient),
+      0 2px 6px var(--shadow-ambient-strong);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -126,31 +147,26 @@ h1, h2, h3, h4, h5, h6 {
     }
   }
 
-  /* Soft glow behind primary CTAs — the "premium fintech" accent glow from
-     the ui-ux-pro-max Modern Dark Cinema style, tuned down for WCAG-safe
-     use behind solid buttons rather than as a decorative-only effect. */
+  /* Level-2 floating panel — dashboard mockup / dropdown chrome. */
   .avs-glow-primary {
-    box-shadow:
-      0 1px 2px var(--shadow-ambient),
-      0 8px 20px -4px var(--primary-glow);
+    box-shadow: 0 8px 24px var(--shadow-ambient);
   }
 
-  /* Tinted icon badge — replaces bare icons in card/section headers with a
-     small rounded surface, matching the landing page's feature-icon
-     treatment everywhere else in the app. */
+  /* Tinted icon badge — Stripe's subdued-indigo tag treatment
+     ({colors.primary-bg-subdued-hover}), used for card/section header
+     icons instead of a bare glyph. */
   .avs-icon-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     border-radius: 0.625rem;
-    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    background: var(--primary-subdued);
   }
 }
 
-/* Ambient hero background — see components/AnimatedBackground.tsx.
-   Disabled entirely under reduced-motion per ui-ux-pro-max's animation
-   guidelines (Task 7: `reduced-motion`, `animation-optional`). */
+/* Gradient-mesh blob motion — see components/AnimatedBackground.tsx.
+   Disabled entirely under reduced-motion. */
 @keyframes avs-blob-float {
   0%, 100% {
     transform: translate(0, 0) scale(1);
