@@ -855,7 +855,7 @@ const es = {
     title: "Estado del sistema",
     refresh: "Actualizar",
     solanaLabel: "Solana Devnet (capa base)",
-    magicblockLabel: "MagicBlock Ephemeral Rollup (devnet, hosted)",
+    magicblockLabel: "MagicBlock Ephemeral Rollup (devnet, alojado)",
     slot: "Slot {slot}",
     corsNote:
       "La verificación del ER puede mostrar falsamente \"Inaccesible\" si la política CORS del endpoint bloquea las solicitudes del navegador — es un ping desde el cliente, no una garantía.",
