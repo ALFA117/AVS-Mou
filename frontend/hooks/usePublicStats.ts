@@ -2,17 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { sealedAuctionProgram } from "@/lib/programs";
-import { ER_PUBLIC_RPC_URL } from "@/lib/ephemeralRollup";
+import { getAnonymousTeeConnection } from "@/lib/ephemeralRollup";
 import { mapBid, mapDeal } from "@/lib/mappers";
 import type { Deal } from "@/lib/types";
-
-let erConnection: Connection | null = null;
-function getErConnection(): Connection {
-  erConnection ??= new Connection(ER_PUBLIC_RPC_URL, "confirmed");
-  return erConnection;
-}
 
 function mergeByPubkey<T extends { publicKey: PublicKey }>(l1: T[], er: T[]): T[] {
   const byPubkey = new Map(l1.map((a) => [a.publicKey.toBase58(), a]));
@@ -68,7 +62,8 @@ export function usePublicStats() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const readonlyWallet = (wallet?.adapter as any) ?? READONLY_WALLET;
       const program = sealedAuctionProgram(connection, readonlyWallet);
-      const erProgram = sealedAuctionProgram(getErConnection(), readonlyWallet);
+      const erConnection = await getAnonymousTeeConnection();
+      const erProgram = sealedAuctionProgram(erConnection, readonlyWallet);
 
       // See useDeals.ts — a Deal's L1 owner moves to the delegation program
       // the instant it's created, and Bid accounts are only ever created on

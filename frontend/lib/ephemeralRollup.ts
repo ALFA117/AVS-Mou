@@ -1,5 +1,6 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { getAuthToken, verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
+import nacl from "tweetnacl";
 
 /**
  * Client-side TEE auth for MagicBlock's Private Ephemeral Rollup, using the
@@ -14,18 +15,32 @@ const TEE_RPC_URL = "https://devnet-tee.magicblock.app";
 const TEE_WS_URL = "wss://devnet-tee.magicblock.app";
 export const ER_VALIDATOR = new PublicKey("MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo");
 
+let anonTeeConnection: Promise<Connection> | null = null;
+
 /**
- * Plain (non-TEE) hosted devnet ER RPC — used for read-only account listing
- * only. Deal/Bid *account existence and terms* aren't access-controlled
- * (only sealed bid amounts are, via per-account Ephemeral Permissions), so
- * this needs no auth handshake. This matters because `delegate_deal` moves
- * a Deal's L1 owner to the delegation program the moment a deal is
- * created — an L1-only `getProgramAccounts` query never sees an Open deal
- * at all, only ones that made it back through `undelegate_deal` (currently
- * broken — see docs/KNOWN_ISSUES.md). Every public listing must merge L1 +
- * ER results.
+ * Read-only TEE connection authenticated with a throwaway, never-funded
+ * keypair generated fresh in the browser — for PUBLIC listing pages (Deals,
+ * stats) with no connected wallet. Every deal in this app delegates
+ * specifically to `ER_VALIDATOR` (the TEE validator) — the plain regional
+ * hosted RPCs (devnet-us/eu/as) are *different* validators and silently
+ * fall back to a frozen L1 snapshot for accounts they don't actually host,
+ * so they only ever show a deal's state as of `initialize_deal`, never any
+ * later bid/reveal/settle activity (see docs/KNOWN_ISSUES.md). Deal/Bid
+ * *account existence and terms* aren't identity-gated — only sealed bid
+ * amounts pre-reveal are — so any identity can authenticate and read
+ * current state; the keypair here exists only to sign the auth handshake.
  */
-export const ER_PUBLIC_RPC_URL = "https://devnet-us.magicblock.app";
+export async function getAnonymousTeeConnection(): Promise<Connection> {
+  anonTeeConnection ??= (async () => {
+    await verifyTeeRpcIntegrity(TEE_RPC_URL);
+    const anon = Keypair.generate();
+    const { token } = await getAuthToken(TEE_RPC_URL, anon.publicKey, async (message: Uint8Array) =>
+      nacl.sign.detached(message, anon.secretKey),
+    );
+    return new Connection(`${TEE_RPC_URL}?token=${token}`, { commitment: "confirmed" });
+  })();
+  return anonTeeConnection;
+}
 
 export async function getWalletErConnection(
   publicKey: PublicKey,
