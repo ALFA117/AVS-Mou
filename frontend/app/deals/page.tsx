@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { Search, RefreshCw, Rocket, PackageSearch } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Search, RefreshCw, Rocket, PackageSearch, SlidersHorizontal } from "lucide-react";
 import { DealCard } from "@/components/DealCard";
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonCard } from "@/components/Skeleton";
@@ -31,6 +31,21 @@ export default function DealsPage() {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("deadline");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [minValuation, setMinValuation] = useState("");
+  const [maxValuation, setMaxValuation] = useState("");
+  const [minEquity, setMinEquity] = useState("");
+  const [maxEquity, setMaxEquity] = useState("");
+
+  const rangeFiltersActive =
+    minValuation !== "" || maxValuation !== "" || minEquity !== "" || maxEquity !== "";
+
+  function clearRangeFilters() {
+    setMinValuation("");
+    setMaxValuation("");
+    setMinEquity("");
+    setMaxEquity("");
+  }
   const reducedMotion = useReducedMotion();
   const { t } = useTranslation();
 
@@ -54,6 +69,26 @@ export default function DealsPage() {
       );
     }
 
+    // deal.valuation is a raw on-chain integer (6 decimals, same scale
+    // formatTokenAmount displays) — scale the typed bound to match, or a
+    // filter like "min 1,000,000" would compare against display units.
+    if (minValuation !== "") {
+      const min = Number(minValuation) * 10 ** 6;
+      result = result.filter((d) => Number(d.valuation) >= min);
+    }
+    if (maxValuation !== "") {
+      const max = Number(maxValuation) * 10 ** 6;
+      result = result.filter((d) => Number(d.valuation) <= max);
+    }
+    if (minEquity !== "") {
+      const min = Number(minEquity) * 100;
+      result = result.filter((d) => d.equityBps >= min);
+    }
+    if (maxEquity !== "") {
+      const max = Number(maxEquity) * 100;
+      result = result.filter((d) => d.equityBps <= max);
+    }
+
     const sorted = [...result];
     switch (sortKey) {
       case "valuation":
@@ -67,11 +102,11 @@ export default function DealsPage() {
         sorted.sort((a, b) => a.deadlineTs - b.deadlineTs);
     }
     return sorted;
-  }, [deals, statusFilter, search, sortKey]);
+  }, [deals, statusFilter, search, sortKey, minValuation, maxValuation, minEquity, maxEquity]);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [statusFilter, search, sortKey]);
+  }, [statusFilter, search, sortKey, minValuation, maxValuation, minEquity, maxEquity]);
 
   const visible = filtered.slice(0, visibleCount);
 
@@ -129,6 +164,19 @@ export default function DealsPage() {
         </select>
 
         <button
+          onClick={() => setFiltersOpen((v) => !v)}
+          aria-expanded={filtersOpen}
+          className={`flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
+            filtersOpen || rangeFiltersActive
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-border"
+          }`}
+        >
+          <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={2} />
+          {t("deals.filtersButton")}
+        </button>
+
+        <button
           onClick={() => void refresh()}
           className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
@@ -136,6 +184,73 @@ export default function DealsPage() {
           {t("common.refresh")}
         </button>
       </div>
+
+      <AnimatePresence initial={false}>
+        {filtersOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-3 flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-4">
+              <label className="text-sm">
+                <span className="mb-1 block text-xs text-muted-foreground">{t("deals.minValuation")}</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={minValuation}
+                  onChange={(e) => setMinValuation(e.target.value)}
+                  className="w-28 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+                />
+              </label>
+              <label className="text-sm">
+                <span className="mb-1 block text-xs text-muted-foreground">{t("deals.maxValuation")}</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={maxValuation}
+                  onChange={(e) => setMaxValuation(e.target.value)}
+                  className="w-28 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+                />
+              </label>
+              <label className="text-sm">
+                <span className="mb-1 block text-xs text-muted-foreground">{t("deals.minEquity")}</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  step="0.1"
+                  value={minEquity}
+                  onChange={(e) => setMinEquity(e.target.value)}
+                  className="w-24 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+                />
+              </label>
+              <label className="text-sm">
+                <span className="mb-1 block text-xs text-muted-foreground">{t("deals.maxEquity")}</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  step="0.1"
+                  value={maxEquity}
+                  onChange={(e) => setMaxEquity(e.target.value)}
+                  className="w-24 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+                />
+              </label>
+              {rangeFiltersActive && (
+                <button
+                  onClick={clearRangeFilters}
+                  className="cursor-pointer text-sm text-primary underline"
+                >
+                  {t("common.clearFilters")}
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {loading && (
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -159,11 +274,12 @@ export default function DealsPage() {
               : t("deals.noResults", { status: STATUS_LABELS[statusFilter].toLowerCase() })
           }
           action={
-            (search.trim() !== "" || statusFilter !== "all") && (
+            (search.trim() !== "" || statusFilter !== "all" || rangeFiltersActive) && (
               <button
                 onClick={() => {
                   setSearch("");
                   setStatusFilter("all");
+                  clearRangeFilters();
                 }}
                 className="cursor-pointer rounded-full border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued"
               >
