@@ -11,6 +11,10 @@ export function formatBps(bps: number): string {
   return `${(bps / 100).toFixed(2)}%`;
 }
 
+export function formatInt(n: number): string {
+  return Math.round(n).toLocaleString();
+}
+
 export function formatEquity(raw: string | number, totalSupply = 1_000_000_000_000): string {
   const pct = (Number(raw) / totalSupply) * 100;
   return `${pct.toFixed(4)}%`;

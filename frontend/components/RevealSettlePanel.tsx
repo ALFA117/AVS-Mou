@@ -16,6 +16,7 @@ import { sealedAuctionProgram } from "@/lib/programs";
 import { getWalletErConnection } from "@/lib/ephemeralRollup";
 import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
 import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { SuccessFlash } from "@/components/SuccessFlash";
 import { formatTokenAmount, shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Bid, Deal } from "@/lib/types";
@@ -137,7 +138,8 @@ export function RevealSettlePanel({
   }
 
   return (
-    <div className="avs-elevate rounded-xl border border-border bg-card p-5">
+    <div className="avs-elevate relative overflow-hidden rounded-xl border border-border bg-card p-5">
+      <SuccessFlash trigger={status.kind === "success"} />
       <h3 className="flex items-center gap-2 font-heading font-light tracking-tight text-card-foreground">
         <span className="avs-icon-badge h-8 w-8">
           <Unlock className="h-4 w-4 text-primary" strokeWidth={2} />

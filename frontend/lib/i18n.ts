@@ -267,6 +267,7 @@ const en = {
   },
   revealAnimation: {
     you: "(you)",
+    topBid: "Top bid",
     equityAmount: "{amount} equity",
     equityPending: "Equity pending settlement",
   },
@@ -724,6 +725,7 @@ const es = {
   },
   revealAnimation: {
     you: "(tú)",
+    topBid: "Puja más alta",
     equityAmount: "{amount} de equity",
     equityPending: "Equity pendiente de liquidación",
   },
@@ -1178,6 +1180,7 @@ const pt = {
   },
   revealAnimation: {
     you: "(você)",
+    topBid: "Maior lance",
     equityAmount: "{amount} de equity",
     equityPending: "Equity pendente de liquidação",
   },

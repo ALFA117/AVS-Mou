@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, Loader2 } from "lucide-react";
 import { shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -85,7 +85,17 @@ export function WalletConnectButton() {
           : connecting
             ? t("walletConnect.connecting")
             : t("walletConnect.connect")}
-        <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} />
+        {connecting ? (
+          <motion.span
+            animate={reduceMotion ? undefined : { rotate: 360 }}
+            transition={reduceMotion ? undefined : { repeat: Infinity, duration: 0.8, ease: "linear" }}
+            className="flex"
+          >
+            <Loader2 className="h-3.5 w-3.5" strokeWidth={2} />
+          </motion.span>
+        ) : (
+          <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} />
+        )}
       </motion.button>
 
       <AnimatePresence>

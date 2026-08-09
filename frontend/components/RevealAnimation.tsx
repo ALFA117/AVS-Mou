@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Trophy } from "lucide-react";
 import { formatEquity, formatTokenAmount, shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Bid } from "@/lib/types";
@@ -19,20 +20,24 @@ export function RevealAnimation({ bids, currentUser }: { bids: Bid[]; currentUse
       <AnimatePresence>
         {sorted.map((bid, index) => {
           const isYou = currentUser && bid.bidder === currentUser;
+          const isTop = index === 0;
+          // The winner lands last — everyone else flips in first, so the
+          // top bid gets its own beat instead of blending into the crowd.
+          const revealOrder = sorted.length - 1 - index;
           return (
             <motion.div
               key={bid.publicKey}
               initial={reduceMotion ? { opacity: 0 } : { opacity: 0, rotateY: 90 }}
               animate={reduceMotion ? { opacity: 1 } : { opacity: 1, rotateY: 0 }}
               transition={{
-                delay: reduceMotion ? 0 : index * 0.05,
+                delay: reduceMotion ? 0 : revealOrder * 0.06,
                 type: "spring",
-                stiffness: 260,
-                damping: 22,
+                stiffness: isTop ? 220 : 260,
+                damping: isTop ? 18 : 22,
               }}
               whileHover={reduceMotion ? undefined : { y: -2 }}
               className={`rounded-lg border bg-card p-4 transition-shadow duration-200 hover:shadow-md hover:shadow-primary/5 ${
-                isYou ? "border-primary/40" : "border-border"
+                isTop ? "avs-glow-primary border-primary bg-primary-subdued" : isYou ? "border-primary/40" : "border-border"
               }`}
             >
               <div className="flex items-center justify-between text-sm">
@@ -40,7 +45,14 @@ export function RevealAnimation({ bids, currentUser }: { bids: Bid[]; currentUse
                   {shortenAddress(bid.bidder)}
                   {isYou && ` ${t("revealAnimation.you")}`}
                 </span>
-                <span className="text-xs text-muted-foreground">#{index + 1}</span>
+                {isTop ? (
+                  <span className="flex items-center gap-1 text-xs font-medium text-primary">
+                    <Trophy className="h-3.5 w-3.5" strokeWidth={2} />
+                    {t("revealAnimation.topBid")}
+                  </span>
+                ) : (
+                  <span className="text-xs text-muted-foreground">#{index + 1}</span>
+                )}
               </div>
               <p className="mt-2 font-mono-avs text-xl font-semibold text-card-foreground">
                 {formatTokenAmount(bid.amount)}

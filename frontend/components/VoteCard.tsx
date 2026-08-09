@@ -12,6 +12,7 @@ import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/
 import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { Countdown } from "@/components/Countdown";
 import { VoteConfirmModal } from "@/components/VoteConfirmModal";
+import { SuccessFlash } from "@/components/SuccessFlash";
 import { formatTokenAmount } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Choice, Milestone } from "@/lib/types";
@@ -95,7 +96,8 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
   }
 
   return (
-    <div className="avs-elevate rounded-xl border border-border bg-card p-5">
+    <div className="avs-elevate relative overflow-hidden rounded-xl border border-border bg-card p-5">
+      <SuccessFlash trigger={status.kind === "success"} />
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2.5 font-heading font-light tracking-tight text-card-foreground">
           <span className="avs-icon-badge h-8 w-8">

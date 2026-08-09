@@ -5,8 +5,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Download, Wallet } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
-import { formatEquity, formatTokenAmount, shortenAddress } from "@/lib/format";
+import { formatEquity, formatInt, formatTokenAmount, shortenAddress } from "@/lib/format";
 import { downloadCsv, positionsToCsv } from "@/lib/csv";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { SkeletonRow } from "@/components/Skeleton";
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -45,8 +46,11 @@ export default function DashboardPage() {
       ) : (
         <>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <MetricCard label={t("dashboard.totalInvested")} value={formatTokenAmount(totalInvested)} />
-            <MetricCard label={t("dashboard.activePositions")} value={String(activeCount)} />
+            <MetricCard
+              label={t("dashboard.totalInvested")}
+              value={<AnimatedNumber value={totalInvested} format={formatTokenAmount} />}
+            />
+            <MetricCard label={t("dashboard.activePositions")} value={<AnimatedNumber value={activeCount} format={formatInt} />} />
             <MetricCard
               label={t("dashboard.wallet")}
               value={shortenAddress(publicKey.toBase58())}
@@ -123,7 +127,7 @@ export default function DashboardPage() {
   );
 }
 
-function MetricCard({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
+function MetricCard({ label, value, icon }: { label: string; value: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <div className="avs-elevate rounded-xl border border-border bg-card p-4">
       <p className="text-xs text-muted-foreground">{label}</p>

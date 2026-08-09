@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Countdown } from "@/components/Countdown";
 import { formatBps, formatTokenAmount, shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -9,6 +9,7 @@ import type { Deal } from "@/lib/types";
 
 export function DealCard({ deal }: { deal: Deal }) {
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
 
   const STATUS_STYLES: Record<Deal["status"], string> = {
     open: "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400",
@@ -18,8 +19,8 @@ export function DealCard({ deal }: { deal: Deal }) {
 
   return (
     <motion.div
-      whileHover={{ scale: 1.015, y: -2 }}
-      whileTap={{ scale: 0.99 }}
+      whileHover={reduceMotion ? undefined : { scale: 1.015, y: -2 }}
+      whileTap={reduceMotion ? undefined : { scale: 0.99 }}
       transition={{ type: "spring", stiffness: 350, damping: 24 }}
     >
       <Link
@@ -30,7 +31,21 @@ export function DealCard({ deal }: { deal: Deal }) {
           <span className="font-mono text-sm text-muted-foreground">
             {shortenAddress(deal.startup)}
           </span>
-          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[deal.status]}`}>
+          <span
+            className={`flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[deal.status]}`}
+          >
+            {deal.status === "open" && (
+              <span className="relative flex h-1.5 w-1.5">
+                {!reduceMotion && (
+                  <motion.span
+                    animate={{ opacity: [0.6, 0, 0.6], scale: [1, 1.8, 1] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute inline-flex h-full w-full rounded-full bg-green-500"
+                  />
+                )}
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-600 dark:bg-green-400" />
+              </span>
+            )}
             {deal.status}
           </span>
         </div>

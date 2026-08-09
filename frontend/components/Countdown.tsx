@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { formatCountdown } from "@/lib/format";
 
 /** Live countdown to a unix-seconds deadline. Ticks every second. */
 export function Countdown({ deadlineTs }: { deadlineTs: number }) {
   const [now, setNow] = useState(() => Date.now());
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 1000);
@@ -16,7 +18,9 @@ export function Countdown({ deadlineTs }: { deadlineTs: number }) {
   const urgent = !closed && deadlineTs * 1000 - now < 60 * 60 * 1000; // < 1h left
 
   return (
-    <span
+    <motion.span
+      animate={urgent && !reduceMotion ? { opacity: [1, 0.55, 1] } : { opacity: 1 }}
+      transition={urgent && !reduceMotion ? { duration: 1.6, repeat: Infinity, ease: "easeInOut" } : undefined}
       className={
         closed
           ? "text-muted-foreground"
@@ -26,6 +30,6 @@ export function Countdown({ deadlineTs }: { deadlineTs: number }) {
       }
     >
       {formatCountdown(deadlineTs, now)}
-    </span>
+    </motion.span>
   );
 }

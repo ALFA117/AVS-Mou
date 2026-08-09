@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   PieChart,
   Pie,
@@ -21,11 +22,21 @@ import { BarChart3, CircleAlert } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePublicStats } from "@/hooks/usePublicStats";
-import { formatTokenAmount, shortenAddress } from "@/lib/format";
+import { formatInt, formatTokenAmount, shortenAddress } from "@/lib/format";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Skeleton, SkeletonStat } from "@/components/Skeleton";
 import { useTranslation } from "@/lib/LanguageContext";
 
 const COLORS = ["var(--primary)", "var(--accent)", "#0EA5E9", "#F59E0B", "#64748B", "#94A3B8"];
+
+const chartContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+const chartItem = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 26 } },
+};
 
 // Pie slices rely on color alone unless paired with a direct % label — this
 // draws that label outside the donut so it stays legible for colorblind users.
@@ -57,6 +68,7 @@ export default function AnalyticsPage() {
   const { positions, loading } = usePortfolio();
   const { stats, loading: statsLoading } = usePublicStats();
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
 
   const allocation = useMemo(
     () => positions.map((p) => ({ name: p.dealTitle, value: Number(p.bidAmount) })),
@@ -131,14 +143,29 @@ export default function AnalyticsPage() {
         {stats && (
           <>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Stat label={t("analytics.totalDeals")} value={String(stats.totalDeals)} />
-              <Stat label={t("analytics.capitalDeployed")} value={formatTokenAmount(stats.totalCapitalDeployed)} />
-              <Stat label={t("analytics.syndicatesFormed")} value={String(stats.syndicateCount)} />
-              <Stat label={t("analytics.avgDealSize")} value={formatTokenAmount(stats.avgDealSize)} />
+              <Stat label={t("analytics.totalDeals")} value={<AnimatedNumber value={stats.totalDeals} format={formatInt} />} />
+              <Stat
+                label={t("analytics.capitalDeployed")}
+                value={<AnimatedNumber value={Number(stats.totalCapitalDeployed)} format={formatTokenAmount} />}
+              />
+              <Stat label={t("analytics.syndicatesFormed")} value={<AnimatedNumber value={stats.syndicateCount} format={formatInt} />} />
+              <Stat
+                label={t("analytics.avgDealSize")}
+                value={<AnimatedNumber value={Number(stats.avgDealSize)} format={formatTokenAmount} />}
+              />
             </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="avs-elevate rounded-xl border border-border bg-card p-4">
+            <motion.div
+              initial={reduceMotion ? undefined : "hidden"}
+              whileInView={reduceMotion ? undefined : "show"}
+              viewport={{ once: true, margin: "-60px" }}
+              variants={reduceMotion ? undefined : chartContainer}
+              className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2"
+            >
+              <motion.div
+                variants={reduceMotion ? undefined : chartItem}
+                className="avs-elevate rounded-xl border border-border bg-card p-4"
+              >
                 <h2 className="text-sm font-medium text-card-foreground">{t("analytics.dealsByDeadline")}</h2>
                 <div
                   className="h-56"
@@ -162,9 +189,12 @@ export default function AnalyticsPage() {
                     </ResponsiveContainer>
                   )}
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="avs-elevate rounded-xl border border-border bg-card p-4">
+              <motion.div
+                variants={reduceMotion ? undefined : chartItem}
+                className="avs-elevate rounded-xl border border-border bg-card p-4"
+              >
                 <h2 className="flex items-center gap-1.5 text-sm font-medium text-card-foreground">
                   <BarChart3 className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
                   {t("analytics.leaderboard")}
@@ -194,8 +224,8 @@ export default function AnalyticsPage() {
                     );
                   })}
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </>
         )}
       </section>
@@ -221,13 +251,22 @@ export default function AnalyticsPage() {
         ) : (
           <>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <Stat label={t("analytics.avgBidAmount")} value={formatTokenAmount(avgBid)} />
-              <Stat label={t("analytics.dealsSettled")} value={String(settledCount)} />
-              <Stat label={t("analytics.totalPositions")} value={String(positions.length)} />
+              <Stat label={t("analytics.avgBidAmount")} value={<AnimatedNumber value={avgBid} format={formatTokenAmount} />} />
+              <Stat label={t("analytics.dealsSettled")} value={<AnimatedNumber value={settledCount} format={formatInt} />} />
+              <Stat label={t("analytics.totalPositions")} value={<AnimatedNumber value={positions.length} format={formatInt} />} />
             </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="avs-elevate rounded-xl border border-border bg-card p-4">
+            <motion.div
+              initial={reduceMotion ? undefined : "hidden"}
+              whileInView={reduceMotion ? undefined : "show"}
+              viewport={{ once: true, margin: "-60px" }}
+              variants={reduceMotion ? undefined : chartContainer}
+              className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2"
+            >
+              <motion.div
+                variants={reduceMotion ? undefined : chartItem}
+                className="avs-elevate rounded-xl border border-border bg-card p-4"
+              >
                 <h3 className="text-sm font-medium text-card-foreground">{t("analytics.allocationBreakdown")}</h3>
                 <div
                   className="h-56"
@@ -259,9 +298,12 @@ export default function AnalyticsPage() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="avs-elevate rounded-xl border border-border bg-card p-4">
+              <motion.div
+                variants={reduceMotion ? undefined : chartItem}
+                className="avs-elevate rounded-xl border border-border bg-card p-4"
+              >
                 <h3 className="text-sm font-medium text-card-foreground">{t("analytics.cumulativeInvestment")}</h3>
                 <div
                   className="h-56"
@@ -277,8 +319,8 @@ export default function AnalyticsPage() {
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </>
         )}
       </section>
@@ -286,7 +328,7 @@ export default function AnalyticsPage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="avs-elevate rounded-xl border border-border bg-card p-4">
       <p className="text-xs text-muted-foreground">{label}</p>

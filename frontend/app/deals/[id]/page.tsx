@@ -14,7 +14,8 @@ import { DealCharts } from "@/components/DealCharts";
 import { ShareDeal } from "@/components/ShareDeal";
 import { Skeleton } from "@/components/Skeleton";
 import { useTranslation } from "@/lib/LanguageContext";
-import { formatBps, formatDate, formatTokenAmount, shortenAddress } from "@/lib/format";
+import { formatBps, formatDate, formatInt, formatTokenAmount, shortenAddress } from "@/lib/format";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 const STATUS_STYLES: Record<string, string> = {
   open: "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400",
@@ -88,11 +89,14 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       <dl className="mt-6 grid grid-cols-2 gap-4 avs-elevate rounded-xl border border-border bg-card p-5 sm:grid-cols-4">
-        <Stat label={t("dealDetail.valuation")} value={formatTokenAmount(deal.valuation)} />
-        <Stat label={t("dealDetail.equityOffered")} value={formatBps(deal.equityBps)} />
-        <Stat label={t("dealDetail.minInvestment")} value={formatTokenAmount(deal.minInvestment)} />
-        <Stat label={t("dealDetail.maxCap")} value={formatTokenAmount(deal.maxCap)} />
-        <Stat label={t("dealDetail.bidders")} value={String(deal.bidCount)} />
+        <Stat label={t("dealDetail.valuation")} value={<AnimatedNumber value={Number(deal.valuation)} format={formatTokenAmount} />} />
+        <Stat label={t("dealDetail.equityOffered")} value={<AnimatedNumber value={deal.equityBps} format={formatBps} />} />
+        <Stat
+          label={t("dealDetail.minInvestment")}
+          value={<AnimatedNumber value={Number(deal.minInvestment)} format={formatTokenAmount} />}
+        />
+        <Stat label={t("dealDetail.maxCap")} value={<AnimatedNumber value={Number(deal.maxCap)} format={formatTokenAmount} />} />
+        <Stat label={t("dealDetail.bidders")} value={<AnimatedNumber value={deal.bidCount} format={formatInt} />} />
         <Stat
           label={t("dealDetail.vesting")}
           value={t("dealDetail.vestingValue", { cliff: deal.cliffMonths, vesting: deal.vestingMonths })}

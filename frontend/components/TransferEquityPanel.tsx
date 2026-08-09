@@ -8,6 +8,7 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { splTokenManagerProgram } from "@/lib/programs";
 import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { SuccessFlash } from "@/components/SuccessFlash";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Syndicate } from "@/lib/types";
 
@@ -59,7 +60,8 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
   }
 
   return (
-    <div className="avs-elevate rounded-xl border border-border bg-card p-4">
+    <div className="avs-elevate relative overflow-hidden rounded-xl border border-border bg-card p-4">
+      <SuccessFlash trigger={status.kind === "success"} />
       <h3 className="flex items-center gap-2.5 font-heading text-sm font-normal text-card-foreground">
         <span className="avs-icon-badge h-7 w-7">
           <ArrowRightLeft className="h-3.5 w-3.5 text-primary" strokeWidth={2} />

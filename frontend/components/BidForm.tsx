@@ -23,6 +23,7 @@ import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemer
 import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { formatTokenAmount } from "@/lib/format";
 import { BidConfirmModal } from "@/components/BidConfirmModal";
+import { SuccessFlash } from "@/components/SuccessFlash";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Deal } from "@/lib/types";
 
@@ -185,7 +186,8 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
   }
 
   return (
-    <div className="avs-elevate rounded-xl border border-border bg-card p-5">
+    <div className="avs-elevate relative overflow-hidden rounded-xl border border-border bg-card p-5">
+      <SuccessFlash trigger={status.kind === "success"} />
       <h3 className="flex items-center gap-2.5 font-heading font-light tracking-tight text-card-foreground">
         <span className="avs-icon-badge h-8 w-8">
           <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
