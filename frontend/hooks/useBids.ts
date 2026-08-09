@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { sealedAuctionProgram } from "@/lib/programs";
+import { getAnonymousTeeConnection } from "@/lib/ephemeralRollup";
 import { mapBid } from "@/lib/mappers";
 import type { Bid } from "@/lib/types";
 
@@ -18,12 +19,12 @@ const READONLY_WALLET = {
 };
 
 /**
- * Fetches settled Bid accounts for a deal. Bids are only readable
- * on-chain (from L1) once revealed/settled — before that they live sealed
- * on the ER and this will simply return an empty list.
+ * Fetches Bid accounts for a deal. Bid accounts only ever exist on
+ * MagicBlock's Private Ephemeral Rollup — place_bid creates them there
+ * directly, never on L1 (see lib/ephemeralRollup.ts) — so this always
+ * queries the TEE ER, not the wallet-adapter L1 connection.
  */
 export function useBids(dealPublicKey: string) {
-  const { connection } = useConnection();
   const { wallet } = useWallet();
   const [bids, setBids] = useState<Bid[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,8 +32,9 @@ export function useBids(dealPublicKey: string) {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
+      const erConnection = await getAnonymousTeeConnection();
       const program = sealedAuctionProgram(
-        connection,
+        erConnection,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (wallet?.adapter as any) ?? READONLY_WALLET,
       );
@@ -50,7 +52,7 @@ export function useBids(dealPublicKey: string) {
     } finally {
       setLoading(false);
     }
-  }, [connection, wallet, dealPublicKey]);
+  }, [wallet, dealPublicKey]);
 
   useEffect(() => {
     void refresh();

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { privateVotingProgram } from "@/lib/programs";
+import { getAnonymousTeeConnection } from "@/lib/ephemeralRollup";
 import { mapMilestone } from "@/lib/mappers";
 import type { Milestone } from "@/lib/types";
 
@@ -26,16 +27,25 @@ export function useMilestones(dealFilter?: string) {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const program = privateVotingProgram(
-        connection,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (wallet?.adapter as any) ?? READONLY_WALLET,
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const readonlyWallet = (wallet?.adapter as any) ?? READONLY_WALLET;
+      const program = privateVotingProgram(connection, readonlyWallet);
+      const erConnection = await getAnonymousTeeConnection();
+      const erProgram = privateVotingProgram(erConnection, readonlyWallet);
       const filters = dealFilter
         ? [{ memcmp: { offset: 8 + 32, bytes: dealFilter } }] // startup(32) precedes deal
         : [];
-      const accounts = await program.account.milestone.all(filters);
-      setMilestones(accounts.map((a) => mapMilestone(a.publicKey, a.account)));
+
+      // A Milestone's L1 owner moves to the delegation program the instant
+      // it's created (same as Deal — see useDeals.ts / lib/ephemeralRollup.ts),
+      // so L1 alone only ever shows its state as of initialize_milestone.
+      const [l1Accounts, erAccounts] = await Promise.all([
+        program.account.milestone.all(filters),
+        erProgram.account.milestone.all(filters).catch(() => []),
+      ]);
+      const byPubkey = new Map(l1Accounts.map((a) => [a.publicKey.toBase58(), a]));
+      for (const a of erAccounts) byPubkey.set(a.publicKey.toBase58(), a);
+      setMilestones(Array.from(byPubkey.values()).map((a) => mapMilestone(a.publicKey, a.account)));
     } catch {
       setMilestones([]);
     } finally {

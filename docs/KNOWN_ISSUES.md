@@ -155,3 +155,54 @@ from delegation). The deal's `DealStatus` reaching `Settled` and the
 `SettlementComplete`/`DealSettled` event are downstream of this, so the
 frontend's dashboard would show a deal as stuck in `Revealed` rather than
 `Settled` until this is fixed.
+
+## Frontend was reading Deal/Bid/Milestone accounts from the wrong place (fixed)
+
+**Status:** Fixed in `useDeals`/`usePublicStats`/`useDeal`/`useBids`/
+`useMilestones`/`usePortfolio` — documenting the gotcha so it isn't
+reintroduced.
+
+Every one of these hooks queried only the wallet-adapter's plain L1
+`connection` — via `program.account.X.all()` (a `getProgramAccounts` call
+filtered server-side by owner = program ID) or `.fetch()`/`.fetchNullable()`
+(a raw read by pubkey). Both silently miss the account's *actual* current
+state, for two different reasons:
+
+- **Deal and Milestone**: `delegate_deal`/`delegate_milestone` reassign the
+  account's L1 owner to the delegation program the instant it's created (see
+  `initialize_deal`/`delegate_deal` above) — L1 keeps a frozen snapshot of
+  the account as of that moment, forever, until `undelegate_deal` succeeds
+  (currently broken, see above). `getProgramAccounts` filters by owner, so it
+  never finds these at all; `.fetch()` by raw pubkey *does* return something,
+  but it's the stale pre-delegation snapshot — `status: Open`, `bidCount: 0`,
+  `totalRaised: 0`, forever, no matter how many real bids/reveals/settles
+  happened on the ER.
+- **Bid**: never touches L1 at all — `place_bid` creates the account
+  directly on the ER. An L1-only query for Bid accounts is not stale, it's
+  just permanently empty.
+
+It's tempting to fix this by pointing reads at one of MagicBlock's plain
+regional hosted ER RPCs (`devnet-us/eu/as.magicblock.app`) instead of L1 —
+that was the *first* fix attempted here, and it looked like it worked
+(deals appeared!) but was actually still wrong: every deal in this app
+delegates specifically to the TEE validator (`ER_VALIDATOR` in
+`lib/ephemeralRollup.ts`, not any of the three regional ones), and the
+regional RPCs silently fall back to L1's frozen snapshot for any account
+they don't actually host — so it "worked" only for deals nobody had bid on
+yet, and would have failed the same way in production for a real deal with
+real activity.
+
+**Fix:** `getAnonymousTeeConnection()` (`lib/ephemeralRollup.ts`) —
+authenticates with `devnet-tee.magicblock.app` using a throwaway keypair
+generated fresh in the browser purely to complete the auth handshake (no
+wallet needed; Deal/Bid/Milestone *account existence and terms* aren't
+identity-gated, only sealed bid amounts pre-reveal are). Every affected hook
+now either queries this exclusively (Bid, since it never has an L1 copy) or
+merges it with the L1 result by pubkey, preferring the ER's copy on overlap
+(Deal, Milestone — since a genuinely-undelegated one, once that's fixed,
+would only exist on L1 again).
+
+**Not affected:** `useSyndicate` (spl-token-manager's `Syndicate` PDA is
+never delegated to the ER — only a member's *equity token account* is, via
+the separate `delegate_equity_account`, which has its own bug above) and
+`useSessionKey` (reads local storage, not an on-chain listing).

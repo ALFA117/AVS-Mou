@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { sealedAuctionProgram } from "@/lib/programs";
+import { getAnonymousTeeConnection } from "@/lib/ephemeralRollup";
 import { mapBid, mapDeal } from "@/lib/mappers";
 import type { Position } from "@/lib/types";
 
@@ -26,18 +27,28 @@ export function usePortfolio() {
     }
     setLoading(true);
     try {
-      const program = sealedAuctionProgram(connection, wallet.adapter as never);
-      const bidAccounts = await program.account.bid.all([
+      // Bid accounts only ever exist on the ER (see useBids.ts); a Deal's
+      // L1 copy is a frozen initialize_deal-time snapshot (see useDeals.ts)
+      // — fetch each from wherever it's actually live, falling back to L1
+      // for anything genuinely undelegated back.
+      const erConnection = await getAnonymousTeeConnection();
+      const erProgram = sealedAuctionProgram(erConnection, wallet.adapter as never);
+      const l1Program = sealedAuctionProgram(connection, wallet.adapter as never);
+
+      const bidAccounts = await erProgram.account.bid.all([
         { memcmp: { offset: 8 + 32, bytes: publicKey.toBase58() } }, // deal(32) precedes bidder
       ]);
       const bids = bidAccounts.map((a) => mapBid(a.publicKey, a.account));
 
       const dealKeys = Array.from(new Set(bids.map((b) => new PublicKey(b.deal))));
-      const dealAccounts = await program.account.deal.fetchMultiple(dealKeys);
+      const [erDealAccounts, l1DealAccounts] = await Promise.all([
+        erProgram.account.deal.fetchMultiple(dealKeys).catch(() => dealKeys.map(() => null)),
+        l1Program.account.deal.fetchMultiple(dealKeys),
+      ]);
       const dealsByKey = new Map(
         dealKeys
           .map((key, i) => {
-            const raw = dealAccounts[i];
+            const raw = erDealAccounts[i] ?? l1DealAccounts[i];
             if (!raw) return null;
             const mapped = mapDeal(key, raw as unknown as Record<string, unknown>);
             return [mapped.publicKey, mapped] as const;
