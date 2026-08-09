@@ -38,7 +38,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
   }
   if (!deal) {
     return (
-      <main className="mx-auto max-w-3xl px-6 py-10 text-red-600 dark:text-red-400">
+      <main role="alert" className="mx-auto max-w-3xl px-6 py-10 text-red-600 dark:text-red-400">
         {t("syndicatePage.notFound")}
       </main>
     );

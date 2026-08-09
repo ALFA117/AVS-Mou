@@ -7,6 +7,7 @@ import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { splTokenManagerProgram } from "@/lib/programs";
+import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Syndicate } from "@/lib/types";
 
@@ -113,10 +114,15 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
         </p>
       )}
       {status.kind === "error" && (
-        <p className="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
-          <CircleAlert className="h-4 w-4" strokeWidth={2} />
-          {t("transferEquity.error", { message: status.message ?? "" })}
-        </p>
+        <div role="alert" className="mt-2 text-sm">
+          <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+            <CircleAlert className="h-4 w-4" strokeWidth={2} />
+            {t("transferEquity.error", { message: status.message ?? "" })}
+          </p>
+          {isLikelyNetworkMismatch(status.message ?? "") && (
+            <p className="mt-1 pl-6 text-xs text-muted-foreground">{t("common.networkMismatchHint")}</p>
+          )}
+        </div>
       )}
     </div>
   );

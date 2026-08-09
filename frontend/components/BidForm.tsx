@@ -20,6 +20,7 @@ import {
   requestFaucetTokens,
 } from "@/lib/relayClient";
 import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
+import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { formatTokenAmount } from "@/lib/format";
 import { BidConfirmModal } from "@/components/BidConfirmModal";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -212,7 +213,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         </p>
       )}
       {faucetStatus.kind === "error" && (
-        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
           <CircleAlert className="h-3.5 w-3.5" strokeWidth={2} />
           {faucetStatus.message}
         </p>
@@ -258,10 +259,15 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         </p>
       )}
       {status.kind === "error" && (
-        <p className="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
-          <CircleAlert className="h-4 w-4" strokeWidth={2} />
-          {t("bidForm.error", { message: status.message ?? "" })}
-        </p>
+        <div role="alert" className="mt-2 text-sm">
+          <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+            <CircleAlert className="h-4 w-4 shrink-0" strokeWidth={2} />
+            {t("bidForm.error", { message: status.message ?? "" })}
+          </p>
+          {isLikelyNetworkMismatch(status.message ?? "") && (
+            <p className="mt-1 pl-6 text-xs text-muted-foreground">{t("common.networkMismatchHint")}</p>
+          )}
+        </div>
       )}
 
       {confirming && (

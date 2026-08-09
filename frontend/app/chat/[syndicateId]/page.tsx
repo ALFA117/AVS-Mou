@@ -33,7 +33,7 @@ export default function ChatPage({ params }: { params: { syndicateId: string } }
   }
   if (!deal) {
     return (
-      <main className="mx-auto max-w-4xl px-6 py-10 text-red-600 dark:text-red-400">
+      <main role="alert" className="mx-auto max-w-4xl px-6 py-10 text-red-600 dark:text-red-400">
         {t("chatPage.notFound")}
       </main>
     );

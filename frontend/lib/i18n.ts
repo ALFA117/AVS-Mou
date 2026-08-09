@@ -31,9 +31,8 @@ const en = {
     noWalletDetected: "No Solana wallet detected",
     you: "you",
     clearFilters: "Clear filters",
-  },
-  devnetBanner: {
-    text: "Solana Devnet demo — every deal, token, and dollar figure here is test data, not real money.",
+    networkMismatchHint:
+      "Tip: make sure your wallet is connected to Solana Devnet, not Mainnet — every deal, bid, and vote here only exists on Devnet. Check your wallet's network selector and try again.",
   },
   home: {
     badge: "Built on MagicBlock Ephemeral Rollups",
@@ -435,6 +434,7 @@ const en = {
   a11y: {
     toggleDarkMode: "Toggle dark mode",
     changeLanguage: "Change language",
+    skipToContent: "Skip to content",
   },
   notFound: {
     title: "Page not found",
@@ -473,9 +473,8 @@ const es = {
     noWalletDetected: "No se detectó ninguna wallet de Solana",
     you: "tú",
     clearFilters: "Limpiar filtros",
-  },
-  devnetBanner: {
-    text: "Demo en Solana Devnet — cada deal, token y cifra en dólares aquí es data de prueba, no dinero real.",
+    networkMismatchHint:
+      "Tip: revisa que tu wallet esté conectada a Solana Devnet, no Mainnet — cada deal, puja y voto aquí solo existe en Devnet. Cambia la red en tu wallet e intenta de nuevo.",
   },
   home: {
     badge: "Construido sobre MagicBlock Ephemeral Rollups",
@@ -883,6 +882,7 @@ const es = {
   a11y: {
     toggleDarkMode: "Cambiar a modo oscuro/claro",
     changeLanguage: "Cambiar idioma",
+    skipToContent: "Saltar al contenido",
   },
   notFound: {
     title: "Página no encontrada",
@@ -919,9 +919,8 @@ const pt = {
     noWalletDetected: "Nenhuma carteira Solana detectada",
     you: "você",
     clearFilters: "Limpar filtros",
-  },
-  devnetBanner: {
-    text: "Demo na Solana Devnet — cada deal, token e valor em dólares aqui é dado de teste, não dinheiro real.",
+    networkMismatchHint:
+      "Dica: confira se sua carteira está conectada à Solana Devnet, não à Mainnet — cada deal, lance e voto aqui só existe na Devnet. Troque a rede na sua carteira e tente de novo.",
   },
   home: {
     badge: "Construído sobre os Ephemeral Rollups da MagicBlock",
@@ -1328,6 +1327,7 @@ const pt = {
   a11y: {
     toggleDarkMode: "Alternar modo escuro/claro",
     changeLanguage: "Mudar idioma",
+    skipToContent: "Pular para o conteúdo",
   },
   notFound: {
     title: "Página não encontrada",

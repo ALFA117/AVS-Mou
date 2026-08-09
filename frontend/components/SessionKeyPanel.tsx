@@ -58,7 +58,7 @@ export function SessionKeyPanel({ targetProgram }: { targetProgram: PublicKey })
     case "error":
       return (
         <div className="flex items-center gap-3 text-sm">
-          <span className="text-red-600">Session error: {state.message}</span>
+          <span role="alert" className="text-red-600">Session error: {state.message}</span>
           <button
             type="button"
             onClick={() => authorize()}

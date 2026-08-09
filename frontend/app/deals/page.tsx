@@ -260,7 +260,7 @@ export default function DealsPage() {
         </div>
       )}
       {error && (
-        <p className="mt-10 text-center text-red-600 dark:text-red-400">
+        <p role="alert" className="mt-10 text-center text-red-600 dark:text-red-400">
           {t("deals.loadError")}: {error}
         </p>
       )}

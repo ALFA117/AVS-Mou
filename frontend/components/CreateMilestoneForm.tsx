@@ -14,6 +14,7 @@ import {
 } from "@magicblock-labs/ephemeral-rollups-sdk";
 import { privateVotingProgram, milestonePda } from "@/lib/programs";
 import { getWalletErConnection, ER_VALIDATOR } from "@/lib/ephemeralRollup";
+import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { useTranslation } from "@/lib/LanguageContext";
 
 async function sha256Bytes(text: string): Promise<number[]> {
@@ -193,10 +194,15 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
           </p>
         )}
         {status.kind === "error" && (
-          <p className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
-            <CircleAlert className="h-4 w-4 shrink-0" strokeWidth={2} />
-            {status.message}
-          </p>
+          <div role="alert" className="text-sm">
+            <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+              <CircleAlert className="h-4 w-4 shrink-0" strokeWidth={2} />
+              {status.message}
+            </p>
+            {isLikelyNetworkMismatch(status.message ?? "") && (
+              <p className="mt-1 pl-6 text-xs text-muted-foreground">{t("common.networkMismatchHint")}</p>
+            )}
+          </div>
         )}
       </div>
     </motion.div>

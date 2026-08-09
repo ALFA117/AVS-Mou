@@ -47,7 +47,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
   if (error || !deal) {
     return (
       <main className="mx-auto max-w-3xl px-6 py-10">
-        <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+        <p role="alert" className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
           <CircleAlert className="h-4 w-4" strokeWidth={2} />
           {t("dealDetail.loadError")}: {error ?? t("dealDetail.notFound")}
         </p>

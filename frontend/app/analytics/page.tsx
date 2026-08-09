@@ -97,7 +97,7 @@ export default function AnalyticsPage() {
           </div>
         )}
         {!statsLoading && !stats && (
-          <p className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
             <CircleAlert className="h-4 w-4" strokeWidth={2} />
             {t("analytics.loadError")}
           </p>

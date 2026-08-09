@@ -5,7 +5,7 @@ import { WalletContextProvider } from "@/components/providers/WalletContextProvi
 import { LanguageProvider } from "@/lib/LanguageContext";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
-import { DevnetBanner } from "@/components/DevnetBanner";
+import { SkipLink } from "@/components/SkipLink";
 
 // Font system per the Stripe DESIGN.md reference (VoltAgent/awesome-design-md):
 // one family (Inter, the documented open-source substitute for the
@@ -58,9 +58,12 @@ export default function RootLayout({
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
         <LanguageProvider>
           <WalletContextProvider>
-            <DevnetBanner />
+            <SkipLink />
             <NavBar />
-            {children}
+            {/* Every page's own root element is already a <main> — this id
+                is just the skip-link's landing target, not a second
+                landmark, so it stays a plain div. */}
+            <div id="main-content">{children}</div>
             <Footer />
           </WalletContextProvider>
         </LanguageProvider>

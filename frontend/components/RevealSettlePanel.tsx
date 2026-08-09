@@ -15,6 +15,7 @@ import {
 import { sealedAuctionProgram } from "@/lib/programs";
 import { getWalletErConnection } from "@/lib/ephemeralRollup";
 import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
+import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { formatTokenAmount, shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Bid, Deal } from "@/lib/types";
@@ -193,10 +194,15 @@ export function RevealSettlePanel({
         </p>
       )}
       {status.kind === "error" && (
-        <p className="mt-3 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
-          <CircleAlert className="h-4 w-4 shrink-0" strokeWidth={2} />
-          {status.message}
-        </p>
+        <div role="alert" className="mt-3 text-sm">
+          <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+            <CircleAlert className="h-4 w-4 shrink-0" strokeWidth={2} />
+            {status.message}
+          </p>
+          {isLikelyNetworkMismatch(status.message ?? "") && (
+            <p className="mt-1 pl-6 text-xs text-muted-foreground">{t("common.networkMismatchHint")}</p>
+          )}
+        </div>
       )}
     </div>
   );

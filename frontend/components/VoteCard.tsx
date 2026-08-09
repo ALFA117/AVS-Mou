@@ -9,6 +9,7 @@ import { BN } from "@coral-xyz/anchor";
 import { votePda, privateVotingProgram, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
 import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/lib/relayClient";
+import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { Countdown } from "@/components/Countdown";
 import { VoteConfirmModal } from "@/components/VoteConfirmModal";
 import { formatTokenAmount } from "@/lib/format";
@@ -141,10 +142,15 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
         </p>
       )}
       {status.kind === "error" && (
-        <p className="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
-          <CircleAlert className="h-4 w-4" strokeWidth={2} />
-          {t("voteCard.error", { message: status.message ?? "" })}
-        </p>
+        <div role="alert" className="mt-2 text-sm">
+          <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+            <CircleAlert className="h-4 w-4 shrink-0" strokeWidth={2} />
+            {t("voteCard.error", { message: status.message ?? "" })}
+          </p>
+          {isLikelyNetworkMismatch(status.message ?? "") && (
+            <p className="mt-1 pl-6 text-xs text-muted-foreground">{t("common.networkMismatchHint")}</p>
+          )}
+        </div>
       )}
 
       {pendingChoice && (

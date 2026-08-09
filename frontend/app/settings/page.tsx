@@ -149,7 +149,7 @@ function SessionRow({
       ) : (
         <span className="flex items-center gap-2">
           {session.state.status === "error" && (
-            <span className="text-xs text-red-600 dark:text-red-400">{session.state.message}</span>
+            <span role="alert" className="text-xs text-red-600 dark:text-red-400">{session.state.message}</span>
           )}
           <button
             onClick={() => session.authorize()}
