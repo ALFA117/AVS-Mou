@@ -74,6 +74,11 @@ Copy `.env.local.example` → `.env.local` (and `.env.testnet.example` → `.env
 ## Docs
 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — system design: on-chain programs, the Ephemeral Rollup/privacy model, session keys, the relay backend, frontend layout
+- [`docs/SETUP.md`](docs/SETUP.md) — step-by-step environment setup, from clone to a working local dev loop against Devnet
+- [`docs/API.md`](docs/API.md) — on-chain instruction reference + the relay's HTTP API
+- [`docs/SECURITY.md`](docs/SECURITY.md) — threat model, privacy guarantees, session key and relay sponsor risk
+- [`docs/FUTURE.md`](docs/FUTURE.md) — deliberately out-of-scope work, ordered by priority
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to contribute, version-pin discipline, code style
 - [`docs/AVS_PROJECT_MASTER.md`](docs/AVS_PROJECT_MASTER.md) — original architecture, requirements, demo script
 - [`docs/AVS_100_TASKS.md`](docs/AVS_100_TASKS.md) — full 100-task build roadmap
 - [`docs/WINDOWS_NOTES.md`](docs/WINDOWS_NOTES.md) — native-Windows toolchain issues and workarounds
