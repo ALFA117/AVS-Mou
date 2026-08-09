@@ -50,6 +50,13 @@ const en = {
     mockupTitle: "See it in action",
     mockupSubtitle: "A real look at the deals board — sealed bids stay hidden until reveal.",
     statsTitle: "Live on Solana",
+    feature4Title: "Verifiable, front-run-proof payouts",
+    feature4Desc:
+      "Milestone rewards settle only once a verifiable random function (VRF) gates the payout order on-chain, so nobody — not even a validator — can see or reorder settlement ahead of time.",
+    faqTeaserSubtitle: "The most common questions about how sealed bids and reveals actually work.",
+    viewAllFaq: "See all questions",
+    ctaTitle: "Ready to join a syndicate?",
+    ctaSubtitle: "Browse open deals or connect your wallet to place your first sealed bid.",
   },
   deals: {
     title: "Deals",
@@ -424,6 +431,13 @@ const es = {
     mockupTitle: "Así se ve en acción",
     mockupSubtitle: "Una vista real del tablero de deals — las pujas selladas permanecen ocultas hasta el reveal.",
     statsTitle: "En vivo en Solana",
+    feature4Title: "Pagos verificables, a prueba de front-running",
+    feature4Desc:
+      "Las recompensas de hitos se liquidan solo cuando una función aleatoria verificable (VRF) habilita el orden de pago on-chain, así que nadie — ni siquiera un validador — puede ver o reordenar la liquidación de antemano.",
+    faqTeaserSubtitle: "Las preguntas más comunes sobre cómo funcionan realmente las pujas selladas y los reveals.",
+    viewAllFaq: "Ver todas las preguntas",
+    ctaTitle: "¿Listo para unirte a un sindicato?",
+    ctaSubtitle: "Explora deals abiertos o conecta tu wallet para hacer tu primera puja sellada.",
   },
   deals: {
     title: "Deals",
@@ -797,6 +811,13 @@ const pt = {
     mockupTitle: "Veja em ação",
     mockupSubtitle: "Uma visão real do painel de deals — os lances selados ficam ocultos até a revelação.",
     statsTitle: "Ao vivo na Solana",
+    feature4Title: "Pagamentos verificáveis, à prova de front-running",
+    feature4Desc:
+      "As recompensas de marcos só são liquidadas quando uma função aleatória verificável (VRF) libera a ordem de pagamento on-chain, então ninguém — nem mesmo um validador — pode ver ou reordenar a liquidação antecipadamente.",
+    faqTeaserSubtitle: "As perguntas mais comuns sobre como lances selados e revelações realmente funcionam.",
+    viewAllFaq: "Ver todas as perguntas",
+    ctaTitle: "Pronto para entrar em um sindicato?",
+    ctaSubtitle: "Explore deals abertos ou conecte sua carteira para fazer seu primeiro lance selado.",
   },
   deals: {
     title: "Deals",
