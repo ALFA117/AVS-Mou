@@ -1,23 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  LabelList,
-  XAxis,
-  YAxis,
-} from "recharts";
-import type { PieLabelRenderProps } from "recharts";
 import { BarChart3, CircleAlert } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
@@ -27,7 +12,17 @@ import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Skeleton, SkeletonStat } from "@/components/Skeleton";
 import { useTranslation } from "@/lib/LanguageContext";
 
-const COLORS = ["var(--primary)", "var(--accent)", "#0EA5E9", "#F59E0B", "#64748B", "#94A3B8"];
+// recharts is a meaningful chunk of JS — split each chart out of this
+// route's main bundle instead of loading it before there's data to show.
+const PlatformActivityChart = dynamic(() =>
+  import("@/components/PlatformActivityChart").then((m) => m.PlatformActivityChart),
+);
+const AllocationPieChart = dynamic(() =>
+  import("@/components/PortfolioBreakdownCharts").then((m) => m.AllocationPieChart),
+);
+const CumulativeInvestmentChart = dynamic(() =>
+  import("@/components/PortfolioBreakdownCharts").then((m) => m.CumulativeInvestmentChart),
+);
 
 const chartContainer = {
   hidden: {},
@@ -37,31 +32,6 @@ const chartItem = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 26 } },
 };
-
-// Pie slices rely on color alone unless paired with a direct % label — this
-// draws that label outside the donut so it stays legible for colorblind users.
-function renderPercentLabel(props: PieLabelRenderProps) {
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
-  if (cx == null || cy == null || midAngle == null || innerRadius == null || outerRadius == null) {
-    return null;
-  }
-  const RADIAN = Math.PI / 180;
-  const radius = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 1.4;
-  const x = Number(cx) + radius * Math.cos(-midAngle * RADIAN);
-  const y = Number(cy) + radius * Math.sin(-midAngle * RADIAN);
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="var(--muted-foreground)"
-      fontSize={11}
-      textAnchor={x > Number(cx) ? "start" : "end"}
-      dominantBaseline="central"
-    >
-      {`${Math.round((percent ?? 0) * 100)}%`}
-    </text>
-  );
-}
 
 export default function AnalyticsPage() {
   const { publicKey } = useWallet();
@@ -167,28 +137,7 @@ export default function AnalyticsPage() {
                 className="avs-elevate rounded-xl border border-border bg-card p-4"
               >
                 <h2 className="text-sm font-medium text-card-foreground">{t("analytics.dealsByDeadline")}</h2>
-                <div
-                  className="h-56"
-                  role={dealsByDeadlineSummary ? "img" : undefined}
-                  aria-label={dealsByDeadlineSummary || undefined}
-                >
-                  {stats.dealsOverTime.length === 0 ? (
-                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                      {t("analytics.noDealsYet")}
-                    </div>
-                  ) : (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={stats.dealsOverTime} margin={{ top: 16 }}>
-                        <XAxis dataKey="date" fontSize={10} stroke="var(--muted-foreground)" />
-                        <YAxis fontSize={12} allowDecimals={false} stroke="var(--muted-foreground)" />
-                        <Tooltip />
-                        <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]}>
-                          <LabelList dataKey="count" position="top" fontSize={11} fill="var(--muted-foreground)" />
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  )}
-                </div>
+                <PlatformActivityChart dealsOverTime={stats.dealsOverTime} summary={dealsByDeadlineSummary} />
               </motion.div>
 
               <motion.div
@@ -268,36 +217,7 @@ export default function AnalyticsPage() {
                 className="avs-elevate rounded-xl border border-border bg-card p-4"
               >
                 <h3 className="text-sm font-medium text-card-foreground">{t("analytics.allocationBreakdown")}</h3>
-                <div
-                  className="h-56"
-                  role={allocationSummary ? "img" : undefined}
-                  aria-label={allocationSummary || undefined}
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={allocation}
-                        dataKey="value"
-                        nameKey="name"
-                        outerRadius={70}
-                        label={renderPercentLabel}
-                        labelLine={{ stroke: "var(--border)" }}
-                      >
-                        {allocation.map((_, i) => (
-                          <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Legend
-                        verticalAlign="bottom"
-                        height={28}
-                        iconType="circle"
-                        iconSize={8}
-                        wrapperStyle={{ fontSize: 11, color: "var(--muted-foreground)" }}
-                      />
-                      <Tooltip formatter={(v) => formatTokenAmount(Number(v ?? 0))} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
+                <AllocationPieChart allocation={allocation} summary={allocationSummary} />
               </motion.div>
 
               <motion.div
@@ -305,20 +225,7 @@ export default function AnalyticsPage() {
                 className="avs-elevate rounded-xl border border-border bg-card p-4"
               >
                 <h3 className="text-sm font-medium text-card-foreground">{t("analytics.cumulativeInvestment")}</h3>
-                <div
-                  className="h-56"
-                  role={cumulativeSummary ? "img" : undefined}
-                  aria-label={cumulativeSummary || undefined}
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={cumulative}>
-                      <XAxis dataKey="name" fontSize={12} stroke="var(--muted-foreground)" />
-                      <YAxis fontSize={12} stroke="var(--muted-foreground)" />
-                      <Tooltip />
-                      <Line type="monotone" dataKey="invested" stroke="var(--primary)" strokeWidth={2} dot={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
+                <CumulativeInvestmentChart cumulative={cumulative} summary={cumulativeSummary} />
               </motion.div>
             </motion.div>
           </>

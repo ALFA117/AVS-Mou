@@ -154,14 +154,31 @@ function SessionRow({
     session.revoke();
   }
 
+  const expiringSoon =
+    session.state.status === "active" && session.state.expiresAt.getTime() - Date.now() < 5 * 60 * 1000;
+
   return (
     <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground">
       <span>{programName}</span>
       {session.state.status === "active" ? (
         <span className="flex items-center gap-2">
-          <span className="font-mono-avs text-green-700 dark:text-green-400">
-            {t("settings.activeUntil", { time: session.state.expiresAt.toLocaleTimeString() })}
+          <span
+            className={`font-mono-avs ${
+              expiringSoon ? "text-amber-600 dark:text-amber-400" : "text-green-700 dark:text-green-400"
+            }`}
+          >
+            {expiringSoon
+              ? t("settings.expiringSoon", { time: session.state.expiresAt.toLocaleTimeString() })
+              : t("settings.activeUntil", { time: session.state.expiresAt.toLocaleTimeString() })}
           </span>
+          {expiringSoon && (
+            <button
+              onClick={() => session.authorize()}
+              className="cursor-pointer rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+            >
+              {t("settings.renew")}
+            </button>
+          )}
           <button
             onClick={handleRevokeClick}
             className={

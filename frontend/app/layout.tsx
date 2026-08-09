@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { WalletContextProvider } from "@/components/providers/WalletContextProvider";
 import { LanguageProvider } from "@/lib/LanguageContext";
@@ -29,9 +30,18 @@ const TITLE = "AVS — Anonymous Venture Syndicate";
 const DESCRIPTION =
   "Sealed-bid deal syndicates on Solana. Bid or vote in secret — everyone reveals at once. Powered by MagicBlock Ephemeral Rollups.";
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#533afd" },
+    { media: "(prefers-color-scheme: dark)", color: "#665efd" },
+  ],
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://avs-mou.vercel.app"),
   title: TITLE,
   description: DESCRIPTION,
+  manifest: "/manifest.json",
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
@@ -67,6 +77,7 @@ export default function RootLayout({
             <Footer />
           </WalletContextProvider>
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );

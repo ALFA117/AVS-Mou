@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowLeft, CircleAlert } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -10,7 +11,6 @@ import { Countdown } from "@/components/Countdown";
 import { BidForm } from "@/components/BidForm";
 import { RevealSettlePanel } from "@/components/RevealSettlePanel";
 import { RevealAnimation } from "@/components/RevealAnimation";
-import { DealCharts } from "@/components/DealCharts";
 import { ShareDeal } from "@/components/ShareDeal";
 import { Skeleton } from "@/components/Skeleton";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -22,6 +22,17 @@ const STATUS_STYLES: Record<string, string> = {
   revealed: "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-400",
   settled: "bg-muted text-muted-foreground",
 };
+
+// recharts pulls in a meaningful chunk of JS — split it out of this route's
+// main bundle instead of loading it before there's even a deal to chart.
+const DealCharts = dynamic(() => import("@/components/DealCharts").then((m) => m.DealCharts), {
+  loading: () => (
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <Skeleton className="h-56 w-full" />
+      <Skeleton className="h-48 w-full" />
+    </div>
+  ),
+});
 
 export default function DealDetailPage({ params }: { params: { id: string } }) {
   const { deal, loading, error, refresh } = useDeal(params.id);

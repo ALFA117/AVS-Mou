@@ -1,0 +1,17 @@
+{
+  "name": "AVS — Anonymous Venture Syndicate",
+  "short_name": "AVS",
+  "description": "Sealed-bid deal syndicates on Solana. Bid or vote in secret — everyone reveals at once.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#533afd",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

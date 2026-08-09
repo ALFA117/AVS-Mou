@@ -7,7 +7,7 @@ import { useTranslation } from "@/lib/LanguageContext";
 export function ShareDeal({ dealTitle, url }: { dealTitle: string; url: string }) {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslation();
-  const shareText = `Investing anonymously in ${dealTitle} via AVS`;
+  const shareText = t("shareDeal.tweetText", { dealTitle });
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
 
   return (
