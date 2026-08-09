@@ -110,11 +110,14 @@ describe("session-key security (live devnet e2e, skipped unless RUN_SESSION_KEY_
   this.timeout(180_000);
   const RUN_LIVE = process.env.RUN_SESSION_KEY_DEVNET_E2E === "1";
 
-  const startup = loadKeypair("~/.config/solana/id.json");
-  const connection = new web3.Connection("https://api.devnet.solana.com", "confirmed");
-  const wallet = new anchor.Wallet(startup);
-  const provider = new anchor.AnchorProvider(connection, wallet, { commitment: "confirmed" });
-  const program = new Program(idl as anchor.Idl, provider) as unknown as Program<anchor.Idl>;
+  // Lazily constructed inside before() (only when RUN_LIVE) — reading
+  // ~/.config/solana/id.json unconditionally at describe-collection time
+  // breaks CI, which has no such file by design (see docs/KNOWN_ISSUES.md
+  // for why devnet secrets don't belong in CI for this repo).
+  let startup: web3.Keypair;
+  let connection: web3.Connection;
+  let wallet: anchor.Wallet;
+  let program: Program<anchor.Idl>;
 
   let deal: web3.PublicKey;
   let dealId: BN;
@@ -203,6 +206,12 @@ describe("session-key security (live devnet e2e, skipped unless RUN_SESSION_KEY_
       this.skip();
       return;
     }
+
+    startup = loadKeypair("~/.config/solana/id.json");
+    connection = new web3.Connection("https://api.devnet.solana.com", "confirmed");
+    wallet = new anchor.Wallet(startup);
+    const provider = new anchor.AnchorProvider(connection, wallet, { commitment: "confirmed" });
+    program = new Program(idl as anchor.Idl, provider) as unknown as Program<anchor.Idl>;
 
     fundingMint = await createMint(connection, startup, startup.publicKey, null, 6);
     dealId = new BN(Date.now());
