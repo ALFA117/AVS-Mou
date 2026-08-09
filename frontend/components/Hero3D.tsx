@@ -1,68 +1,134 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, MeshDistortMaterial, Sphere } from "@react-three/drei";
+import { Sparkles } from "@react-three/drei";
 import { useReducedMotion } from "framer-motion";
-import { MathUtils, type Group, type Mesh, type MeshStandardMaterial } from "three";
+import { MathUtils, type Group, type Mesh, type MeshStandardMaterial, type MeshPhysicalMaterial } from "three";
 
 /**
- * Scroll- and pointer-reactive 3D centerpiece for the landing hero —
- * sealed-vault motif (a slowly warping glass sphere with an orbiting
- * wireframe ring, evoking "sealed until reveal") rendered with
- * react-three-fiber. Client-only: mounted via next/dynamic({ ssr: false })
- * from app/page.tsx since WebGL has no server-side representation.
+ * Scroll- and pointer-reactive 3D centerpiece for the landing hero.
  *
- * Interaction: the whole shape leans toward the cursor (parallax tilt),
- * brightens and scales up slightly on hover, and clicking triggers a
- * quick "reveal" pulse (brief scale/glow bounce) — a nod to the product's
- * own sealed -> reveal mechanic, not just decoration for its own sake.
+ * Concept — "Sealed Network": a faceted glass core (the deal/vault) with
+ * several small satellite nodes (individual sealed bids) orbiting it on
+ * their own inclined, independent paths, each on a faint orbit ring.
+ * Everything stays sharp-faceted / low-poly (no organic distort material)
+ * on purpose — a first pass used a wobbling glossy sphere and it read as
+ * amorphous rather than precise, which is the wrong feeling for a
+ * "sealed, precise, trustless" fintech product.
+ *
+ * Interaction: the whole assembly leans toward the cursor, brightens and
+ * spins faster on hover, and a click fires a "reveal" — every node
+ * flashes bright at once, mirroring the product's actual reveal mechanic
+ * (every sealed bid becomes visible simultaneously).
+ *
+ * Client-only: mounted via next/dynamic({ ssr: false }) from app/page.tsx
+ * since WebGL has no server-side representation.
  */
-function SealedCore({ scrollRef }: { scrollRef: React.MutableRefObject<number> }) {
+
+type SatelliteConfig = {
+  radius: number;
+  speed: number;
+  inclination: number;
+  phase: number;
+  size: number;
+  color: string;
+};
+
+const SATELLITES: SatelliteConfig[] = [
+  { radius: 1.95, speed: 0.42, inclination: 0.18, phase: 0, size: 0.16, color: "#3b82f6" },
+  { radius: 2.35, speed: -0.31, inclination: -0.42, phase: 1.3, size: 0.12, color: "#10b981" },
+  { radius: 2.7, speed: 0.24, inclination: 0.62, phase: 2.6, size: 0.14, color: "#10b981" },
+  { radius: 2.15, speed: -0.46, inclination: -0.12, phase: 4.1, size: 0.1, color: "#3b82f6" },
+  { radius: 2.9, speed: 0.19, inclination: 0.08, phase: 5.4, size: 0.17, color: "#3b82f6" },
+  { radius: 2.5, speed: -0.27, inclination: -0.6, phase: 3.3, size: 0.11, color: "#10b981" },
+];
+
+type SharedState = {
+  hovered: React.MutableRefObject<boolean>;
+  pulse: React.MutableRefObject<number>;
+  speedMul: React.MutableRefObject<number>;
+};
+
+function OrbitNode({ config, shared, reduceMotion }: { config: SatelliteConfig; shared: SharedState; reduceMotion: boolean }) {
+  const orbitRef = useRef<Group>(null);
+  const nodeRef = useRef<Mesh>(null);
+  const t = useRef(config.phase);
+
+  useFrame((_, delta) => {
+    if (!reduceMotion) {
+      t.current += delta * config.speed * shared.speedMul.current;
+    }
+    if (nodeRef.current) {
+      nodeRef.current.position.x = Math.cos(t.current) * config.radius;
+      nodeRef.current.position.z = Math.sin(t.current) * config.radius;
+      nodeRef.current.rotation.y += reduceMotion ? 0 : delta * 0.8;
+      nodeRef.current.rotation.x += reduceMotion ? 0 : delta * 0.5;
+
+      const targetEmissive = shared.pulse.current > 0 ? 2.6 : shared.hovered.current ? 1.0 : 0.45;
+      const mat = nodeRef.current.material as MeshStandardMaterial;
+      mat.emissiveIntensity = MathUtils.lerp(mat.emissiveIntensity, targetEmissive, 0.15);
+    }
+  });
+
+  return (
+    <group ref={orbitRef} rotation={[config.inclination, 0, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[config.radius, 0.004, 8, 96]} />
+        <meshBasicMaterial color={config.color} transparent opacity={0.18} />
+      </mesh>
+      <mesh ref={nodeRef}>
+        <octahedronGeometry args={[config.size, 0]} />
+        <meshStandardMaterial
+          color={config.color}
+          emissive={config.color}
+          emissiveIntensity={0.45}
+          roughness={0.25}
+          metalness={0.4}
+          flatShading
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function SealedNetwork({ scrollRef }: { scrollRef: React.MutableRefObject<number> }) {
   const groupRef = useRef<Group>(null);
   const coreRef = useRef<Mesh>(null);
-  const ringRef = useRef<Mesh>(null);
-  const reduceMotion = useReducedMotion();
-  const [hovered, setHovered] = useState(false);
+  const reduceMotion = useReducedMotion() ?? false;
 
-  // Refs, not state, for anything driven every frame — avoids a re-render
-  // per frame while still letting hover/click retarget the lerp smoothly.
+  const hovered = useRef(false);
   const pulse = useRef(0);
+  const speedMul = useRef(1);
   const scale = useRef(1);
-  const emissive = useRef(0.6);
+  const shared = useMemo<SharedState>(() => ({ hovered, pulse, speedMul }), []);
 
   useFrame((state, delta) => {
-    const scrollSpin = scrollRef.current * 0.0006;
+    const scrollSpin = scrollRef.current * 0.0007;
 
     if (groupRef.current) {
-      const targetTiltX = reduceMotion ? 0 : state.pointer.y * 0.25;
-      const targetTiltY = reduceMotion ? 0 : state.pointer.x * 0.35;
+      const targetTiltX = reduceMotion ? 0 : state.pointer.y * 0.22;
+      const targetTiltY = reduceMotion ? 0 : state.pointer.x * 0.32;
       groupRef.current.rotation.x = MathUtils.lerp(groupRef.current.rotation.x, targetTiltX, 0.06);
-      groupRef.current.rotation.y = MathUtils.lerp(groupRef.current.rotation.y, targetTiltY, 0.06);
+      groupRef.current.rotation.y = MathUtils.lerp(groupRef.current.rotation.y + (reduceMotion ? 0 : delta * 0.06), targetTiltY, 0.06);
+      groupRef.current.rotation.z = scrollSpin;
 
-      if (pulse.current > 0) pulse.current = Math.max(0, pulse.current - delta * 1.8);
-      const targetScale = (hovered ? 1.08 : 1) + Math.sin(pulse.current * Math.PI) * 0.15;
+      if (pulse.current > 0) pulse.current = Math.max(0, pulse.current - delta * 1.6);
+      const targetScale = (hovered.current ? 1.06 : 1) + Math.sin(pulse.current * Math.PI) * 0.1;
       scale.current = MathUtils.lerp(scale.current, targetScale, 0.15);
       groupRef.current.scale.setScalar(scale.current);
     }
 
+    speedMul.current = MathUtils.lerp(speedMul.current, hovered.current ? 1.7 : 1, 0.08);
+
     if (coreRef.current) {
       if (!reduceMotion) {
-        coreRef.current.rotation.y += delta * (hovered ? 0.34 : 0.22);
-        coreRef.current.rotation.x += delta * 0.07;
+        coreRef.current.rotation.y += delta * 0.18;
+        coreRef.current.rotation.x += delta * 0.06;
       }
-      coreRef.current.rotation.z = scrollSpin;
-    }
-
-    if (ringRef.current) {
-      if (!reduceMotion) {
-        ringRef.current.rotation.z -= delta * (hovered ? 0.7 : 0.35);
-      }
-      ringRef.current.rotation.x = 1.15 + scrollSpin * 1.5;
-
-      const targetEmissive = pulse.current > 0 ? 2.2 : hovered ? 1.1 : 0.6;
-      emissive.current = MathUtils.lerp(emissive.current, targetEmissive, 0.12);
-      (ringRef.current.material as MeshStandardMaterial).emissiveIntensity = emissive.current;
+      const mat = coreRef.current.material as MeshPhysicalMaterial;
+      const targetEmissive = pulse.current > 0 ? 1.4 : hovered.current ? 0.55 : 0.25;
+      mat.emissiveIntensity = MathUtils.lerp(mat.emissiveIntensity, targetEmissive, 0.12);
     }
   });
 
@@ -71,12 +137,12 @@ function SealedCore({ scrollRef }: { scrollRef: React.MutableRefObject<number> }
       ref={groupRef}
       onPointerOver={(e) => {
         e.stopPropagation();
-        setHovered(true);
+        hovered.current = true;
         document.body.style.cursor = "pointer";
       }}
       onPointerOut={(e) => {
         e.stopPropagation();
-        setHovered(false);
+        hovered.current = false;
         document.body.style.cursor = "auto";
       }}
       onClick={(e) => {
@@ -84,25 +150,30 @@ function SealedCore({ scrollRef }: { scrollRef: React.MutableRefObject<number> }
         pulse.current = 1;
       }}
     >
-      <Float
-        speed={reduceMotion ? 0 : 1.4}
-        rotationIntensity={reduceMotion ? 0 : 0.35}
-        floatIntensity={reduceMotion ? 0 : 0.7}
-      >
-        <Sphere ref={coreRef} args={[1.15, 64, 64]}>
-          <MeshDistortMaterial
-            color="#3b82f6"
-            roughness={0.15}
-            metalness={0.3}
-            distort={0.28}
-            speed={reduceMotion ? 0 : 1.6}
-          />
-        </Sphere>
-        <mesh ref={ringRef} rotation={[1.15, 0, 0]}>
-          <torusGeometry args={[1.65, 0.02, 16, 100]} />
-          <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.6} roughness={0.3} />
-        </mesh>
-      </Float>
+      <pointLight color="#3b82f6" intensity={2.2} distance={4} decay={2} />
+
+      <mesh ref={coreRef}>
+        <icosahedronGeometry args={[1, 0]} />
+        <meshPhysicalMaterial
+          color="#1d4ed8"
+          emissive="#3b82f6"
+          emissiveIntensity={0.25}
+          roughness={0.12}
+          metalness={0.1}
+          transmission={0.85}
+          thickness={1.1}
+          ior={1.4}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          flatShading
+        />
+      </mesh>
+
+      {SATELLITES.map((config, i) => (
+        <OrbitNode key={i} config={config} shared={shared} reduceMotion={reduceMotion} />
+      ))}
+
+      <Sparkles count={36} scale={5.5} size={1.6} speed={reduceMotion ? 0 : 0.25} color="#93c5fd" opacity={0.5} />
     </group>
   );
 }
@@ -122,12 +193,12 @@ export function Hero3D() {
   }, []);
 
   return (
-    <div className="mx-auto h-56 w-full max-w-sm sm:h-72 md:h-80" aria-hidden="true">
-      <Canvas camera={{ position: [0, 0, 4.4], fov: 42 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
-        <ambientLight intensity={0.7} />
-        <directionalLight position={[3, 3, 4]} intensity={1.3} color="#93c5fd" />
-        <directionalLight position={[-3, -2, -3]} intensity={0.5} color="#10b981" />
-        <SealedCore scrollRef={scrollRef} />
+    <div className="mx-auto h-64 w-full max-w-md sm:h-80 md:h-96" aria-hidden="true">
+      <Canvas camera={{ position: [0, 0.6, 5.6], fov: 42 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
+        <ambientLight intensity={0.55} />
+        <directionalLight position={[3, 3, 4]} intensity={1.2} color="#93c5fd" />
+        <directionalLight position={[-3, -2, -3]} intensity={0.45} color="#10b981" />
+        <SealedNetwork scrollRef={scrollRef} />
       </Canvas>
     </div>
   );

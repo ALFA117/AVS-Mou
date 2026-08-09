@@ -12,7 +12,7 @@ import { useTranslation } from "@/lib/LanguageContext";
 // once the real canvas mounts.
 const Hero3D = dynamic(() => import("@/components/Hero3D").then((m) => m.Hero3D), {
   ssr: false,
-  loading: () => <div className="mx-auto h-56 w-full max-w-sm sm:h-72 md:h-80" />,
+  loading: () => <div className="mx-auto h-64 w-full max-w-md sm:h-80 md:h-96" />,
 });
 
 export default function Home() {
