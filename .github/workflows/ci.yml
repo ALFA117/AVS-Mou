@@ -128,7 +128,15 @@ jobs:
       # in CI secrets for a hackathon-scoped project. Run those locally via
       # `make test-devnet-e2e` instead — see docs/KNOWN_ISSUES.md.
       - name: Run structural tests
+        # Newer Node defaults to its own native TypeScript handling for
+        # .ts files (loaded via ESM import()), bypassing ts-node/ts-mocha's
+        # CommonJS require hook entirely — mocha's own esm-utils.js says as
+        # much. That breaks named imports from CJS packages like
+        # @coral-xyz/anchor ("Named export 'BN' not found"). Force Node
+        # back onto the require-hook path ts-mocha actually expects.
         run: npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts
+        env:
+          NODE_OPTIONS: --no-experimental-strip-types
 
   build-frontend:
     name: Build Frontend
