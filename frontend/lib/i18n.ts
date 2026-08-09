@@ -30,6 +30,7 @@ const en = {
     connecting: "Connecting…",
     noWalletDetected: "No Solana wallet detected",
     you: "you",
+    clearFilters: "Clear filters",
   },
   home: {
     badge: "Built on MagicBlock Ephemeral Rollups",
@@ -46,6 +47,9 @@ const en = {
     feature3Title: "Gasless, one-tap signing",
     feature3Desc:
       "Session keys let you bid and vote without a wallet popup per action, running on MagicBlock's Ephemeral Rollups at ~10ms latency.",
+    mockupTitle: "See it in action",
+    mockupSubtitle: "A real look at the deals board — sealed bids stay hidden until reveal.",
+    statsTitle: "Live on Solana",
   },
   deals: {
     title: "Deals",
@@ -62,6 +66,7 @@ const en = {
     loadError: "Couldn't load deals",
     noResults: "No {status} deals match your search.",
     noResultsAny: "No deals match your search.",
+    emptyTitle: "No deals found",
   },
   dealCard: {
     equityOffered: "Equity offered",
@@ -135,7 +140,9 @@ const en = {
     title: "Milestone Votes",
     subtitle: "Sealed YES/NO votes — outcomes and rewards reveal simultaneously after each deadline.",
     connectPrompt: "Connect your wallet to see milestones you can vote on.",
+    connectTitle: "Connect your wallet",
     noMilestones: "No open milestones right now.",
+    noMilestonesTitle: "All caught up",
   },
   dashboard: {
     title: "Dashboard",
@@ -396,6 +403,7 @@ const es = {
     connecting: "Conectando…",
     noWalletDetected: "No se detectó ninguna wallet de Solana",
     you: "tú",
+    clearFilters: "Limpiar filtros",
   },
   home: {
     badge: "Construido sobre MagicBlock Ephemeral Rollups",
@@ -413,6 +421,9 @@ const es = {
     feature3Title: "Firma sin gas, de un toque",
     feature3Desc:
       "Las session keys te permiten pujar y votar sin un popup de wallet por cada acción, corriendo sobre los Ephemeral Rollups de MagicBlock con ~10ms de latencia.",
+    mockupTitle: "Así se ve en acción",
+    mockupSubtitle: "Una vista real del tablero de deals — las pujas selladas permanecen ocultas hasta el reveal.",
+    statsTitle: "En vivo en Solana",
   },
   deals: {
     title: "Deals",
@@ -429,6 +440,7 @@ const es = {
     loadError: "No se pudieron cargar los deals",
     noResults: "Ningún deal {status} coincide con tu búsqueda.",
     noResultsAny: "Ningún deal coincide con tu búsqueda.",
+    emptyTitle: "No se encontraron deals",
   },
   dealCard: {
     equityOffered: "Equity ofrecido",
@@ -503,7 +515,9 @@ const es = {
     subtitle:
       "Votos SÍ/NO sellados — los resultados y recompensas se revelan simultáneamente después de cada fecha límite.",
     connectPrompt: "Conecta tu wallet para ver los hitos que puedes votar.",
+    connectTitle: "Conecta tu wallet",
     noMilestones: "No hay hitos abiertos en este momento.",
+    noMilestonesTitle: "Todo al día",
   },
   dashboard: {
     title: "Panel",
@@ -762,6 +776,7 @@ const pt = {
     connecting: "Conectando…",
     noWalletDetected: "Nenhuma carteira Solana detectada",
     you: "você",
+    clearFilters: "Limpar filtros",
   },
   home: {
     badge: "Construído sobre os Ephemeral Rollups da MagicBlock",
@@ -779,6 +794,9 @@ const pt = {
     feature3Title: "Assinatura sem gas, em um toque",
     feature3Desc:
       "As session keys permitem dar lances e votar sem um popup da carteira a cada ação, rodando nos Ephemeral Rollups da MagicBlock com ~10ms de latência.",
+    mockupTitle: "Veja em ação",
+    mockupSubtitle: "Uma visão real do painel de deals — os lances selados ficam ocultos até a revelação.",
+    statsTitle: "Ao vivo na Solana",
   },
   deals: {
     title: "Deals",
@@ -795,6 +813,7 @@ const pt = {
     loadError: "Não foi possível carregar os deals",
     noResults: "Nenhum deal {status} corresponde à sua busca.",
     noResultsAny: "Nenhum deal corresponde à sua busca.",
+    emptyTitle: "Nenhum deal encontrado",
   },
   dealCard: {
     equityOffered: "Equity oferecido",
@@ -868,7 +887,9 @@ const pt = {
     title: "Votos de marcos",
     subtitle: "Votos SIM/NÃO selados — resultados e recompensas são revelados simultaneamente após cada prazo.",
     connectPrompt: "Conecte sua carteira para ver os marcos em que você pode votar.",
+    connectTitle: "Conecte sua carteira",
     noMilestones: "Nenhum marco aberto no momento.",
+    noMilestonesTitle: "Tudo em dia",
   },
   dashboard: {
     title: "Painel",

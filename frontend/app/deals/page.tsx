@@ -3,8 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { Search, RefreshCw, Rocket } from "lucide-react";
+import { Search, RefreshCw, Rocket, PackageSearch } from "lucide-react";
 import { DealCard } from "@/components/DealCard";
+import { EmptyState } from "@/components/EmptyState";
 import { SkeletonCard } from "@/components/Skeleton";
 import { useDeals } from "@/hooks/useDeals";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -140,11 +141,28 @@ export default function DealsPage() {
         </p>
       )}
       {!loading && !error && filtered.length === 0 && (
-        <p className="mt-10 text-center text-muted-foreground">
-          {statusFilter === "all"
-            ? t("deals.noResultsAny")
-            : t("deals.noResults", { status: STATUS_LABELS[statusFilter].toLowerCase() })}
-        </p>
+        <EmptyState
+          icon={PackageSearch}
+          title={t("deals.emptyTitle")}
+          description={
+            statusFilter === "all"
+              ? t("deals.noResultsAny")
+              : t("deals.noResults", { status: STATUS_LABELS[statusFilter].toLowerCase() })
+          }
+          action={
+            (search.trim() !== "" || statusFilter !== "all") && (
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter("all");
+                }}
+                className="cursor-pointer rounded-full border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued"
+              >
+                {t("common.clearFilters")}
+              </button>
+            )
+          }
+        />
       )}
 
       <motion.div

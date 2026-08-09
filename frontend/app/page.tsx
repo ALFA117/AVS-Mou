@@ -4,6 +4,8 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Lock, Vote, Zap, ShieldCheck } from "lucide-react";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { DealsMockup } from "@/components/DealsMockup";
+import { StatsBand } from "@/components/StatsBand";
 import { useTranslation } from "@/lib/LanguageContext";
 
 export default function Home() {
@@ -15,6 +17,8 @@ export default function Home() {
     { icon: Vote, title: t("home.feature2Title"), description: t("home.feature2Desc") },
     { icon: Zap, title: t("home.feature3Title"), description: t("home.feature3Desc") },
   ];
+
+  const HOW_STEPS = [t("about.howStep1"), t("about.howStep2"), t("about.howStep3"), t("about.howStep4")];
 
   const container = {
     hidden: {},
@@ -92,6 +96,36 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: "-80px" }}
         variants={container}
+        className="mx-auto max-w-5xl px-6 pb-16 sm:pb-20"
+      >
+        <motion.div variants={item} className="mx-auto max-w-xl text-center">
+          <h2 className="font-heading text-2xl font-light tracking-tight text-foreground sm:text-3xl">
+            {t("home.mockupTitle")}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">{t("home.mockupSubtitle")}</p>
+        </motion.div>
+        <motion.div variants={item} className="mt-8">
+          <DealsMockup />
+        </motion.div>
+      </motion.section>
+
+      <motion.section
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={container}
+        className="mx-auto max-w-5xl px-6 pb-16 sm:pb-20"
+      >
+        <motion.div variants={item}>
+          <StatsBand title={t("home.statsTitle")} />
+        </motion.div>
+      </motion.section>
+
+      <motion.section
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={container}
         className="mx-auto max-w-5xl px-6 pb-16 sm:pb-24"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -113,6 +147,31 @@ export default function Home() {
             </motion.div>
           ))}
         </div>
+      </motion.section>
+
+      <motion.section
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        variants={container}
+        className="mx-auto max-w-3xl px-6 pb-20 sm:pb-28"
+      >
+        <motion.h2
+          variants={item}
+          className="text-center font-heading text-2xl font-light tracking-tight text-foreground sm:text-3xl"
+        >
+          {t("about.howTitle")}
+        </motion.h2>
+        <motion.ol variants={item} className="mt-8 space-y-4">
+          {HOW_STEPS.map((step, i) => (
+            <li key={step} className="avs-elevate flex gap-4 rounded-xl border border-border bg-card p-5">
+              <span className="avs-icon-badge h-8 w-8 shrink-0 text-sm font-medium text-primary">
+                {i + 1}
+              </span>
+              <p className="text-sm text-muted-foreground">{step}</p>
+            </li>
+          ))}
+        </motion.ol>
       </motion.section>
     </main>
   );

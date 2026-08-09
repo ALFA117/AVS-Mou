@@ -2,9 +2,12 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Wallet, CheckCircle2 } from "lucide-react";
 import { useMilestones } from "@/hooks/useMilestones";
 import { VoteCard } from "@/components/VoteCard";
+import { EmptyState } from "@/components/EmptyState";
 import { SkeletonRow } from "@/components/Skeleton";
+import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { useTranslation } from "@/lib/LanguageContext";
 
 const container = {
@@ -33,7 +36,12 @@ export default function VotePage() {
       </div>
 
       {!publicKey && (
-        <p className="mt-10 text-center text-muted-foreground">{t("votePage.connectPrompt")}</p>
+        <EmptyState
+          icon={Wallet}
+          title={t("votePage.connectTitle")}
+          description={t("votePage.connectPrompt")}
+          action={<WalletConnectButton />}
+        />
       )}
 
       {publicKey && loading && (
@@ -44,7 +52,11 @@ export default function VotePage() {
       )}
 
       {publicKey && !loading && open.length === 0 && (
-        <p className="mt-10 text-center text-muted-foreground">{t("votePage.noMilestones")}</p>
+        <EmptyState
+          icon={CheckCircle2}
+          title={t("votePage.noMilestonesTitle")}
+          description={t("votePage.noMilestones")}
+        />
       )}
 
       {publicKey && (
