@@ -33,7 +33,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cargo fmt check
-        run: cargo fmt --check --manifest-path programs/Cargo.toml
+        run: cargo fmt --check --all --manifest-path Cargo.toml
         continue-on-error: true
 
       - name: Install frontend deps
@@ -84,6 +84,17 @@ jobs:
       # machines), so there's no local-validator target worth spinning up
       # here. `target/` is gitignored, so target/idl/*.json (which
       # tests/*.ts require()) must be regenerated from source every run.
+      #
+      # Cargo.lock is committed pinned at `version = 3` on purpose: the
+      # Solana CLI's bundled cargo-build-sbf toolchain (pinned to
+      # SOLANA_VERSION above, independent of whatever host Rust runs this
+      # step) can't parse a `version = 4` lockfile without
+      # `-Znext-lockfile-bump` — a nightly-only flag. If `cargo update`
+      # ever bumps this back to 4 (a newer host cargo will happily rewrite
+      # it), either edit the header back to 3 by hand (safe as long as
+      # there are no git-sourced dependencies — check with
+      # `grep '^source = "git' Cargo.lock`) or bump SOLANA_VERSION to one
+      # whose bundled toolchain understands v4.
       - name: Build programs
         run: |
           for dir in programs/*/; do
