@@ -41,3 +41,25 @@ export async function submitViaRelay(tx: Transaction): Promise<string> {
   }
   return data.signature;
 }
+
+/** Mints test funding tokens for `mint` directly to `recipient` — see
+ * lib/faucetServer.ts for why a public devnet SOL faucet can't cover this. */
+export async function requestFaucetTokens(
+  recipient: string,
+  mint: string,
+): Promise<{ amount: number; toppedUpSol: boolean }> {
+  const res = await fetch("/api/faucet", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ recipient, mint }),
+  });
+  const data = (await res.json()) as {
+    amount?: number;
+    toppedUpSol?: boolean;
+    error?: string;
+  };
+  if (!res.ok || data.amount === undefined) {
+    throw new Error(data.error || "Faucet request failed");
+  }
+  return { amount: data.amount, toppedUpSol: Boolean(data.toppedUpSol) };
+}

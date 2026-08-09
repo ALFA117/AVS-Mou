@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Lock, CircleCheck, CircleAlert, Link2 } from "lucide-react";
+import { Lock, CircleCheck, CircleAlert, Link2, Droplet } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -13,7 +13,12 @@ import {
   SEALED_AUCTION_PROGRAM_ID,
 } from "@/lib/programs";
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
-import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/lib/relayClient";
+import {
+  fetchRelaySponsorPubkey,
+  fetchRelayBlockhash,
+  submitViaRelay,
+  requestFaucetTokens,
+} from "@/lib/relayClient";
 import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
 import { formatTokenAmount } from "@/lib/format";
 import { BidConfirmModal } from "@/components/BidConfirmModal";
@@ -34,10 +39,31 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
     kind: "idle",
   });
+  const [faucetLoading, setFaucetLoading] = useState(false);
+  const [faucetStatus, setFaucetStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
+    kind: "idle",
+  });
 
   const minInvestment = formatTokenAmount(deal.minInvestment);
   const parsedAmount = Number(amount);
   const amountValid = parsedAmount > 0 && parsedAmount >= Number(minInvestment);
+
+  async function requestTestTokens() {
+    if (!publicKey) return;
+    setFaucetLoading(true);
+    setFaucetStatus({ kind: "idle" });
+    try {
+      const { amount: minted } = await requestFaucetTokens(publicKey.toBase58(), deal.fundingMint);
+      setFaucetStatus({ kind: "success", message: t("bidForm.faucetSuccess", { amount: minted.toLocaleString() }) });
+    } catch (err) {
+      setFaucetStatus({
+        kind: "error",
+        message: err instanceof Error ? err.message : String(err),
+      });
+    } finally {
+      setFaucetLoading(false);
+    }
+  }
 
   async function submitBid() {
     if (!publicKey || !wallet?.adapter) return;
@@ -157,6 +183,32 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         {t("bidForm.title")}
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">{t("bidForm.subtitle")}</p>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md bg-muted p-2.5">
+        <Droplet className="h-3.5 w-3.5 shrink-0 text-primary" strokeWidth={2} />
+        <p className="flex-1 text-xs text-muted-foreground">{t("bidForm.faucetHint")}</p>
+        <button
+          type="button"
+          disabled={faucetLoading}
+          onClick={() => void requestTestTokens()}
+          className="cursor-pointer whitespace-nowrap rounded-full border border-primary px-3 py-1 text-xs font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {faucetLoading ? t("bidForm.faucetLoading") : t("bidForm.faucetButton")}
+        </button>
+      </div>
+      {faucetStatus.kind === "success" && (
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-green-700 dark:text-green-400">
+          <CircleCheck className="h-3.5 w-3.5" strokeWidth={2} />
+          {faucetStatus.message}
+        </p>
+      )}
+      {faucetStatus.kind === "error" && (
+        <p className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+          <CircleAlert className="h-3.5 w-3.5" strokeWidth={2} />
+          {faucetStatus.message}
+        </p>
+      )}
+
       <div className="mt-4 flex items-center gap-2">
         <input
           type="number"

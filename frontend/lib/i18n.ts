@@ -113,6 +113,10 @@ const en = {
     submitting: "Submitting sealed bid…",
     success: "Bid placed. Waiting for reveal.",
     error: "Bid failed: {message}",
+    faucetHint: "No funding tokens for this deal yet? Get some test ones to try a bid.",
+    faucetButton: "Get test tokens",
+    faucetLoading: "Sending…",
+    faucetSuccess: "Sent {amount} test tokens to your wallet.",
   },
   bidConfirmModal: {
     title: "Confirm sealed bid",
@@ -503,6 +507,10 @@ const es = {
     submitting: "Enviando puja sellada…",
     success: "Puja enviada. Esperando el reveal.",
     error: "La puja falló: {message}",
+    faucetHint: "¿Aún no tienes tokens de financiamiento para este deal? Consigue algunos de prueba para probar una puja.",
+    faucetButton: "Obtener tokens de prueba",
+    faucetLoading: "Enviando…",
+    faucetSuccess: "Se enviaron {amount} tokens de prueba a tu wallet.",
   },
   bidConfirmModal: {
     title: "Confirmar puja sellada",
@@ -892,6 +900,10 @@ const pt = {
     submitting: "Enviando lance selado…",
     success: "Lance registrado. Aguardando a revelação.",
     error: "Falha no lance: {message}",
+    faucetHint: "Ainda não tem tokens de financiamento para este deal? Pegue alguns de teste para experimentar um lance.",
+    faucetButton: "Obter tokens de teste",
+    faucetLoading: "Enviando…",
+    faucetSuccess: "Enviamos {amount} tokens de teste para sua carteira.",
   },
   bidConfirmModal: {
     title: "Confirmar lance selado",
