@@ -100,6 +100,11 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
               <Users className="h-3.5 w-3.5" strokeWidth={2} />
               {t("syndicatePage.memberListSettled", { count: deal.bidCount })}
             </p>
+          ) : deal.bidCount === 0 ? (
+            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Users className="h-3.5 w-3.5" strokeWidth={2} />
+              {t("syndicatePage.noMembers")}
+            </p>
           ) : (
             bids.map((b) => {
               const isYou = publicKey && b.bidder === publicKey.toBase58();

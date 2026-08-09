@@ -76,6 +76,32 @@ export default function AnalyticsPage() {
     : 0;
   const settledCount = positions.filter((p) => p.status === "liquidated").length;
 
+  const dealsByDeadlineSummary =
+    stats && stats.dealsOverTime.length > 0
+      ? t("analytics.dealsByDeadlineA11y", { count: stats.totalDeals, dates: stats.dealsOverTime.length })
+      : "";
+
+  const largestAllocation = allocation.length
+    ? allocation.reduce((max, a) => (a.value > max.value ? a : max), allocation[0])
+    : null;
+  const allocationTotal = allocation.reduce((s, a) => s + a.value, 0);
+  const allocationSummary =
+    largestAllocation && allocationTotal > 0
+      ? t("analytics.allocationBreakdownA11y", {
+          count: allocation.length,
+          name: largestAllocation.name,
+          percent: Math.round((largestAllocation.value / allocationTotal) * 100),
+        })
+      : "";
+
+  const cumulativeSummary =
+    cumulative.length > 0
+      ? t("analytics.cumulativeInvestmentA11y", {
+          count: cumulative.length,
+          total: formatTokenAmount(cumulative[cumulative.length - 1].invested * 10 ** 6),
+        })
+      : "";
+
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
       <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">{t("analytics.title")}</h1>
@@ -114,17 +140,27 @@ export default function AnalyticsPage() {
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="avs-elevate rounded-xl border border-border bg-card p-4">
                 <h2 className="text-sm font-medium text-card-foreground">{t("analytics.dealsByDeadline")}</h2>
-                <div className="h-56">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={stats.dealsOverTime} margin={{ top: 16 }}>
-                      <XAxis dataKey="date" fontSize={10} stroke="var(--muted-foreground)" />
-                      <YAxis fontSize={12} allowDecimals={false} stroke="var(--muted-foreground)" />
-                      <Tooltip />
-                      <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]}>
-                        <LabelList dataKey="count" position="top" fontSize={11} fill="var(--muted-foreground)" />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                <div
+                  className="h-56"
+                  role={dealsByDeadlineSummary ? "img" : undefined}
+                  aria-label={dealsByDeadlineSummary || undefined}
+                >
+                  {stats.dealsOverTime.length === 0 ? (
+                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                      {t("analytics.noDealsYet")}
+                    </div>
+                  ) : (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={stats.dealsOverTime} margin={{ top: 16 }}>
+                        <XAxis dataKey="date" fontSize={10} stroke="var(--muted-foreground)" />
+                        <YAxis fontSize={12} allowDecimals={false} stroke="var(--muted-foreground)" />
+                        <Tooltip />
+                        <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]}>
+                          <LabelList dataKey="count" position="top" fontSize={11} fill="var(--muted-foreground)" />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
                 </div>
               </div>
 
@@ -193,7 +229,11 @@ export default function AnalyticsPage() {
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="avs-elevate rounded-xl border border-border bg-card p-4">
                 <h3 className="text-sm font-medium text-card-foreground">{t("analytics.allocationBreakdown")}</h3>
-                <div className="h-56">
+                <div
+                  className="h-56"
+                  role={allocationSummary ? "img" : undefined}
+                  aria-label={allocationSummary || undefined}
+                >
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -223,7 +263,11 @@ export default function AnalyticsPage() {
 
               <div className="avs-elevate rounded-xl border border-border bg-card p-4">
                 <h3 className="text-sm font-medium text-card-foreground">{t("analytics.cumulativeInvestment")}</h3>
-                <div className="h-56">
+                <div
+                  className="h-56"
+                  role={cumulativeSummary ? "img" : undefined}
+                  aria-label={cumulativeSummary || undefined}
+                >
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={cumulative}>
                       <XAxis dataKey="name" fontSize={12} stroke="var(--muted-foreground)" />

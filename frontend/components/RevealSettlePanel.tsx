@@ -173,7 +173,7 @@ export function RevealSettlePanel({
                   type="button"
                   disabled={busy !== null}
                   onClick={() => void settle(b)}
-                  className="cursor-pointer whitespace-nowrap rounded-full border border-primary px-3 py-1 text-xs font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex min-h-11 shrink-0 cursor-pointer items-center whitespace-nowrap rounded-full border border-primary px-3 text-xs font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {busy === b.publicKey
                     ? delegating

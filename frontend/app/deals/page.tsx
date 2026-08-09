@@ -108,6 +108,51 @@ export default function DealsPage() {
     setVisibleCount(PAGE_SIZE);
   }, [statusFilter, search, sortKey, minValuation, maxValuation, minEquity, maxEquity]);
 
+  // Restore filters from a shared/refreshed URL. Runs once after mount (not
+  // during the lazy useState initializer) so the server-rendered HTML and
+  // the client's first render both start from the same defaults — avoids a
+  // hydration mismatch, at the cost of a one-frame flash of unfiltered
+  // results on a link that carries filter params.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("status");
+    if (status === "open" || status === "revealed" || status === "settled") setStatusFilter(status);
+    const q = params.get("q");
+    if (q) setSearch(q);
+    const sort = params.get("sort");
+    if (sort === "valuation" || sort === "popularity" || sort === "deadline") setSortKey(sort);
+    const minVal = params.get("minVal");
+    if (minVal) setMinValuation(minVal);
+    const maxVal = params.get("maxVal");
+    if (maxVal) setMaxValuation(maxVal);
+    const minEq = params.get("minEq");
+    if (minEq) setMinEquity(minEq);
+    const maxEq = params.get("maxEq");
+    if (maxEq) setMaxEquity(maxEq);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keep the URL in sync so a refresh or a shared link preserves the current
+  // filters — direct history.replaceState (not next/navigation's router)
+  // avoids opting this otherwise-static page into useSearchParams's
+  // Suspense requirement, since none of this filtering touches the server.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (search) params.set("q", search);
+    if (sortKey !== "deadline") params.set("sort", sortKey);
+    if (minValuation) params.set("minVal", minValuation);
+    if (maxValuation) params.set("maxVal", maxValuation);
+    if (minEquity) params.set("minEq", minEquity);
+    if (maxEquity) params.set("maxEq", maxEquity);
+    const qs = params.toString();
+    const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+    const timer = setTimeout(() => {
+      window.history.replaceState(null, "", url);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [statusFilter, search, sortKey, minValuation, maxValuation, minEquity, maxEquity]);
+
   const visible = filtered.slice(0, visibleCount);
 
   return (
@@ -178,7 +223,7 @@ export default function DealsPage() {
 
         <button
           onClick={() => void refresh()}
-          className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+          className="flex min-h-11 cursor-pointer items-center gap-1.5 px-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
           <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
           {t("common.refresh")}

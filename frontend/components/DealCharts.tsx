@@ -60,11 +60,31 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
     .slice(0, 5)
     .map((b) => ({ name: b.bidder.slice(0, 4), amount: Number(b.amount) / 10 ** 6 }));
 
+  const raisedAmount = raiseData[0].value;
+  const capAmount = raisedAmount + raiseData[1].value;
+  const raisedPercent = capAmount > 0 ? Math.round((raisedAmount / capAmount) * 100) : 0;
+  const raiseProgressSummary = t("dealCharts.raiseProgressA11y", {
+    raised: formatTokenAmount(raisedAmount),
+    cap: formatTokenAmount(capAmount),
+    percent: raisedPercent,
+  });
+
+  const bidAmounts = bidDistribution.map((b) => b.amount);
+  const numberFormat = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  const topBidSummary =
+    bidAmounts.length > 0
+      ? t("dealCharts.topBidAmountsA11y", {
+          count: bidAmounts.length,
+          min: numberFormat(Math.min(...bidAmounts)),
+          max: numberFormat(Math.max(...bidAmounts)),
+        })
+      : "";
+
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <div className="avs-elevate rounded-xl border border-border bg-card p-4">
         <h3 className="text-sm font-medium text-card-foreground">{t("dealCharts.raiseProgress")}</h3>
-        <div className="h-56">
+        <div className="h-56" role="img" aria-label={raiseProgressSummary}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -98,7 +118,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
         <h3 className="text-sm font-medium text-card-foreground">
           {deal.status === "open" ? t("dealCharts.sealedHidden") : t("dealCharts.topBidAmounts")}
         </h3>
-        <div className="h-48">
+        <div className="h-48" role={bidDistribution.length > 0 ? "img" : undefined} aria-label={topBidSummary || undefined}>
           {deal.status === "open" ? (
             <div className="flex h-full items-center justify-center gap-1.5 text-sm text-muted-foreground">
               <Lock className="h-4 w-4" strokeWidth={2} />

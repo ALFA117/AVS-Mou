@@ -34,7 +34,7 @@ export default function StatusPage() {
         <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">{t("status.title")}</h1>
         <button
           onClick={() => void refresh()}
-          className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+          className="flex min-h-11 cursor-pointer items-center gap-1.5 px-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
           <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
           {t("status.refresh")}

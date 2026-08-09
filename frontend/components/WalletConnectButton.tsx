@@ -116,7 +116,7 @@ export function WalletConnectButton() {
                   aria-checked={active}
                   disabled={active}
                   onClick={() => chooseWallet(w.adapter.name)}
-                  className="flex w-full cursor-pointer items-center gap-2 rounded px-3 py-2 text-left text-sm text-foreground transition-colors duration-200 hover:bg-muted disabled:cursor-default disabled:opacity-60"
+                  className="flex min-h-11 w-full cursor-pointer items-center gap-2 rounded px-3 py-2 text-left text-sm text-foreground transition-colors duration-200 hover:bg-muted disabled:cursor-default disabled:opacity-60"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={w.adapter.icon} alt="" className="h-4 w-4 shrink-0" />
@@ -135,7 +135,7 @@ export function WalletConnectButton() {
                     void disconnect();
                     setOpen(false);
                   }}
-                  className="flex w-full cursor-pointer items-center gap-2 rounded px-3 py-2 text-left text-sm text-red-600 transition-colors duration-200 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                  className="flex min-h-11 w-full cursor-pointer items-center gap-2 rounded px-3 py-2 text-left text-sm text-red-600 transition-colors duration-200 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
                 >
                   <LogOut className="h-3.5 w-3.5" strokeWidth={2} />
                   {t("walletConnect.disconnect")}

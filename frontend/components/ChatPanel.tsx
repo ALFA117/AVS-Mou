@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Send, MessageSquare, Trash2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useChatStore } from "@/lib/chatStore";
 import { shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -18,8 +18,25 @@ export function ChatPanel({
   const { messagesBySyndicate, loadSyndicate, sendMessage, deleteMessage } = useChatStore();
   const messages = messagesBySyndicate[syndicateId] ?? [];
   const [draft, setDraft] = useState("");
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!confirmingDeleteId) return;
+    const timer = setTimeout(() => setConfirmingDeleteId(null), 3000);
+    return () => clearTimeout(timer);
+  }, [confirmingDeleteId]);
+
+  function handleDeleteClick(id: string) {
+    if (confirmingDeleteId !== id) {
+      setConfirmingDeleteId(id);
+      return;
+    }
+    setConfirmingDeleteId(null);
+    deleteMessage(syndicateId, id, currentUser);
+  }
 
   useEffect(() => {
     loadSyndicate(syndicateId);
@@ -46,10 +63,10 @@ export function ChatPanel({
         {messages.map((m) => (
           <motion.div
             key={m.id}
-            initial={{ opacity: 0, y: 6 }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 340, damping: 26 }}
-            className={`group flex ${m.senderId === currentUser ? "justify-end" : "justify-start"}`}
+            className={`flex ${m.senderId === currentUser ? "justify-end" : "justify-start"}`}
           >
             <div
               className={`max-w-xs rounded-lg px-3 py-2 text-sm ${
@@ -62,11 +79,13 @@ export function ChatPanel({
               <p>{m.content}</p>
               {m.senderId === currentUser && (
                 <button
-                  onClick={() => deleteMessage(syndicateId, m.id, currentUser)}
-                  className="mt-1 flex cursor-pointer items-center gap-1 text-xs opacity-0 underline transition group-hover:opacity-70 group-focus-within:opacity-70 focus-visible:opacity-100"
+                  onClick={() => handleDeleteClick(m.id)}
+                  className={`-mb-1 -mr-1 mt-1 flex min-h-11 cursor-pointer items-center gap-1 rounded px-1 text-xs underline transition hover:opacity-100 ${
+                    confirmingDeleteId === m.id ? "font-semibold opacity-100" : "opacity-70"
+                  }`}
                 >
-                  <Trash2 className="h-3 w-3" strokeWidth={2} />
-                  {t("chatPanel.delete")}
+                  <Trash2 className="h-3 w-3 shrink-0" strokeWidth={2} />
+                  {confirmingDeleteId === m.id ? t("chatPanel.deleteConfirm") : t("chatPanel.delete")}
                 </button>
               )}
             </div>
