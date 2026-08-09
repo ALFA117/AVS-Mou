@@ -69,13 +69,13 @@ export default function StatusPage() {
         </h2>
         <div className="mt-2 space-y-1">
           {PROGRAM_IDS.map((p) => (
-            <div key={p.id} className="flex items-center justify-between text-sm">
+            <div key={p.id} className="flex flex-col gap-0.5 text-sm sm:flex-row sm:items-center sm:justify-between">
               <span className="text-foreground">{p.name}</span>
               <a
                 href={`https://explorer.solana.com/address/${p.id}?cluster=devnet`}
                 target="_blank"
                 rel="noreferrer"
-                className="font-mono-avs text-xs text-primary underline"
+                className="break-all font-mono-avs text-xs text-primary underline"
               >
                 {p.id}
               </a>
