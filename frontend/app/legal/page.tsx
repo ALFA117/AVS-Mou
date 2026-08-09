@@ -1,45 +1,37 @@
+"use client";
+
 import { CircleAlert, FileText, Lock } from "lucide-react";
+import { useTranslation } from "@/lib/LanguageContext";
 
 export default function LegalPage() {
+  const { t } = useTranslation();
+
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground">Legal</h1>
+      <h1 className="font-heading text-2xl font-bold text-foreground">{t("legal.title")}</h1>
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
           <CircleAlert className="h-4 w-4 text-primary" strokeWidth={2} />
-          Disclaimer
+          {t("legal.disclaimerTitle")}
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          AVS is a hackathon project (Solana Blitz V7). Nothing here is financial, legal, or tax
-          advice. Deals shown are not vetted or endorsed by AVS. Devnet deployments use test
-          tokens with no monetary value — do not send real funds to any address associated with
-          this app on devnet.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("legal.disclaimerText")}</p>
       </section>
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
           <FileText className="h-4 w-4 text-primary" strokeWidth={2} />
-          Terms of Service
+          {t("legal.tosTitle")}
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          By using this app you acknowledge it is experimental software provided as-is, with no
-          warranty of any kind. Smart contracts have not been audited. Use at your own risk.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("legal.tosText")}</p>
       </section>
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
           <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
-          Privacy Policy
+          {t("legal.privacyTitle")}
         </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          This app does not run its own backend or collect personal data — all state lives
-          on-chain (public deal terms, sealed bids/votes) or in your browser&apos;s local storage
-          (session keys, chat messages — see docs/SESSION_KEYS.md and lib/chatStore.ts in the
-          repo). No analytics or tracking scripts are included.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("legal.privacyText")}</p>
       </section>
     </main>
   );

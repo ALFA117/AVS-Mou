@@ -1,19 +1,28 @@
-import Link from "next/link";
+"use client";
 
-const LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/legal", label: "Legal" },
-  { href: "/status", label: "Status" },
-  { href: "/settings", label: "Settings" },
-];
+import Link from "next/link";
+import { useTranslation } from "@/lib/LanguageContext";
 
 export function Footer() {
+  const { t } = useTranslation();
+
+  const LINKS = [
+    { href: "/about", label: t("footer.about") },
+    { href: "/faq", label: t("footer.faq") },
+    { href: "/legal", label: t("footer.legal") },
+    { href: "/status", label: t("footer.status") },
+    { href: "/settings", label: t("footer.settings") },
+  ];
+
   return (
     <footer className="mt-16 border-t border-border">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-4 px-6 py-6 text-xs text-muted-foreground">
         {LINKS.map((link) => (
-          <Link key={link.href} href={link.href} className="transition hover:text-foreground">
+          <Link
+            key={link.href}
+            href={link.href}
+            className="transition-colors duration-200 hover:text-foreground"
+          >
             {link.label}
           </Link>
         ))}

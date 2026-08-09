@@ -12,6 +12,7 @@ import { RevealAnimation } from "@/components/RevealAnimation";
 import { DealCharts } from "@/components/DealCharts";
 import { ShareDeal } from "@/components/ShareDeal";
 import { Skeleton } from "@/components/Skeleton";
+import { useTranslation } from "@/lib/LanguageContext";
 import { formatBps, formatDate, formatTokenAmount, shortenAddress } from "@/lib/format";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -24,6 +25,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
   const { deal, loading, error, refresh } = useDeal(params.id);
   const { bids, refresh: refreshBids } = useBids(params.id);
   const { publicKey } = useWallet();
+  const { t } = useTranslation();
 
   if (loading) {
     return (
@@ -46,10 +48,10 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
       <main className="mx-auto max-w-3xl px-6 py-10">
         <p className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
           <CircleAlert className="h-4 w-4" strokeWidth={2} />
-          Couldn&apos;t load this deal: {error ?? "not found"}
+          {t("dealDetail.loadError")}: {error ?? t("dealDetail.notFound")}
         </p>
         <Link href="/deals" className="mt-4 inline-block text-sm text-primary underline">
-          Back to deals
+          {t("dealDetail.backToDeals")}
         </Link>
       </main>
     );
@@ -59,16 +61,16 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
     <motion.main
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ type: "spring", stiffness: 260, damping: 26 }}
       className="mx-auto max-w-3xl px-6 py-10"
     >
       <div className="flex items-center justify-between">
         <Link
           href="/deals"
-          className="flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
-          All deals
+          {t("dealDetail.allDeals")}
         </Link>
       </div>
 
@@ -76,7 +78,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
         <div>
           <h1 className="font-heading text-2xl font-bold text-foreground">Deal #{deal.dealId}</h1>
           <p className="mt-1 font-mono-avs text-sm text-muted-foreground">
-            Startup: {shortenAddress(deal.startup)}
+            {t("dealDetail.startup", { address: shortenAddress(deal.startup) })}
           </p>
         </div>
         <span className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLES[deal.status]}`}>
@@ -85,17 +87,20 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       <dl className="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-border bg-card p-5 sm:grid-cols-4">
-        <Stat label="Valuation" value={formatTokenAmount(deal.valuation)} />
-        <Stat label="Equity offered" value={formatBps(deal.equityBps)} />
-        <Stat label="Min investment" value={formatTokenAmount(deal.minInvestment)} />
-        <Stat label="Max cap" value={formatTokenAmount(deal.maxCap)} />
-        <Stat label="Bidders" value={String(deal.bidCount)} />
-        <Stat label="Vesting" value={`${deal.cliffMonths}mo cliff / ${deal.vestingMonths}mo`} />
+        <Stat label={t("dealDetail.valuation")} value={formatTokenAmount(deal.valuation)} />
+        <Stat label={t("dealDetail.equityOffered")} value={formatBps(deal.equityBps)} />
+        <Stat label={t("dealDetail.minInvestment")} value={formatTokenAmount(deal.minInvestment)} />
+        <Stat label={t("dealDetail.maxCap")} value={formatTokenAmount(deal.maxCap)} />
+        <Stat label={t("dealDetail.bidders")} value={String(deal.bidCount)} />
         <Stat
-          label={deal.status === "open" ? "Closes in" : "Deadline was"}
+          label={t("dealDetail.vesting")}
+          value={t("dealDetail.vestingValue", { cliff: deal.cliffMonths, vesting: deal.vestingMonths })}
+        />
+        <Stat
+          label={deal.status === "open" ? t("dealDetail.closesIn") : t("dealDetail.deadlineWas")}
           value={deal.status === "open" ? <Countdown deadlineTs={deal.deadlineTs} /> : formatDate(deal.deadlineTs)}
         />
-        <Stat label="Oversubscribed" value={deal.oversubscribed ? "Yes" : "No"} />
+        <Stat label={t("dealDetail.oversubscribed")} value={deal.oversubscribed ? t("dealDetail.yes") : t("dealDetail.no")} />
       </dl>
 
       <div className="mt-4">
@@ -116,7 +121,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold text-foreground">Analytics</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground">{t("dealDetail.analytics")}</h2>
         <div className="mt-3">
           <DealCharts deal={deal} bids={bids} />
         </div>
@@ -124,7 +129,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
 
       {(deal.status === "revealed" || deal.status === "settled") && bids.length > 0 && (
         <section className="mt-8">
-          <h2 className="font-heading text-lg font-semibold text-foreground">Syndicate (revealed)</h2>
+          <h2 className="font-heading text-lg font-semibold text-foreground">{t("dealDetail.syndicateRevealed")}</h2>
           <div className="mt-3">
             <RevealAnimation bids={bids} currentUser={publicKey?.toBase58()} />
           </div>

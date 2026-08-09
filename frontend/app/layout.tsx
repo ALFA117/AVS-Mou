@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { WalletContextProvider } from "@/components/providers/WalletContextProvider";
+import { LanguageProvider } from "@/lib/LanguageContext";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 
@@ -39,11 +40,13 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <WalletContextProvider>
-          <NavBar />
-          {children}
-          <Footer />
-        </WalletContextProvider>
+        <LanguageProvider>
+          <WalletContextProvider>
+            <NavBar />
+            {children}
+            <Footer />
+          </WalletContextProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

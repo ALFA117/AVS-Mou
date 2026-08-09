@@ -7,6 +7,7 @@ import { Search, RefreshCw, Rocket } from "lucide-react";
 import { DealCard } from "@/components/DealCard";
 import { SkeletonCard } from "@/components/Skeleton";
 import { useDeals } from "@/hooks/useDeals";
+import { useTranslation } from "@/lib/LanguageContext";
 import type { Deal } from "@/lib/types";
 
 const container = {
@@ -15,7 +16,7 @@ const container = {
 };
 const item = {
   hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as const } },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 26 } },
 };
 
 type StatusFilter = "all" | Deal["status"];
@@ -27,6 +28,14 @@ export default function DealsPage() {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("deadline");
   const reducedMotion = useReducedMotion();
+  const { t } = useTranslation();
+
+  const STATUS_LABELS: Record<StatusFilter, string> = {
+    all: t("deals.filterAll"),
+    open: t("deals.filterOpen"),
+    revealed: t("deals.filterRevealed"),
+    settled: t("deals.filterSettled"),
+  };
 
   const filtered = useMemo(() => {
     let result = statusFilter === "all" ? deals : deals.filter((d) => d.status === statusFilter);
@@ -60,18 +69,18 @@ export default function DealsPage() {
     <main className="mx-auto max-w-5xl px-6 py-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-bold text-foreground">Deals</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Sealed-bid syndicates — bid amounts stay private until reveal.
-          </p>
+          <h1 className="font-heading text-2xl font-bold text-foreground">{t("deals.title")}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t("deals.subtitle")}</p>
         </div>
-        <Link
-          href="/deals/new"
-          className="flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-        >
-          <Rocket className="h-3.5 w-3.5" strokeWidth={2} />
-          Create deal
-        </Link>
+        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+          <Link
+            href="/deals/new"
+            className="flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+          >
+            <Rocket className="h-3.5 w-3.5" strokeWidth={2} />
+            {t("deals.createDeal")}
+          </Link>
+        </motion.div>
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
@@ -79,13 +88,13 @@ export default function DealsPage() {
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`flex min-h-11 cursor-pointer items-center rounded-full px-3 text-sm font-medium transition ${
+            className={`flex min-h-11 cursor-pointer items-center rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
               statusFilter === s
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:bg-border"
             }`}
           >
-            {s === "all" ? "All" : s[0].toUpperCase() + s.slice(1)}
+            {STATUS_LABELS[s]}
           </button>
         ))}
 
@@ -94,7 +103,7 @@ export default function DealsPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by deal ID or startup address…"
+            placeholder={t("deals.searchPlaceholder")}
             className="w-full rounded-md border border-border bg-background py-1 pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground"
           />
         </div>
@@ -104,17 +113,17 @@ export default function DealsPage() {
           onChange={(e) => setSortKey(e.target.value as SortKey)}
           className="rounded-md border border-border bg-background px-2 py-1 text-sm text-foreground"
         >
-          <option value="deadline">Sort: Deadline</option>
-          <option value="valuation">Sort: Valuation</option>
-          <option value="popularity">Sort: Most bidders</option>
+          <option value="deadline">{t("deals.sortDeadline")}</option>
+          <option value="valuation">{t("deals.sortValuation")}</option>
+          <option value="popularity">{t("deals.sortPopularity")}</option>
         </select>
 
         <button
           onClick={() => void refresh()}
-          className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+          className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
           <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
-          Refresh
+          {t("common.refresh")}
         </button>
       </div>
 
@@ -127,12 +136,14 @@ export default function DealsPage() {
       )}
       {error && (
         <p className="mt-10 text-center text-red-600 dark:text-red-400">
-          Couldn&apos;t load deals: {error}
+          {t("deals.loadError")}: {error}
         </p>
       )}
       {!loading && !error && filtered.length === 0 && (
         <p className="mt-10 text-center text-muted-foreground">
-          No {statusFilter === "all" ? "" : statusFilter} deals match your search.
+          {statusFilter === "all"
+            ? t("deals.noResultsAny")
+            : t("deals.noResults", { status: STATUS_LABELS[statusFilter].toLowerCase() })}
         </p>
       )}
 

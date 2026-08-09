@@ -22,6 +22,7 @@ import {
   DELEGATION_PROGRAM_ID,
 } from "@/lib/programs";
 import { getWalletErConnection, ER_VALIDATOR } from "@/lib/ephemeralRollup";
+import { useTranslation } from "@/lib/LanguageContext";
 
 type Step = "idle" | "creating" | "delegating" | "permissioning" | "done";
 
@@ -29,6 +30,7 @@ export default function NewDealPage() {
   const router = useRouter();
   const { connection } = useConnection();
   const { publicKey, wallet, sendTransaction, signMessage } = useWallet();
+  const { t } = useTranslation();
 
   const [fundingMint, setFundingMint] = useState("");
   const [valuation, setValuation] = useState("");
@@ -49,7 +51,7 @@ export default function NewDealPage() {
     if (!signMessage) {
       setStatus({
         kind: "error",
-        message: "This wallet doesn't support message signing, which init_deal_permission needs to authenticate to the Ephemeral Rollup.",
+        message: t("newDeal.noSignMessageSupport"),
       });
       return;
     }
@@ -164,7 +166,7 @@ export default function NewDealPage() {
     return (
       <main className="mx-auto max-w-xl px-6 py-10">
         <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
-          Connect your wallet to create a deal.
+          {t("newDeal.connectPrompt")}
         </p>
       </main>
     );
@@ -174,30 +176,27 @@ export default function NewDealPage() {
     <motion.main
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ type: "spring", stiffness: 260, damping: 26 }}
       className="mx-auto max-w-xl px-6 py-10"
     >
       <h1 className="flex items-center gap-2 font-heading text-2xl font-bold text-foreground">
         <Rocket className="h-5 w-5 text-primary" strokeWidth={2} />
-        Create a deal
+        {t("newDeal.title")}
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Sets your deal live and sealed on MagicBlock&apos;s Ephemeral Rollup — bid amounts stay
-        hidden from everyone, including you, until reveal.
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">{t("newDeal.subtitle")}</p>
 
       <div className="mt-6 space-y-4 rounded-lg border border-border bg-card p-5">
-        <Field label="Funding token mint address">
+        <Field label={t("newDeal.fundingMint")}>
           <input
             value={fundingMint}
             onChange={(e) => setFundingMint(e.target.value)}
-            placeholder="An existing SPL token mint on Devnet"
+            placeholder={t("newDeal.fundingMintPlaceholder")}
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
           />
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Valuation">
+          <Field label={t("newDeal.valuation")}>
             <input
               type="number"
               value={valuation}
@@ -205,7 +204,7 @@ export default function NewDealPage() {
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label="Equity offered (%)">
+          <Field label={t("newDeal.equityPercent")}>
             <input
               type="number"
               step="0.1"
@@ -214,7 +213,7 @@ export default function NewDealPage() {
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label="Min investment">
+          <Field label={t("newDeal.minInvestment")}>
             <input
               type="number"
               value={minInvestment}
@@ -222,7 +221,7 @@ export default function NewDealPage() {
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label="Max cap">
+          <Field label={t("newDeal.maxCap")}>
             <input
               type="number"
               value={maxCap}
@@ -230,7 +229,7 @@ export default function NewDealPage() {
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label="Cliff (months)">
+          <Field label={t("newDeal.cliffMonths")}>
             <input
               type="number"
               value={cliffMonths}
@@ -238,7 +237,7 @@ export default function NewDealPage() {
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label="Vesting (months)">
+          <Field label={t("newDeal.vestingMonths")}>
             <input
               type="number"
               value={vestingMonths}
@@ -248,7 +247,7 @@ export default function NewDealPage() {
           </Field>
         </div>
 
-        <Field label="Bidding deadline">
+        <Field label={t("newDeal.deadline")}>
           <input
             type="datetime-local"
             value={deadline}
@@ -257,20 +256,21 @@ export default function NewDealPage() {
           />
         </Field>
 
-        <button
+        <motion.button
           type="button"
           disabled={!valid || busy}
           onClick={() => void submit()}
-          className="w-full cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          whileTap={valid && !busy ? { scale: 0.98 } : undefined}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          className="w-full cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {busy ? <StepLabel step={step} /> : "Create deal"}
-        </button>
+          {busy ? <StepLabel step={step} /> : t("newDeal.createDeal")}
+        </motion.button>
 
         {step === "permissioning" && (
           <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Link2 className="h-3.5 w-3.5" strokeWidth={2} />
-            Your wallet will ask you to sign a message to authenticate to the Ephemeral Rollup —
-            this doesn&apos;t cost anything or authorize a transaction by itself.
+            {t("newDeal.signMessageNotice")}
           </p>
         )}
 
@@ -295,14 +295,15 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 function StepLabel({ step }: { step: Step }) {
+  const { t } = useTranslation();
   switch (step) {
     case "creating":
-      return <>Creating deal on-chain…</>;
+      return <>{t("newDeal.stepCreating")}</>;
     case "delegating":
-      return <>Delegating to the Ephemeral Rollup…</>;
+      return <>{t("newDeal.stepDelegating")}</>;
     case "permissioning":
-      return <>Sealing bid visibility…</>;
+      return <>{t("newDeal.stepPermissioning")}</>;
     default:
-      return <>Working…</>;
+      return <>{t("newDeal.stepWorking")}</>;
   }
 }

@@ -2,6 +2,7 @@
 
 import { RefreshCw, Server, Link2 } from "lucide-react";
 import { useSystemStatus, type ServiceStatus } from "@/hooks/useSystemStatus";
+import { useTranslation } from "@/lib/LanguageContext";
 
 const PROGRAM_IDS: { name: string; id: string }[] = [
   { name: "sealed-auction", id: "Bycx3bB2yrFMYWSvi2Yjxutrt1QoVuYyzn37T6ys9YYo" },
@@ -15,50 +16,50 @@ const STATUS_DOT: Record<ServiceStatus, string> = {
   down: "bg-red-500",
 };
 
-const STATUS_LABEL: Record<ServiceStatus, string> = {
-  checking: "Checking…",
-  up: "Operational",
-  down: "Unreachable",
-};
-
 export default function StatusPage() {
   const { status, refresh, erEndpoint } = useSystemStatus();
+  const { t } = useTranslation();
+
+  const STATUS_LABEL: Record<ServiceStatus, string> = {
+    checking: t("status.checking"),
+    up: t("status.operational"),
+    down: t("status.unreachable"),
+  };
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-bold text-foreground">System Status</h1>
+        <h1 className="font-heading text-2xl font-bold text-foreground">{t("status.title")}</h1>
         <button
           onClick={() => void refresh()}
-          className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+          className="flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
           <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
-          Refresh
+          {t("status.refresh")}
         </button>
       </div>
 
       <div className="mt-6 space-y-3">
         <StatusRow
-          label="Solana Devnet (base layer)"
+          label={t("status.solanaLabel")}
           status={status.solana}
-          detail={status.solanaSlot ? `Slot ${status.solanaSlot.toLocaleString()}` : undefined}
+          statusLabel={STATUS_LABEL}
+          detail={status.solanaSlot ? t("status.slot", { slot: status.solanaSlot.toLocaleString() }) : undefined}
         />
         <StatusRow
-          label="MagicBlock Ephemeral Rollup (devnet, hosted)"
+          label={t("status.magicblockLabel")}
           status={status.magicblockEr}
+          statusLabel={STATUS_LABEL}
           detail={erEndpoint}
         />
       </div>
 
-      <p className="mt-3 text-xs text-muted-foreground">
-        The ER check may show a false &quot;Unreachable&quot; if the endpoint&apos;s CORS policy
-        blocks browser requests — it&apos;s a best-effort client-side ping, not a guarantee.
-      </p>
+      <p className="mt-3 text-xs text-muted-foreground">{t("status.corsNote")}</p>
 
       <section className="mt-8">
         <h2 className="flex items-center gap-1.5 text-sm font-medium text-foreground">
           <Server className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
-          Deployed programs
+          {t("status.deployedPrograms")}
         </h2>
         <div className="mt-2 space-y-1">
           {PROGRAM_IDS.map((p) => (
@@ -80,17 +81,17 @@ export default function StatusPage() {
       <section className="mt-8">
         <h2 className="flex items-center gap-1.5 text-sm font-medium text-foreground">
           <Link2 className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
-          Links
+          {t("status.links")}
         </h2>
         <ul className="mt-2 space-y-1 text-sm">
           <li>
             <a href="https://status.solana.com" target="_blank" rel="noreferrer" className="text-primary underline">
-              Solana network status
+              {t("status.solanaStatusLink")}
             </a>
           </li>
           <li>
             <a href="https://docs.magicblock.gg" target="_blank" rel="noreferrer" className="text-primary underline">
-              MagicBlock docs
+              {t("status.magicblockDocsLink")}
             </a>
           </li>
         </ul>
@@ -102,10 +103,12 @@ export default function StatusPage() {
 function StatusRow({
   label,
   status,
+  statusLabel,
   detail,
 }: {
   label: string;
   status: ServiceStatus;
+  statusLabel: Record<ServiceStatus, string>;
   detail?: string;
 }) {
   return (
@@ -116,7 +119,7 @@ function StatusRow({
       </div>
       <span className="flex items-center gap-2 text-sm text-foreground">
         <span className={`h-2 w-2 rounded-full ${STATUS_DOT[status]}`} />
-        {STATUS_LABEL[status]}
+        {statusLabel[status]}
       </span>
     </div>
   );

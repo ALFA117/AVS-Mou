@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Lock, CircleCheck, CircleAlert, Link2 } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
@@ -16,6 +17,7 @@ import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/
 import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
 import { formatTokenAmount } from "@/lib/format";
 import { BidConfirmModal } from "@/components/BidConfirmModal";
+import { useTranslation } from "@/lib/LanguageContext";
 import type { Deal } from "@/lib/types";
 
 const MAGIC_VAULT = new PublicKey("MagicVau1t999999999999999999999999999999999");
@@ -24,6 +26,7 @@ const MAGIC_PROGRAM = new PublicKey("Magic11111111111111111111111111111111111111
 export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () => void }) {
   const { connection } = useConnection();
   const { publicKey, wallet, signTransaction, sendTransaction } = useWallet();
+  const { t } = useTranslation();
   const [amount, setAmount] = useState("");
   const [confirming, setConfirming] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -132,7 +135,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
   if (deal.status !== "open") {
     return (
       <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
-        Bidding is closed for this deal.
+        {t("dealDetail.biddingClosed")}
       </p>
     );
   }
@@ -140,7 +143,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
   if (!publicKey) {
     return (
       <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
-        Connect your wallet to place a sealed bid.
+        {t("dealDetail.connectToBid")}
       </p>
     );
   }
@@ -149,11 +152,9 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
     <div className="rounded-lg border border-border bg-card p-5">
       <h3 className="flex items-center gap-2 font-heading font-semibold text-card-foreground">
         <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
-        Place a sealed bid
+        {t("bidForm.title")}
       </h3>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Your amount is hidden from everyone — including other bidders — until reveal.
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">{t("bidForm.subtitle")}</p>
       <div className="mt-4 flex items-center gap-2">
         <input
           type="number"
@@ -161,40 +162,42 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
           step="0.01"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          placeholder={`Min ${minInvestment}`}
+          placeholder={t("bidForm.minPlaceholder", { amount: minInvestment })}
           className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
         />
-        <button
+        <motion.button
           type="button"
           disabled={!amountValid || submitting}
           onClick={() => setConfirming(true)}
-          className="cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          whileTap={amountValid && !submitting ? { scale: 0.96 } : undefined}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          className="cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {submitting ? "Placing bid…" : "Place Bid"}
-        </button>
+          {submitting ? t("bidForm.placingBid") : t("bidForm.placeBid")}
+        </motion.button>
       </div>
       {delegating && (
         <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
           <Link2 className="h-4 w-4 animate-pulse" strokeWidth={2} />
-          One-time setup: approving your wallet for gasless bidding…
+          {t("bidForm.delegating")}
         </p>
       )}
       {submitting && !delegating && (
         <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
           <Lock className="h-4 w-4 animate-pulse" strokeWidth={2} />
-          Submitting sealed bid…
+          {t("bidForm.submitting")}
         </p>
       )}
       {status.kind === "success" && (
         <p className="mt-2 flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
           <CircleCheck className="h-4 w-4" strokeWidth={2} />
-          Bid placed. Waiting for reveal.
+          {t("bidForm.success")}
         </p>
       )}
       {status.kind === "error" && (
         <p className="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
           <CircleAlert className="h-4 w-4" strokeWidth={2} />
-          Bid failed: {status.message}
+          {t("bidForm.error", { message: status.message ?? "" })}
         </p>
       )}
 

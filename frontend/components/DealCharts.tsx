@@ -16,6 +16,7 @@ import {
 import type { PieLabelRenderProps } from "recharts";
 import { Lock } from "lucide-react";
 import { formatTokenAmount } from "@/lib/format";
+import { useTranslation } from "@/lib/LanguageContext";
 import type { Bid, Deal } from "@/lib/types";
 
 // CSS custom properties resolve fine as SVG fill values, so these charts
@@ -48,9 +49,10 @@ function renderPercentLabel(props: PieLabelRenderProps) {
 }
 
 export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
+  const { t } = useTranslation();
   const raiseData = [
-    { name: "Raised", value: Number(deal.totalRaised) || bids.reduce((s, b) => s + Number(b.amount), 0) },
-    { name: "Remaining to cap", value: Math.max(Number(deal.maxCap) - Number(deal.totalRaised), 0) },
+    { name: t("dealCharts.raised"), value: Number(deal.totalRaised) || bids.reduce((s, b) => s + Number(b.amount), 0) },
+    { name: t("dealCharts.remainingToCap"), value: Math.max(Number(deal.maxCap) - Number(deal.totalRaised), 0) },
   ];
 
   const bidDistribution = [...bids]
@@ -61,7 +63,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <div className="rounded-lg border border-border bg-card p-4">
-        <h3 className="text-sm font-medium text-card-foreground">Raise progress</h3>
+        <h3 className="text-sm font-medium text-card-foreground">{t("dealCharts.raiseProgress")}</h3>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -94,13 +96,13 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
 
       <div className="rounded-lg border border-border bg-card p-4">
         <h3 className="text-sm font-medium text-card-foreground">
-          {deal.status === "open" ? "Sealed — visible only after reveal" : "Top bid amounts"}
+          {deal.status === "open" ? t("dealCharts.sealedHidden") : t("dealCharts.topBidAmounts")}
         </h3>
         <div className="h-48">
           {deal.status === "open" ? (
             <div className="flex h-full items-center justify-center gap-1.5 text-sm text-muted-foreground">
               <Lock className="h-4 w-4" strokeWidth={2} />
-              Hidden until reveal
+              {t("dealCharts.hiddenUntilReveal")}
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">

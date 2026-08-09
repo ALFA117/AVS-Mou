@@ -7,6 +7,7 @@ import { useSessionKey } from "@/hooks/useSessionKey";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { SEALED_AUCTION_PROGRAM_ID, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
 import { downloadCsv, positionsToCsv } from "@/lib/csv";
+import { useTranslation } from "@/lib/LanguageContext";
 
 const NOTIF_STORAGE_KEY = "avs.settings.notifications";
 
@@ -22,37 +23,38 @@ export default function SettingsPage() {
   const voteSession = useSessionKey(PRIVATE_VOTING_PROGRAM_ID);
   const [notifEnabled, setNotifEnabled] = useState(loadNotifPref);
   const [cleared, setCleared] = useState(false);
+  const { t } = useTranslation();
 
   if (!publicKey) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-10">
-        <h1 className="font-heading text-2xl font-bold text-foreground">Settings</h1>
-        <p className="mt-6 text-sm text-muted-foreground">Connect your wallet to manage settings.</p>
+        <h1 className="font-heading text-2xl font-bold text-foreground">{t("settings.title")}</h1>
+        <p className="mt-6 text-sm text-muted-foreground">{t("settings.connectPrompt")}</p>
       </main>
     );
   }
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground">Settings</h1>
+      <h1 className="font-heading text-2xl font-bold text-foreground">{t("settings.title")}</h1>
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
           <KeyRound className="h-4 w-4 text-primary" strokeWidth={2} />
-          Session keys
+          {t("settings.sessionKeysTitle")}
         </h2>
         <p className="text-xs text-muted-foreground">
-          See <a href="/faq" className="text-primary underline">FAQ</a> — a session key lets you bid/vote
-          without a wallet popup per action, until it expires or you revoke it.
+          {t("settings.sessionKeysSeeFaq")} <a href="/faq" className="text-primary underline">{t("settings.faqLinkLabel")}</a>{" "}
+          {t("settings.sessionKeysHint")}
         </p>
         <div className="mt-3 space-y-2">
-          <SessionRow programName="Bidding (sealed-auction)" session={bidSession} />
-          <SessionRow programName="Voting (private-voting)" session={voteSession} />
+          <SessionRow programName={t("settings.biddingProgram")} session={bidSession} />
+          <SessionRow programName={t("settings.votingProgram")} session={voteSession} />
         </div>
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold text-foreground">Notifications</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground">{t("settings.notifications")}</h2>
         <label className="mt-2 flex items-center gap-2 text-sm text-foreground">
           <input
             type="checkbox"
@@ -63,42 +65,35 @@ export default function SettingsPage() {
             }}
             className="h-4 w-4 accent-primary"
           />
-          Notify me about deal reveals and milestone results
+          {t("settings.notifyLabel")}
         </label>
-        <p className="mt-1 text-xs text-muted-foreground">
-          This app has no backend/push service — this preference is a placeholder for a future
-          notification channel and only affects local UI state today.
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">{t("settings.notifyHint")}</p>
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold text-foreground">Export data</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground">{t("settings.exportData")}</h2>
         <button
           type="button"
           disabled={positions.length === 0}
           onClick={() => downloadCsv("avs-portfolio.csv", positionsToCsv(positions))}
-          className="mt-2 flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
+          className="mt-2 flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Download className="h-3.5 w-3.5" strokeWidth={2} />
-          Export portfolio as CSV
+          {t("settings.exportPortfolio")}
         </button>
       </section>
 
       <section className="mt-8">
-        <h2 className="font-heading text-lg font-semibold text-foreground">Privacy</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground">{t("settings.privacy")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          This app has no backend and collects no analytics. Locally stored data (this browser
-          only): your session keys and syndicate chat messages. See{" "}
-          <a href="/legal" className="text-primary underline">Legal</a> for the full privacy policy.
+          {t("settings.privacyText")}{" "}
+          <a href="/legal" className="text-primary underline">{t("settings.legalLinkLabel")}</a>{" "}
+          {t("settings.privacyTextSuffix")}
         </p>
         <button
           type="button"
           onClick={() => {
-            if (
-              !window.confirm(
-                "Clear all local data? This revokes your session keys and deletes syndicate chat history stored in this browser. This can't be undone.",
-              )
-            ) {
+            if (!window.confirm(t("settings.clearConfirm"))) {
               return;
             }
             bidSession.revoke();
@@ -110,15 +105,15 @@ export default function SettingsPage() {
             }
             setCleared(true);
           }}
-          className="mt-3 flex cursor-pointer items-center gap-1.5 rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10"
+          className="mt-3 flex cursor-pointer items-center gap-1.5 rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors duration-200 hover:bg-red-50 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/10"
         >
           <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
-          Clear all local data
+          {t("settings.clearData")}
         </button>
         {cleared && (
           <p className="mt-2 flex items-center gap-1.5 text-xs text-green-700 dark:text-green-400">
             <CircleCheck className="h-3.5 w-3.5" strokeWidth={2} />
-            Local data cleared.
+            {t("settings.cleared")}
           </p>
         )}
       </section>
@@ -133,23 +128,24 @@ function SessionRow({
   programName: string;
   session: ReturnType<typeof useSessionKey>;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-3 py-2 text-sm text-card-foreground">
       <span>{programName}</span>
       {session.state.status === "active" ? (
         <span className="flex items-center gap-2">
           <span className="font-mono-avs text-green-700 dark:text-green-400">
-            Active till {session.state.expiresAt.toLocaleTimeString()}
+            {t("settings.activeUntil", { time: session.state.expiresAt.toLocaleTimeString() })}
           </span>
           <button
             onClick={() => session.revoke()}
             className="cursor-pointer text-red-600 underline dark:text-red-400"
           >
-            Revoke
+            {t("settings.revoke")}
           </button>
         </span>
       ) : session.state.status === "authorizing" ? (
-        <span className="text-muted-foreground">Waiting for wallet signature…</span>
+        <span className="text-muted-foreground">{t("settings.waitingSignature")}</span>
       ) : (
         <span className="flex items-center gap-2">
           {session.state.status === "error" && (
@@ -157,9 +153,9 @@ function SessionRow({
           )}
           <button
             onClick={() => session.authorize()}
-            className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition hover:opacity-90"
+            className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
           >
-            Authorize (one-time)
+            {t("settings.authorize")}
           </button>
         </span>
       )}

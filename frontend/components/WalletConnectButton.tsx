@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { shortenAddress } from "@/lib/format";
+import { useTranslation } from "@/lib/LanguageContext";
 
 /** Minimal connect button — relies on Wallet Standard auto-detected wallets. */
 export function WalletConnectButton() {
   const { wallets, wallet, select, connect, disconnect, connecting, connected, publicKey } =
     useWallet();
+  const { t } = useTranslation();
   // `select` only updates which adapter is active; connecting has to happen
   // in a follow-up render once that adapter is actually set, or `connect()`
   // races against a still-null `wallet`.
@@ -24,31 +27,35 @@ export function WalletConnectButton() {
 
   if (connected && publicKey) {
     return (
-      <button
+      <motion.button
         type="button"
         onClick={() => void disconnect()}
-        className="cursor-pointer rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted"
+        whileTap={{ scale: 0.96 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+        className="cursor-pointer rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
       >
         {shortenAddress(publicKey.toBase58())}
-      </button>
+      </motion.button>
     );
   }
 
   if (wallets.length === 0) {
-    return <span className="text-sm text-muted-foreground">No Solana wallet detected</span>;
+    return <span className="text-sm text-muted-foreground">{t("walletConnect.noWallet")}</span>;
   }
 
   return (
-    <button
+    <motion.button
       type="button"
       disabled={connecting}
       onClick={() => {
         pendingConnect.current = true;
         select(wallets[0].adapter.name);
       }}
-      className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      whileTap={!connecting ? { scale: 0.96 } : undefined}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {connecting ? "Connecting…" : "Connect Wallet"}
-    </button>
+      {connecting ? t("walletConnect.connecting") : t("walletConnect.connect")}
+    </motion.button>
   );
 }

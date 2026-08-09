@@ -23,6 +23,7 @@ import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePublicStats } from "@/hooks/usePublicStats";
 import { formatTokenAmount } from "@/lib/format";
 import { Skeleton, SkeletonStat } from "@/components/Skeleton";
+import { useTranslation } from "@/lib/LanguageContext";
 
 const COLORS = ["var(--primary)", "var(--accent)", "#0EA5E9", "#F59E0B", "#64748B", "#94A3B8"];
 
@@ -55,6 +56,7 @@ export default function AnalyticsPage() {
   const { publicKey } = useWallet();
   const { positions, loading } = usePortfolio();
   const { stats, loading: statsLoading } = usePublicStats();
+  const { t } = useTranslation();
 
   const allocation = useMemo(
     () => positions.map((p) => ({ name: p.dealTitle, value: Number(p.bidAmount) })),
@@ -76,11 +78,8 @@ export default function AnalyticsPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground">Analytics</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Platform-wide stats are public — no wallet needed. Individual bid amounts stay
-        sealed until each deal reveals.
-      </p>
+      <h1 className="font-heading text-2xl font-bold text-foreground">{t("analytics.title")}</h1>
+      <p className="mt-1 text-sm text-muted-foreground">{t("analytics.subtitle")}</p>
 
       <section className="mt-6">
         {statsLoading && (
@@ -100,21 +99,21 @@ export default function AnalyticsPage() {
         {!statsLoading && !stats && (
           <p className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
             <CircleAlert className="h-4 w-4" strokeWidth={2} />
-            Couldn&apos;t load platform stats.
+            {t("analytics.loadError")}
           </p>
         )}
         {stats && (
           <>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-              <Stat label="Total deals" value={String(stats.totalDeals)} />
-              <Stat label="Capital deployed" value={formatTokenAmount(stats.totalCapitalDeployed)} />
-              <Stat label="Syndicates formed" value={String(stats.syndicateCount)} />
-              <Stat label="Avg deal size" value={formatTokenAmount(stats.avgDealSize)} />
+              <Stat label={t("analytics.totalDeals")} value={String(stats.totalDeals)} />
+              <Stat label={t("analytics.capitalDeployed")} value={formatTokenAmount(stats.totalCapitalDeployed)} />
+              <Stat label={t("analytics.syndicatesFormed")} value={String(stats.syndicateCount)} />
+              <Stat label={t("analytics.avgDealSize")} value={formatTokenAmount(stats.avgDealSize)} />
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="rounded-lg border border-border bg-card p-4">
-                <h2 className="text-sm font-medium text-card-foreground">Deals by deadline date</h2>
+                <h2 className="text-sm font-medium text-card-foreground">{t("analytics.dealsByDeadline")}</h2>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={stats.dealsOverTime} margin={{ top: 16 }}>
@@ -132,11 +131,11 @@ export default function AnalyticsPage() {
               <div className="rounded-lg border border-border bg-card p-4">
                 <h2 className="flex items-center gap-1.5 text-sm font-medium text-card-foreground">
                   <BarChart3 className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
-                  Leaderboard (anonymous, by total invested)
+                  {t("analytics.leaderboard")}
                 </h2>
                 <div className="mt-2 space-y-1">
                   {stats.leaderboard.length === 0 && (
-                    <p className="text-sm text-muted-foreground">No sealed bids settled yet.</p>
+                    <p className="text-sm text-muted-foreground">{t("analytics.noBidsSettled")}</p>
                   )}
                   {stats.leaderboard.map((entry, i) => (
                     <div key={entry.investor} className="flex items-center justify-between text-sm">
@@ -144,8 +143,8 @@ export default function AnalyticsPage() {
                         #{i + 1} <span className="font-mono-avs">{entry.investor}</span>
                       </span>
                       <span className="font-mono-avs text-foreground">
-                        {formatTokenAmount(entry.totalInvested)} · {entry.dealCount} deal
-                        {entry.dealCount === 1 ? "" : "s"}
+                        {formatTokenAmount(entry.totalInvested)} ·{" "}
+                        {t("analytics.dealsSuffix", { count: entry.dealCount, plural: entry.dealCount === 1 ? "" : "s" })}
                       </span>
                     </div>
                   ))}
@@ -157,9 +156,9 @@ export default function AnalyticsPage() {
       </section>
 
       <section className="mt-10 border-t border-border pt-8">
-        <h2 className="font-heading text-lg font-semibold text-foreground">My Stats</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground">{t("analytics.myStats")}</h2>
         {!publicKey ? (
-          <p className="mt-4 text-sm text-muted-foreground">Connect your wallet to see your own stats.</p>
+          <p className="mt-4 text-sm text-muted-foreground">{t("analytics.connectPrompt")}</p>
         ) : loading ? (
           <div className="mt-4 space-y-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -173,18 +172,18 @@ export default function AnalyticsPage() {
             </div>
           </div>
         ) : positions.length === 0 ? (
-          <p className="mt-4 text-sm text-muted-foreground">No positions yet.</p>
+          <p className="mt-4 text-sm text-muted-foreground">{t("analytics.noPositions")}</p>
         ) : (
           <>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <Stat label="Avg bid amount" value={formatTokenAmount(avgBid)} />
-              <Stat label="Deals settled" value={String(settledCount)} />
-              <Stat label="Total positions" value={String(positions.length)} />
+              <Stat label={t("analytics.avgBidAmount")} value={formatTokenAmount(avgBid)} />
+              <Stat label={t("analytics.dealsSettled")} value={String(settledCount)} />
+              <Stat label={t("analytics.totalPositions")} value={String(positions.length)} />
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
               <div className="rounded-lg border border-border bg-card p-4">
-                <h3 className="text-sm font-medium text-card-foreground">Allocation breakdown</h3>
+                <h3 className="text-sm font-medium text-card-foreground">{t("analytics.allocationBreakdown")}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -214,7 +213,7 @@ export default function AnalyticsPage() {
               </div>
 
               <div className="rounded-lg border border-border bg-card p-4">
-                <h3 className="text-sm font-medium text-card-foreground">Cumulative investment</h3>
+                <h3 className="text-sm font-medium text-card-foreground">{t("analytics.cumulativeInvestment")}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={cumulative}>

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { formatEquity, formatTokenAmount, shortenAddress } from "@/lib/format";
+import { useTranslation } from "@/lib/LanguageContext";
 import type { Bid } from "@/lib/types";
 
 /**
@@ -10,6 +11,7 @@ import type { Bid } from "@/lib/types";
  */
 export function RevealAnimation({ bids, currentUser }: { bids: Bid[]; currentUser?: string }) {
   const sorted = [...bids].sort((a, b) => Number(b.amount) - Number(a.amount));
+  const { t } = useTranslation();
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -21,23 +23,24 @@ export function RevealAnimation({ bids, currentUser }: { bids: Bid[]; currentUse
               key={bid.publicKey}
               initial={{ opacity: 0, rotateY: 90 }}
               animate={{ opacity: 1, rotateY: 0 }}
-              transition={{ delay: index * 0.08, duration: 0.4 }}
-              className={`rounded-lg border bg-card p-4 ${
+              transition={{ delay: index * 0.05, type: "spring", stiffness: 260, damping: 22 }}
+              whileHover={{ y: -2 }}
+              className={`rounded-lg border bg-card p-4 transition-shadow duration-200 hover:shadow-md hover:shadow-primary/5 ${
                 isYou ? "border-primary/40" : "border-border"
               }`}
             >
               <div className="flex items-center justify-between text-sm">
                 <span className="font-mono text-muted-foreground">
                   {shortenAddress(bid.bidder)}
-                  {isYou && " (you)"}
+                  {isYou && ` ${t("revealAnimation.you")}`}
                 </span>
                 <span className="text-xs text-muted-foreground">#{index + 1}</span>
               </div>
               <p className="mt-2 text-xl font-semibold text-card-foreground">{formatTokenAmount(bid.amount)}</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {Number(bid.equityAllocated) > 0
-                  ? `${formatEquity(bid.equityAllocated)} equity`
-                  : "Equity pending settlement"}
+                  ? t("revealAnimation.equityAmount", { amount: formatEquity(bid.equityAllocated) })
+                  : t("revealAnimation.equityPending")}
               </p>
             </motion.div>
           );

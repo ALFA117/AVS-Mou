@@ -7,6 +7,7 @@ import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { splTokenManagerProgram } from "@/lib/programs";
+import { useTranslation } from "@/lib/LanguageContext";
 import type { Syndicate } from "@/lib/types";
 
 /**
@@ -18,6 +19,7 @@ import type { Syndicate } from "@/lib/types";
 export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
   const { connection } = useConnection();
   const { publicKey, wallet, sendTransaction } = useWallet();
+  const { t } = useTranslation();
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -59,16 +61,16 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
     <div className="rounded-lg border border-border bg-card p-4">
       <h3 className="flex items-center gap-2 font-heading text-sm font-semibold text-card-foreground">
         <ArrowRightLeft className="h-4 w-4 text-primary" strokeWidth={2} />
-        Transfer equity to another member
+        {t("transferEquity.title")}
       </h3>
       <div className="mt-3 space-y-3">
         <div>
           <label htmlFor="transfer-recipient" className="text-xs text-muted-foreground">
-            Recipient wallet address
+            {t("transferEquity.recipientLabel")}
           </label>
           <input
             id="transfer-recipient"
-            placeholder="e.g. 7xKX...gAsU"
+            placeholder={t("transferEquity.recipientPlaceholder")}
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
             className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
@@ -77,7 +79,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
         <div className="flex gap-2">
           <div className="w-full">
             <label htmlFor="transfer-amount" className="text-xs text-muted-foreground">
-              Equity amount
+              {t("transferEquity.amountLabel")}
             </label>
             <input
               id="transfer-amount"
@@ -92,26 +94,26 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
             type="button"
             disabled={!recipient || !amount || submitting}
             onClick={() => {
-              if (window.confirm(`Transfer ${amount} equity to ${recipient}? This can't be undone.`)) {
+              if (window.confirm(t("transferEquity.confirmPrompt", { amount, recipient }))) {
                 void submit();
               }
             }}
-            className="mt-5 h-11 cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-5 h-11 cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {submitting ? "Transferring…" : "Transfer"}
+            {submitting ? t("transferEquity.transferring") : t("transferEquity.transfer")}
           </button>
         </div>
       </div>
       {status.kind === "success" && (
         <p className="mt-2 flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
           <CircleCheck className="h-4 w-4" strokeWidth={2} />
-          Transfer sent.
+          {t("transferEquity.success")}
         </p>
       )}
       {status.kind === "error" && (
         <p className="mt-2 flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
           <CircleAlert className="h-4 w-4" strokeWidth={2} />
-          Transfer failed: {status.message}
+          {t("transferEquity.error", { message: status.message ?? "" })}
         </p>
       )}
     </div>

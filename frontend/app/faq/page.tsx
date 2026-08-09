@@ -1,36 +1,19 @@
-import { HelpCircle } from "lucide-react";
+"use client";
 
-const FAQS: { q: string; a: string }[] = [
-  {
-    q: "Is my bid really private?",
-    a: "Yes — it's stored on an Ephemeral Rollup account gated by MagicBlock's private-permission system, naming only you and the startup as readers. It stays that way until the deal's reveal instruction runs after the deadline.",
-  },
-  {
-    q: "Can the startup see my bid amount before reveal?",
-    a: "No. The same access-control permission that hides your bid from other bidders also hides it from the startup until reveal.",
-  },
-  {
-    q: "What if I want to change my bid?",
-    a: "sealed-auction doesn't currently support editing a placed bid — each bidder gets one bid PDA per deal. Revoke/re-bid support is tracked as future work.",
-  },
-  {
-    q: "How do I know the reveal is fair?",
-    a: "Reveal logic runs entirely on-chain: reveal_deal scans every bid account, sums the total raised, and there's no discretionary step where a party could hide or alter a bid. Milestone reward settlement additionally gates on a verifiable random function (VRF) so payout order can't be front-run.",
-  },
-  {
-    q: "Why do I sometimes not need to approve a wallet popup?",
-    a: "Session keys — once you authorize a disposable signing key with one wallet signature, it can sign bids/votes on your behalf until it expires (default 1 hour) or you revoke it. See the Authorize/Revoke controls when you place a bid or vote.",
-  },
-  {
-    q: "Do I need SOL in my wallet to bid or vote?",
-    a: "No. A relay service sponsors the small rent + transaction fee for every bid and vote, so you only need SPL tokens for the bid amount itself — never SOL. Your wallet (or session key) still signs the bid/vote content; the relay only ever pays, it can never see or alter what you're bidding or voting.",
-  },
-];
+import { HelpCircle } from "lucide-react";
+import { useTranslation } from "@/lib/LanguageContext";
 
 export default function FaqPage() {
+  const { t } = useTranslation();
+
+  const FAQS = [1, 2, 3, 4, 5, 6].map((n) => ({
+    q: t(`faq.q${n}`),
+    a: t(`faq.a${n}`),
+  }));
+
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="font-heading text-2xl font-bold text-foreground">FAQ</h1>
+      <h1 className="font-heading text-2xl font-bold text-foreground">{t("faq.title")}</h1>
       <div className="mt-6 space-y-6">
         {FAQS.map((item) => (
           <div key={item.q} className="rounded-lg border border-border bg-card p-4">

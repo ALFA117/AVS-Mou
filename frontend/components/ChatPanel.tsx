@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Send, MessageSquare, Trash2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { useChatStore } from "@/lib/chatStore";
 import { shortenAddress } from "@/lib/format";
+import { useTranslation } from "@/lib/LanguageContext";
 import type { MemberRole } from "@/lib/types";
 
 export function ChatPanel({
@@ -17,6 +19,7 @@ export function ChatPanel({
   const messages = messagesBySyndicate[syndicateId] ?? [];
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadSyndicate(syndicateId);
@@ -31,16 +34,19 @@ export function ChatPanel({
       <div className="flex items-center gap-2 border-b border-border px-4 py-3">
         <MessageSquare className="h-4 w-4 text-primary" strokeWidth={2} />
         <h3 className="font-heading text-sm font-semibold text-card-foreground">
-          Syndicate chat
+          {t("chatPanel.title")}
         </h3>
       </div>
       <div className="flex-1 space-y-2 overflow-y-auto p-4">
         {messages.length === 0 && (
-          <p className="text-center text-sm text-muted-foreground">No messages yet.</p>
+          <p className="text-center text-sm text-muted-foreground">{t("chatPanel.noMessages")}</p>
         )}
         {messages.map((m) => (
-          <div
+          <motion.div
             key={m.id}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 340, damping: 26 }}
             className={`group flex ${m.senderId === currentUser ? "justify-end" : "justify-start"}`}
           >
             <div
@@ -58,11 +64,11 @@ export function ChatPanel({
                   className="mt-1 flex cursor-pointer items-center gap-1 text-xs opacity-0 underline transition group-hover:opacity-70 group-focus-within:opacity-70 focus-visible:opacity-100"
                 >
                   <Trash2 className="h-3 w-3" strokeWidth={2} />
-                  Delete
+                  {t("chatPanel.delete")}
                 </button>
               )}
             </div>
-          </div>
+          </motion.div>
         ))}
         <div ref={bottomRef} />
       </div>
@@ -78,21 +84,23 @@ export function ChatPanel({
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Message the syndicate…"
+          placeholder={t("chatPanel.messagePlaceholder")}
           className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground"
         />
-        <button
+        <motion.button
           type="submit"
-          className="flex cursor-pointer items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+          whileTap={{ scale: 0.94 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          className="flex cursor-pointer items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
         >
           <Send className="h-3.5 w-3.5" strokeWidth={2} />
-          Send
-        </button>
+          {t("chatPanel.send")}
+        </motion.button>
       </form>
     </div>
   );
 }
 
-export function roleLabel(role: MemberRole): string {
-  return { founder: "Founder", member: "Member", observer: "Observer" }[role];
+export function roleLabel(role: MemberRole, t: (key: string) => string): string {
+  return { founder: t("chatPanel.roleFounder"), member: t("chatPanel.roleMember"), observer: t("chatPanel.roleObserver") }[role];
 }

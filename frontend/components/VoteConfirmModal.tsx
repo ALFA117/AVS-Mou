@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Vote as VoteIcon } from "lucide-react";
+import { useTranslation } from "@/lib/LanguageContext";
 import type { Choice } from "@/lib/types";
 
 export function VoteConfirmModal({
@@ -13,6 +14,8 @@ export function VoteConfirmModal({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -22,37 +25,38 @@ export function VoteConfirmModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 8 }}
+        initial={{ opacity: 0, scale: 0.94, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ type: "spring", stiffness: 320, damping: 26 }}
         className="w-full max-w-sm rounded-lg border border-border bg-card p-6 shadow-lg"
       >
         <h3 className="flex items-center gap-2 font-heading text-lg font-semibold text-card-foreground">
           <VoteIcon className="h-4 w-4 text-primary" strokeWidth={2} />
-          Confirm your vote
+          {t("voteConfirmModal.title")}
         </h3>
         <p className="mt-3 text-sm text-card-foreground">
-          You&apos;re voting <span className="font-semibold uppercase">{choice}</span>.
+          {t("voteConfirmModal.votingOn", { choice: choice.toUpperCase() })}
         </p>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Your vote is sealed — no one, including the startup, can see how you voted until
-          reveal.
-        </p>
+        <p className="mt-2 text-xs text-muted-foreground">{t("voteConfirmModal.notice")}</p>
         <div className="mt-6 flex justify-end gap-2">
-          <button
+          <motion.button
             type="button"
             onClick={onCancel}
-            className="cursor-pointer rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            className="cursor-pointer rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
           >
-            Cancel
-          </button>
-          <button
+            {t("common.cancel")}
+          </motion.button>
+          <motion.button
             type="button"
             onClick={onConfirm}
-            className="cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            className="cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
           >
-            Confirm Vote
-          </button>
+            {t("voteConfirmModal.confirm")}
+          </motion.button>
         </div>
       </motion.div>
     </motion.div>

@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { Share2, Link2, Check } from "lucide-react";
+import { useTranslation } from "@/lib/LanguageContext";
 
 export function ShareDeal({ dealTitle, url }: { dealTitle: string; url: string }) {
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslation();
   const shareText = `Investing anonymously in ${dealTitle} via AVS`;
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
 
@@ -17,7 +19,7 @@ export function ShareDeal({ dealTitle, url }: { dealTitle: string; url: string }
         className="flex items-center gap-1.5 text-muted-foreground transition hover:text-foreground"
       >
         <Share2 className="h-3.5 w-3.5" strokeWidth={2} />
-        Share on X
+        {t("shareDeal.shareOnX")}
       </a>
       <button
         type="button"
@@ -31,12 +33,12 @@ export function ShareDeal({ dealTitle, url }: { dealTitle: string; url: string }
         {copied ? (
           <>
             <Check className="h-3.5 w-3.5 text-green-600 dark:text-green-400" strokeWidth={2} />
-            Copied!
+            {t("shareDeal.copied")}
           </>
         ) : (
           <>
             <Link2 className="h-3.5 w-3.5" strokeWidth={2} />
-            Copy link
+            {t("shareDeal.copyLink")}
           </>
         )}
       </button>
