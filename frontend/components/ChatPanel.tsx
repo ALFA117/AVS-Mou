@@ -30,9 +30,11 @@ export function ChatPanel({
   }, [messages.length]);
 
   return (
-    <div className="flex h-96 flex-col rounded-lg border border-border bg-card">
-      <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-        <MessageSquare className="h-4 w-4 text-primary" strokeWidth={2} />
+    <div className="flex h-96 flex-col avs-elevate rounded-xl border border-border bg-card">
+      <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
+        <span className="avs-icon-badge h-7 w-7">
+          <MessageSquare className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
+        </span>
         <h3 className="font-heading text-sm font-semibold text-card-foreground">
           {t("chatPanel.title")}
         </h3>

@@ -185,7 +185,7 @@ export default function NewDealPage() {
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">{t("newDeal.subtitle")}</p>
 
-      <div className="mt-6 space-y-4 rounded-lg border border-border bg-card p-5">
+      <div className="mt-6 space-y-4 avs-elevate rounded-xl border border-border bg-card p-5">
         <Field label={t("newDeal.fundingMint")}>
           <input
             value={fundingMint}
@@ -262,7 +262,7 @@ export default function NewDealPage() {
           onClick={() => void submit()}
           whileTap={valid && !busy ? { scale: 0.98 } : undefined}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="w-full cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full cursor-pointer avs-glow-primary rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {busy ? <StepLabel step={step} /> : t("newDeal.createDeal")}
         </motion.button>

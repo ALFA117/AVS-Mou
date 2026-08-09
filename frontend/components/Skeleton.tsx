@@ -4,7 +4,7 @@ export function Skeleton({ className = "" }: { className?: string }) {
 
 export function SkeletonCard() {
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="avs-elevate rounded-xl border border-border bg-card p-5">
       <div className="flex items-center justify-between">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-4 w-16" />
@@ -20,7 +20,7 @@ export function SkeletonCard() {
 
 export function SkeletonRow() {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+    <div className="flex items-center justify-between avs-elevate rounded-xl border border-border bg-card p-4">
       <div className="space-y-2">
         <Skeleton className="h-4 w-40" />
         <Skeleton className="h-3 w-28" />
@@ -32,7 +32,7 @@ export function SkeletonRow() {
 
 export function SkeletonStat() {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="avs-elevate rounded-xl border border-border bg-card p-4">
       <Skeleton className="h-3 w-20" />
       <Skeleton className="mt-2 h-6 w-24" />
     </div>

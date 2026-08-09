@@ -62,7 +62,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="avs-elevate rounded-xl border border-border bg-card p-4">
         <h3 className="text-sm font-medium text-card-foreground">{t("dealCharts.raiseProgress")}</h3>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
@@ -94,7 +94,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="avs-elevate rounded-xl border border-border bg-card p-4">
         <h3 className="text-sm font-medium text-card-foreground">
           {deal.status === "open" ? t("dealCharts.sealedHidden") : t("dealCharts.topBidAmounts")}
         </h3>

@@ -94,10 +94,12 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="avs-elevate rounded-xl border border-border bg-card p-5">
       <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 font-heading font-semibold text-card-foreground">
-          <VoteIcon className="h-4 w-4 text-primary" strokeWidth={2} />
+        <h3 className="flex items-center gap-2.5 font-heading font-semibold text-card-foreground">
+          <span className="avs-icon-badge h-8 w-8">
+            <VoteIcon className="h-4 w-4 text-primary" strokeWidth={2} />
+          </span>
           {t("voteCard.milestone", { id: milestone.milestoneId })}
         </h3>
         <Countdown deadlineTs={milestone.deadlineTs} />

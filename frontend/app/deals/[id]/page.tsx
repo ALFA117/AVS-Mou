@@ -86,7 +86,7 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
         </span>
       </div>
 
-      <dl className="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-border bg-card p-5 sm:grid-cols-4">
+      <dl className="mt-6 grid grid-cols-2 gap-4 avs-elevate rounded-xl border border-border bg-card p-5 sm:grid-cols-4">
         <Stat label={t("dealDetail.valuation")} value={formatTokenAmount(deal.valuation)} />
         <Stat label={t("dealDetail.equityOffered")} value={formatBps(deal.equityBps)} />
         <Stat label={t("dealDetail.minInvestment")} value={formatTokenAmount(deal.minInvestment)} />

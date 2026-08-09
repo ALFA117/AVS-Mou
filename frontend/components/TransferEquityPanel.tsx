@@ -58,9 +58,11 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="flex items-center gap-2 font-heading text-sm font-semibold text-card-foreground">
-        <ArrowRightLeft className="h-4 w-4 text-primary" strokeWidth={2} />
+    <div className="avs-elevate rounded-xl border border-border bg-card p-4">
+      <h3 className="flex items-center gap-2.5 font-heading text-sm font-semibold text-card-foreground">
+        <span className="avs-icon-badge h-7 w-7">
+          <ArrowRightLeft className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
+        </span>
         {t("transferEquity.title")}
       </h3>
       <div className="mt-3 space-y-3">

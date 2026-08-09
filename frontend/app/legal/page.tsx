@@ -12,7 +12,7 @@ export default function LegalPage() {
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
-          <CircleAlert className="h-4 w-4 text-primary" strokeWidth={2} />
+          <span className="avs-icon-badge h-7 w-7"><CircleAlert className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("legal.disclaimerTitle")}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">{t("legal.disclaimerText")}</p>
@@ -20,7 +20,7 @@ export default function LegalPage() {
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
-          <FileText className="h-4 w-4 text-primary" strokeWidth={2} />
+          <span className="avs-icon-badge h-7 w-7"><FileText className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("legal.tosTitle")}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">{t("legal.tosText")}</p>
@@ -28,7 +28,7 @@ export default function LegalPage() {
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
-          <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
+          <span className="avs-icon-badge h-7 w-7"><Lock className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("legal.privacyTitle")}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">{t("legal.privacyText")}</p>

@@ -149,9 +149,11 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
-      <h3 className="flex items-center gap-2 font-heading font-semibold text-card-foreground">
-        <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
+    <div className="avs-elevate rounded-xl border border-border bg-card p-5">
+      <h3 className="flex items-center gap-2.5 font-heading font-semibold text-card-foreground">
+        <span className="avs-icon-badge h-8 w-8">
+          <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
+        </span>
         {t("bidForm.title")}
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">{t("bidForm.subtitle")}</p>
@@ -171,7 +173,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
           onClick={() => setConfirming(true)}
           whileTap={amountValid && !submitting ? { scale: 0.96 } : undefined}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="cursor-pointer whitespace-nowrap avs-glow-primary rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {submitting ? t("bidForm.placingBid") : t("bidForm.placeBid")}
         </motion.button>

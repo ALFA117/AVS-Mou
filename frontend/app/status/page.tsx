@@ -112,7 +112,7 @@ function StatusRow({
   detail?: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+    <div className="flex items-center justify-between avs-elevate rounded-xl border border-border bg-card p-4">
       <div>
         <p className="font-medium text-card-foreground">{label}</p>
         {detail && <p className="font-mono-avs text-xs text-muted-foreground">{detail}</p>}

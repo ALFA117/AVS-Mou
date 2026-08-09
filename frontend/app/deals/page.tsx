@@ -75,7 +75,7 @@ export default function DealsPage() {
         <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
           <Link
             href="/deals/new"
-            className="flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+            className="flex items-center gap-1.5 avs-glow-primary rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
           >
             <Rocket className="h-3.5 w-3.5" strokeWidth={2} />
             {t("deals.createDeal")}

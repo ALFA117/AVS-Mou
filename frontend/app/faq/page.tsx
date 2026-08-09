@@ -16,7 +16,7 @@ export default function FaqPage() {
       <h1 className="font-heading text-2xl font-bold text-foreground">{t("faq.title")}</h1>
       <div className="mt-6 space-y-6">
         {FAQS.map((item) => (
-          <div key={item.q} className="rounded-lg border border-border bg-card p-4">
+          <div key={item.q} className="avs-elevate rounded-xl border border-border bg-card p-4">
             <h2 className="flex items-center gap-2 font-medium text-card-foreground">
               <HelpCircle className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
               {item.q}

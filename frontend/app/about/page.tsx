@@ -13,7 +13,7 @@ export default function AboutPage() {
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
-          <ShieldCheck className="h-4 w-4 text-primary" strokeWidth={2} />
+          <span className="avs-icon-badge h-7 w-7"><ShieldCheck className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("about.privacyTitle")}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">{t("about.privacyText")}</p>
@@ -21,7 +21,7 @@ export default function AboutPage() {
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
-          <Workflow className="h-4 w-4 text-primary" strokeWidth={2} />
+          <span className="avs-icon-badge h-7 w-7"><Workflow className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("about.howTitle")}
         </h2>
         <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted-foreground">
@@ -34,7 +34,7 @@ export default function AboutPage() {
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
-          <Cpu className="h-4 w-4 text-primary" strokeWidth={2} />
+          <span className="avs-icon-badge h-7 w-7"><Cpu className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("about.techTitle")}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -48,7 +48,7 @@ export default function AboutPage() {
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-semibold text-foreground">
-          <Link2 className="h-4 w-4 text-primary" strokeWidth={2} />
+          <span className="avs-icon-badge h-7 w-7"><Link2 className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("about.linksTitle")}
         </h2>
         <ul className="mt-2 space-y-1 text-sm">

@@ -24,7 +24,7 @@ export function DealCard({ deal }: { deal: Deal }) {
     >
       <Link
         href={`/deals/${deal.publicKey}`}
-        className="block rounded-lg border border-border bg-card p-5 transition-shadow duration-200 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5"
+        className="block avs-elevate rounded-xl border border-border bg-card p-5 transition-shadow duration-200 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5"
       >
         <div className="flex items-center justify-between">
           <span className="font-mono text-sm text-muted-foreground">

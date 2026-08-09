@@ -66,7 +66,7 @@ export default function Home() {
             >
               <Link
                 href="/deals"
-                className="block rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm shadow-primary/30 transition-colors duration-200 hover:opacity-90"
+                className="avs-glow-primary block rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
               >
                 {t("home.browseDeals")}
               </Link>
@@ -78,7 +78,7 @@ export default function Home() {
             >
               <Link
                 href="/dashboard"
-                className="block rounded-md border border-border bg-card/60 px-5 py-2.5 text-sm font-medium text-foreground backdrop-blur transition-colors duration-200 hover:bg-card"
+                className="block rounded-lg border border-border bg-card/60 px-5 py-2.5 text-sm font-medium text-foreground backdrop-blur transition-colors duration-200 hover:bg-card"
               >
                 {t("home.myDashboard")}
               </Link>

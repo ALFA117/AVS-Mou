@@ -95,7 +95,7 @@ export default function DashboardPage() {
                 <motion.div whileHover={{ y: -1 }} transition={{ type: "spring", stiffness: 350, damping: 24 }}>
                   <Link
                     href={`/syndicates/${p.dealPublicKey}`}
-                    className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-shadow duration-200 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5"
+                    className="flex items-center justify-between avs-elevate rounded-xl border border-border bg-card p-4 transition-shadow duration-200 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5"
                   >
                     <div>
                       <p className="font-medium text-card-foreground">{p.dealTitle}</p>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
 
 function MetricCard({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="avs-elevate rounded-xl border border-border bg-card p-4">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 flex items-center gap-1.5 font-mono-avs text-xl font-semibold text-card-foreground">
         {icon}

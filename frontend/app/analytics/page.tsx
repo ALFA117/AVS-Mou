@@ -112,7 +112,7 @@ export default function AnalyticsPage() {
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="rounded-lg border border-border bg-card p-4">
+              <div className="avs-elevate rounded-xl border border-border bg-card p-4">
                 <h2 className="text-sm font-medium text-card-foreground">{t("analytics.dealsByDeadline")}</h2>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
@@ -128,7 +128,7 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-border bg-card p-4">
+              <div className="avs-elevate rounded-xl border border-border bg-card p-4">
                 <h2 className="flex items-center gap-1.5 text-sm font-medium text-card-foreground">
                   <BarChart3 className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
                   {t("analytics.leaderboard")}
@@ -182,7 +182,7 @@ export default function AnalyticsPage() {
             </div>
 
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="rounded-lg border border-border bg-card p-4">
+              <div className="avs-elevate rounded-xl border border-border bg-card p-4">
                 <h3 className="text-sm font-medium text-card-foreground">{t("analytics.allocationBreakdown")}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
@@ -212,7 +212,7 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-border bg-card p-4">
+              <div className="avs-elevate rounded-xl border border-border bg-card p-4">
                 <h3 className="text-sm font-medium text-card-foreground">{t("analytics.cumulativeInvestment")}</h3>
                 <div className="h-56">
                   <ResponsiveContainer width="100%" height="100%">
@@ -235,7 +235,7 @@ export default function AnalyticsPage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="avs-elevate rounded-xl border border-border bg-card p-4">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 font-mono-avs text-xl font-semibold text-card-foreground">{value}</p>
     </div>

@@ -148,7 +148,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
         <div className="mt-8">
           <Link
             href={`/chat/${deal.publicKey}`}
-            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+            className="inline-flex items-center gap-1.5 avs-glow-primary rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
           >
             <MessageSquare className="h-3.5 w-3.5" strokeWidth={2} />
             {t("syndicatePage.openChat")}
