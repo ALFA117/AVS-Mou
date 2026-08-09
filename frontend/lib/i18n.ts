@@ -32,6 +32,9 @@ const en = {
     you: "you",
     clearFilters: "Clear filters",
   },
+  devnetBanner: {
+    text: "Solana Devnet demo — every deal, token, and dollar figure here is test data, not real money.",
+  },
   home: {
     badge: "Built on MagicBlock Ephemeral Rollups",
     title: "Anonymous Venture Syndicate",
@@ -100,6 +103,7 @@ const en = {
     loadError: "Couldn't load this deal",
     notFound: "not found",
     biddingClosed: "Bidding is closed for this deal.",
+    awaitingReveal: "Deadline passed — bidding is closed, awaiting reveal.",
     connectToBid: "Connect your wallet to place a sealed bid.",
     backToDeals: "Back to deals",
   },
@@ -215,6 +219,7 @@ const en = {
     sealedHidden: "Sealed — visible only after reveal",
     topBidAmounts: "Top bid amounts",
     hiddenUntilReveal: "Hidden until reveal",
+    bidsSettled: "All bids settled — funds already paid out to the startup.",
     raised: "Raised",
     remainingToCap: "Remaining to cap",
   },
@@ -421,6 +426,9 @@ const es = {
     you: "tú",
     clearFilters: "Limpiar filtros",
   },
+  devnetBanner: {
+    text: "Demo en Solana Devnet — cada deal, token y cifra en dólares aquí es data de prueba, no dinero real.",
+  },
   home: {
     badge: "Construido sobre MagicBlock Ephemeral Rollups",
     title: "Anonymous Venture Syndicate",
@@ -494,6 +502,7 @@ const es = {
     loadError: "No se pudo cargar este deal",
     notFound: "no encontrado",
     biddingClosed: "Las pujas están cerradas para este deal.",
+    awaitingReveal: "El plazo venció — las pujas están cerradas, esperando el reveal.",
     connectToBid: "Conecta tu wallet para hacer una puja sellada.",
     backToDeals: "Volver a los deals",
   },
@@ -610,6 +619,7 @@ const es = {
     sealedHidden: "Sellado — visible solo después del reveal",
     topBidAmounts: "Montos de las pujas más altas",
     hiddenUntilReveal: "Oculto hasta el reveal",
+    bidsSettled: "Todas las pujas liquidadas — los fondos ya se pagaron a la startup.",
     raised: "Recaudado",
     remainingToCap: "Restante hasta el tope",
   },
@@ -814,6 +824,9 @@ const pt = {
     you: "você",
     clearFilters: "Limpar filtros",
   },
+  devnetBanner: {
+    text: "Demo na Solana Devnet — cada deal, token e valor em dólares aqui é dado de teste, não dinheiro real.",
+  },
   home: {
     badge: "Construído sobre os Ephemeral Rollups da MagicBlock",
     title: "Anonymous Venture Syndicate",
@@ -887,6 +900,7 @@ const pt = {
     loadError: "Não foi possível carregar este deal",
     notFound: "não encontrado",
     biddingClosed: "Os lances estão encerrados para este deal.",
+    awaitingReveal: "O prazo venceu — os lances estão encerrados, aguardando a revelação.",
     connectToBid: "Conecte sua carteira para dar um lance selado.",
     backToDeals: "Voltar aos deals",
   },
@@ -1002,6 +1016,7 @@ const pt = {
     sealedHidden: "Selado — visível só após a revelação",
     topBidAmounts: "Maiores valores de lance",
     hiddenUntilReveal: "Oculto até a revelação",
+    bidsSettled: "Todos os lances liquidados — os fundos já foram pagos à startup.",
     raised: "Arrecadado",
     remainingToCap: "Restante até o teto",
   },

@@ -14,7 +14,7 @@ import {
   YAxis,
 } from "recharts";
 import type { PieLabelRenderProps } from "recharts";
-import { Lock } from "lucide-react";
+import { Lock, CircleCheck } from "lucide-react";
 import { formatTokenAmount } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Bid, Deal } from "@/lib/types";
@@ -103,6 +103,11 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
             <div className="flex h-full items-center justify-center gap-1.5 text-sm text-muted-foreground">
               <Lock className="h-4 w-4" strokeWidth={2} />
               {t("dealCharts.hiddenUntilReveal")}
+            </div>
+          ) : bidDistribution.length === 0 ? (
+            <div className="flex h-full items-center justify-center gap-1.5 text-center text-sm text-muted-foreground">
+              <CircleCheck className="h-4 w-4 shrink-0" strokeWidth={2} />
+              {t("dealCharts.bidsSettled")}
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">

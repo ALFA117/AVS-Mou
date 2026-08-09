@@ -5,6 +5,7 @@ import { WalletContextProvider } from "@/components/providers/WalletContextProvi
 import { LanguageProvider } from "@/lib/LanguageContext";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
+import { DevnetBanner } from "@/components/DevnetBanner";
 
 // Font system per the Stripe DESIGN.md reference (VoltAgent/awesome-design-md):
 // one family (Inter, the documented open-source substitute for the
@@ -24,9 +25,27 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+const TITLE = "AVS — Anonymous Venture Syndicate";
+const DESCRIPTION =
+  "Sealed-bid deal syndicates on Solana. Bid or vote in secret — everyone reveals at once. Powered by MagicBlock Ephemeral Rollups.";
+
 export const metadata: Metadata = {
-  title: "AVS — Anonymous Venture Syndicate",
-  description: "Sealed-bid deal syndicates on Solana, powered by MagicBlock Ephemeral Rollups.",
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "https://avs-mou.vercel.app",
+    siteName: "AVS",
+    images: [{ url: "/icon.png", width: 256, height: 256 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/icon.png"],
+  },
 };
 
 export default function RootLayout({
@@ -39,6 +58,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
         <LanguageProvider>
           <WalletContextProvider>
+            <DevnetBanner />
             <NavBar />
             {children}
             <Footer />

@@ -166,6 +166,15 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
     );
   }
 
+  if (deal.deadlineTs * 1000 < Date.now()) {
+    return (
+      <p className="flex items-center gap-1.5 rounded-md bg-muted p-4 text-sm text-muted-foreground">
+        <Lock className="h-4 w-4 shrink-0" strokeWidth={2} />
+        {t("dealDetail.awaitingReveal")}
+      </p>
+    );
+  }
+
   if (!publicKey) {
     return (
       <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
