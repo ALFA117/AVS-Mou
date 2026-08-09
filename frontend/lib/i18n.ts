@@ -375,6 +375,9 @@ const en = {
     connect: "Connect Wallet",
     connecting: "Connecting…",
     noWallet: "No Solana wallet detected",
+    chooseWallet: "Choose a wallet",
+    switchWallet: "Switch wallet",
+    disconnect: "Disconnect",
   },
   a11y: {
     toggleDarkMode: "Toggle dark mode",
@@ -757,6 +760,9 @@ const es = {
     connect: "Conectar wallet",
     connecting: "Conectando…",
     noWallet: "No se detectó ninguna wallet de Solana",
+    chooseWallet: "Elige una wallet",
+    switchWallet: "Cambiar de wallet",
+    disconnect: "Desconectar",
   },
   a11y: {
     toggleDarkMode: "Cambiar a modo oscuro/claro",
@@ -1136,6 +1142,9 @@ const pt = {
     connect: "Conectar carteira",
     connecting: "Conectando…",
     noWallet: "Nenhuma carteira Solana detectada",
+    chooseWallet: "Escolha uma carteira",
+    switchWallet: "Trocar de carteira",
+    disconnect: "Desconectar",
   },
   a11y: {
     toggleDarkMode: "Alternar modo escuro/claro",
