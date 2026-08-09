@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <main>
-      <section className="relative overflow-hidden px-6 py-24 sm:py-32">
+      <section className="relative overflow-hidden px-6 py-12 sm:py-20 md:py-28">
         <AnimatedBackground />
         <motion.div
           initial="hidden"
@@ -49,16 +49,16 @@ export default function Home() {
 
           <motion.h1
             variants={item}
-            className="mt-6 font-heading text-4xl font-bold tracking-tight text-foreground sm:text-6xl"
+            className="mt-4 font-heading text-4xl font-bold tracking-tight text-foreground sm:mt-6 sm:text-6xl"
           >
             {t("home.title")}
           </motion.h1>
 
-          <motion.p variants={item} className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
+          <motion.p variants={item} className="mx-auto mt-3 max-w-xl text-lg text-muted-foreground sm:mt-5">
             {t("home.subtitle")}
           </motion.p>
 
-          <motion.div variants={item} className="mt-9 flex flex-wrap justify-center gap-3">
+          <motion.div variants={item} className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-9">
             <motion.div
               whileHover={reduceMotion ? undefined : { scale: 1.03 }}
               whileTap={reduceMotion ? undefined : { scale: 0.97 }}
@@ -92,7 +92,7 @@ export default function Home() {
         whileInView="show"
         viewport={{ once: true, margin: "-80px" }}
         variants={container}
-        className="mx-auto max-w-5xl px-6 pb-24"
+        className="mx-auto max-w-5xl px-6 pb-16 sm:pb-24"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {FEATURES.map((f) => (
