@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -30,12 +31,12 @@ export function NavBar() {
           className="flex items-center gap-2 font-heading text-lg font-medium tracking-tight text-foreground"
         >
           <motion.span
-            className="avs-icon-badge avs-glow-primary h-8 w-8"
+            className="avs-glow-primary relative h-9 w-9 shrink-0 overflow-hidden rounded-full"
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
           >
-            <Lock className="h-4 w-4 text-primary" strokeWidth={2.25} />
+            <Image src="/avs-logo-mark.jpg" alt="" fill sizes="36px" className="object-cover" priority />
           </motion.span>
           AVS
         </Link>

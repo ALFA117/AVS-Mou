@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ShieldCheck, Workflow, Cpu, Link2 } from "lucide-react";
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -9,7 +10,18 @@ export default function AboutPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-10">
-      <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">{t("about.title")}</h1>
+      <div className="avs-elevate overflow-hidden rounded-xl border border-border">
+        <Image
+          src="/avs-logo-lockup.jpg"
+          alt="AVS — Anonymous Venture Syndicate"
+          width={1200}
+          height={818}
+          className="w-full"
+          priority
+        />
+      </div>
+
+      <h1 className="mt-8 font-heading text-2xl font-light tracking-tight text-foreground">{t("about.title")}</h1>
 
       <section className="mt-6">
         <h2 className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-foreground">
