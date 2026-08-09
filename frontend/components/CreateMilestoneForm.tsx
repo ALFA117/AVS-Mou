@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { CircleAlert, Link2, Plus } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -39,6 +39,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
   const { connection } = useConnection();
   const { publicKey, wallet, sendTransaction, signMessage } = useWallet();
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
@@ -127,7 +128,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -6 }}
+      initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 320, damping: 28 }}
       className="avs-elevate rounded-xl border border-border bg-card p-4"

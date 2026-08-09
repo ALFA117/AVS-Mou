@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Vote as VoteIcon } from "lucide-react";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -17,6 +17,7 @@ export function VoteConfirmModal({
   onConfirm: () => void;
 }) {
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
   const cancelRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useFocusTrap<HTMLDivElement>(onCancel, cancelRef);
 
@@ -30,8 +31,8 @@ export function VoteConfirmModal({
     >
       <motion.div
         ref={dialogRef}
-        initial={{ opacity: 0, scale: 0.94, y: 12 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 12 }}
+        animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 320, damping: 26 }}
         role="dialog"
         aria-modal="true"

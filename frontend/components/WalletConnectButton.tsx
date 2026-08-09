@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ChevronDown, LogOut } from "lucide-react";
 import { shortenAddress } from "@/lib/format";
@@ -18,6 +18,7 @@ export function WalletConnectButton() {
   const { wallets, wallet, select, connect, disconnect, connecting, connected, publicKey } =
     useWallet();
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
   // `select` only updates which adapter is active; connecting has to happen
   // in a follow-up render once that adapter is actually set, or `connect()`
   // races against a still-null `wallet`.
@@ -90,9 +91,9 @@ export function WalletConnectButton() {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: -4 }}
+            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
             role="menu"
             className="absolute right-0 top-full z-50 mt-2 min-w-56 overflow-hidden rounded-md border border-border bg-surface-elevated p-1 shadow-lg"
