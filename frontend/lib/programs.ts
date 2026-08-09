@@ -18,6 +18,15 @@ export const SPL_TOKEN_MANAGER_PROGRAM_ID = new PublicKey(
   "fNkSCkp2szKMND8ouKwfxNpGqhAsnCdQ4PTzsxnDKa3",
 );
 
+// MagicBlock infra program IDs shared across deal/milestone creation and
+// the relay — see docs/RELAY.md.
+export const EPHEMERAL_SPL_TOKEN_PROGRAM_ID = new PublicKey(
+  "SPLxh1LVZzEkX99H6rqYizhytLWPZVV296zyYDPagv2",
+);
+export const DELEGATION_PROGRAM_ID = new PublicKey(
+  "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh",
+);
+
 export const DEAL_SEED = Buffer.from("deal");
 export const BID_SEED = Buffer.from("bid");
 export const MILESTONE_SEED = Buffer.from("milestone");

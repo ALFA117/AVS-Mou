@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, RefreshCw, Rocket } from "lucide-react";
 import { DealCard } from "@/components/DealCard";
 import { SkeletonCard } from "@/components/Skeleton";
 import { useDeals } from "@/hooks/useDeals";
@@ -64,6 +65,13 @@ export default function DealsPage() {
             Sealed-bid syndicates — bid amounts stay private until reveal.
           </p>
         </div>
+        <Link
+          href="/deals/new"
+          className="flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+        >
+          <Rocket className="h-3.5 w-3.5" strokeWidth={2} />
+          Create deal
+        </Link>
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
