@@ -1,4 +1,4 @@
-import { Connection, Keypair, Transaction, PublicKey, clusterApiUrl } from "@solana/web3.js";
+import { Connection, Keypair, Transaction, PublicKey, ComputeBudgetProgram, clusterApiUrl } from "@solana/web3.js";
 import * as nacl from "tweetnacl";
 import { getAuthToken, verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
 import { SEALED_AUCTION_PROGRAM_ID, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
@@ -73,13 +73,23 @@ export class RelayRejectedError extends Error {}
 
 /** Defense in depth on top of the on-chain program constraints. */
 export function assertRelayableTransaction(tx: Transaction): void {
-  if (tx.instructions.length === 0) {
+  // Many wallets (Phantom included) auto-prepend one or two
+  // ComputeBudgetProgram instructions (unit limit / priority fee) when
+  // signing — outside the app's control, and harmless on their own: that
+  // program can only adjust the transaction's own compute budget, never
+  // move funds or invoke arbitrary logic. Exclude them from validation so a
+  // wallet's own fee-optimization doesn't get a legitimate bid/vote
+  // rejected as "too many instructions" (seen in practice with Phantom).
+  const realInstructions = tx.instructions.filter(
+    (ix) => !ix.programId.equals(ComputeBudgetProgram.programId),
+  );
+  if (realInstructions.length === 0) {
     throw new RelayRejectedError("Transaction has no instructions");
   }
-  if (tx.instructions.length > 2) {
+  if (realInstructions.length > 2) {
     throw new RelayRejectedError("Transaction has too many instructions");
   }
-  for (const ix of tx.instructions) {
+  for (const ix of realInstructions) {
     if (!ALLOWED_PROGRAM_IDS.has(ix.programId.toBase58())) {
       throw new RelayRejectedError(
         `Instruction targets a program the relay doesn't sponsor: ${ix.programId.toBase58()}`,

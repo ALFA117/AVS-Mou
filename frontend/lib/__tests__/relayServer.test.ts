@@ -1,5 +1,10 @@
+// @vitest-environment node
+//
+// web3.js's buffer-layout encoding (used by ComputeBudgetProgram's
+// instruction builders below) needs a real Node Buffer/Uint8Array — jsdom's
+// polyfill fails its `instanceof Uint8Array` checks.
 import { describe, it, expect } from "vitest";
-import { Keypair, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { ComputeBudgetProgram, Keypair, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import {
   assertFeePayerIsSponsor,
   assertRelayableTransaction,
@@ -74,5 +79,27 @@ describe("assertRelayableTransaction", () => {
   it("accepts a single private-voting instruction", () => {
     const tx = txWithProgram(PRIVATE_VOTING_PROGRAM_ID);
     expect(() => assertRelayableTransaction(tx)).not.toThrow();
+  });
+
+  // Regression: Phantom (and other wallets) auto-prepend one or two
+  // ComputeBudgetProgram instructions during signTransaction() for fee
+  // optimization — a real vote transaction observed in practice with
+  // exactly 1 real instruction plus 2 wallet-injected ones was rejected as
+  // "too many instructions" before this exclusion existed.
+  it("accepts a legitimate instruction alongside wallet-injected ComputeBudget instructions", () => {
+    const tx = new Transaction();
+    tx.add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }));
+    tx.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1_000 }));
+    tx.add({ programId: PRIVATE_VOTING_PROGRAM_ID, keys: [], data: Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]) });
+    expect(() => assertRelayableTransaction(tx)).not.toThrow();
+  });
+
+  it("still rejects too many real instructions even with ComputeBudget instructions present", () => {
+    const tx = new Transaction();
+    tx.add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }));
+    tx.add({ programId: SEALED_AUCTION_PROGRAM_ID, keys: [], data: Buffer.from([1]) });
+    tx.add({ programId: SEALED_AUCTION_PROGRAM_ID, keys: [], data: Buffer.from([1]) });
+    tx.add({ programId: SEALED_AUCTION_PROGRAM_ID, keys: [], data: Buffer.from([1]) });
+    expect(() => assertRelayableTransaction(tx)).toThrow(RelayRejectedError);
   });
 });
