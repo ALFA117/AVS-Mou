@@ -9,6 +9,7 @@ import { useMilestones } from "@/hooks/useMilestones";
 import { useSyndicate } from "@/hooks/useSyndicate";
 import { Countdown } from "@/components/Countdown";
 import { TransferEquityPanel } from "@/components/TransferEquityPanel";
+import { CreateMilestoneForm } from "@/components/CreateMilestoneForm";
 import { Skeleton } from "@/components/Skeleton";
 import { useTranslation } from "@/lib/LanguageContext";
 import { formatEquity, formatTokenAmount, shortenAddress } from "@/lib/format";
@@ -18,7 +19,7 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
   const { publicKey } = useWallet();
   const { deal, loading } = useDeal(params.id);
   const { bids } = useBids(params.id);
-  const { milestones } = useMilestones(deal?.startup);
+  const { milestones, refresh: refreshMilestones } = useMilestones(deal?.publicKey);
   const { syndicate } = useSyndicate(params.id);
   const { t } = useTranslation();
 
@@ -94,6 +95,11 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
               <Lock className="h-3.5 w-3.5" strokeWidth={2} />
               {t("syndicatePage.memberListHidden", { count: deal.bidCount })}
             </p>
+          ) : bids.length === 0 && deal.bidCount > 0 ? (
+            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Users className="h-3.5 w-3.5" strokeWidth={2} />
+              {t("syndicatePage.memberListSettled", { count: deal.bidCount })}
+            </p>
           ) : (
             bids.map((b) => (
               <div key={b.publicKey} className="flex justify-between rounded-md bg-muted px-3 py-2 text-sm">
@@ -117,6 +123,13 @@ export default function SyndicateDetailsPage({ params }: { params: { id: string 
             {t("syndicatePage.goToVote")}
           </Link>
         </div>
+
+        {publicKey?.toBase58() === deal.startup && (
+          <div className="mt-3">
+            <CreateMilestoneForm deal={deal.publicKey} onCreated={() => void refreshMilestones()} />
+          </div>
+        )}
+
         <div className="mt-3 space-y-2">
           {milestones.length === 0 && (
             <p className="text-sm text-muted-foreground">{t("syndicatePage.noMilestones")}</p>

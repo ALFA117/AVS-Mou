@@ -206,6 +206,20 @@ const en = {
     noSignMessageSupport:
       "This wallet doesn't support message signing, which init_deal_permission needs to authenticate to the Ephemeral Rollup.",
   },
+  createMilestone: {
+    openButton: "Propose a milestone",
+    description: "Description",
+    descriptionPlaceholder: "What does the syndicate need to vote YES/NO on?",
+    deadline: "Vote deadline",
+    rewardPool: "Reward pool (SOL)",
+    createButton: "Propose milestone",
+    stepCreating: "Creating milestone on-chain…",
+    stepDelegating: "Delegating to the Ephemeral Rollup…",
+    stepPermissioning: "Sealing vote visibility…",
+    stepWorking: "Working…",
+    signMessageNotice:
+      "Your wallet will ask you to sign a message to authenticate to the Ephemeral Rollup — this doesn't cost anything or authorize a transaction by itself.",
+  },
   analytics: {
     title: "Analytics",
     subtitle:
@@ -315,6 +329,7 @@ const en = {
     members: "Members",
     anonymousNote: "Anonymous — equity share only, no identities shown.",
     memberListHidden: "Member list hidden until reveal ({count} sealed bids)",
+    memberListSettled: "{count} members — bids settled and closed, records no longer stored on-chain.",
     milestones: "Milestones",
     goToVote: "Go to vote",
     noMilestones: "No milestones proposed yet.",
@@ -620,6 +635,20 @@ const es = {
     noSignMessageSupport:
       "Esta wallet no soporta la firma de mensajes, que init_deal_permission necesita para autenticarse ante el Ephemeral Rollup.",
   },
+  createMilestone: {
+    openButton: "Proponer un hito",
+    description: "Descripción",
+    descriptionPlaceholder: "¿Sobre qué tiene que votar SÍ/NO el sindicato?",
+    deadline: "Plazo de votación",
+    rewardPool: "Fondo de recompensa (SOL)",
+    createButton: "Proponer hito",
+    stepCreating: "Creando hito on-chain…",
+    stepDelegating: "Delegando al Ephemeral Rollup…",
+    stepPermissioning: "Sellando la visibilidad del voto…",
+    stepWorking: "Trabajando…",
+    signMessageNotice:
+      "Tu wallet te pedirá firmar un mensaje para autenticarte ante el Ephemeral Rollup — esto no cuesta nada ni autoriza ninguna transacción por sí mismo.",
+  },
   analytics: {
     title: "Analítica",
     subtitle:
@@ -729,6 +758,7 @@ const es = {
     members: "Miembros",
     anonymousNote: "Anónimo — solo se muestra la participación de equity, sin identidades.",
     memberListHidden: "Lista de miembros oculta hasta el reveal ({count} pujas selladas)",
+    memberListSettled: "{count} miembros — pujas liquidadas y cerradas, los registros ya no se guardan on-chain.",
     milestones: "Hitos",
     goToVote: "Ir a votar",
     noMilestones: "Aún no se han propuesto hitos.",
@@ -1031,6 +1061,20 @@ const pt = {
     noSignMessageSupport:
       "Esta carteira não suporta assinatura de mensagens, que o init_deal_permission precisa para autenticar no Ephemeral Rollup.",
   },
+  createMilestone: {
+    openButton: "Propor um marco",
+    description: "Descrição",
+    descriptionPlaceholder: "Sobre o que o sindicato precisa votar SIM/NÃO?",
+    deadline: "Prazo de votação",
+    rewardPool: "Fundo de recompensa (SOL)",
+    createButton: "Propor marco",
+    stepCreating: "Criando marco on-chain…",
+    stepDelegating: "Delegando ao Ephemeral Rollup…",
+    stepPermissioning: "Selando a visibilidade do voto…",
+    stepWorking: "Trabalhando…",
+    signMessageNotice:
+      "Sua carteira vai pedir para assinar uma mensagem para autenticar no Ephemeral Rollup — isso não custa nada nem autoriza nenhuma transação por si só.",
+  },
   analytics: {
     title: "Análises",
     subtitle:
@@ -1140,6 +1184,7 @@ const pt = {
     members: "Membros",
     anonymousNote: "Anônimo — mostra apenas a participação de equity, sem identidades.",
     memberListHidden: "Lista de membros oculta até a revelação ({count} lances selados)",
+    memberListSettled: "{count} membros — lances liquidados e encerrados, os registros não ficam mais on-chain.",
     milestones: "Marcos",
     goToVote: "Ir votar",
     noMilestones: "Ainda não há marcos propostos.",
