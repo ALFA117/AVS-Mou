@@ -154,13 +154,40 @@ export default function NewDealPage() {
     }
   }
 
+  function isValidPubkey(value: string): boolean {
+    try {
+      // eslint-disable-next-line no-new
+      new PublicKey(value.trim());
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  const fieldErrors: Partial<Record<"fundingMint" | "equityPercent" | "maxCap" | "deadline", string>> = {};
+  if (fundingMint.trim().length > 0 && !isValidPubkey(fundingMint)) {
+    fieldErrors.fundingMint = t("newDeal.errorInvalidMint");
+  }
+  if (equityPercent !== "" && Number(equityPercent) > 100) {
+    fieldErrors.equityPercent = t("newDeal.errorEquityTooHigh");
+  }
+  if (maxCap !== "" && minInvestment !== "" && Number(maxCap) < Number(minInvestment)) {
+    fieldErrors.maxCap = t("newDeal.errorMaxBelowMin");
+  }
+  if (deadline.length > 0 && new Date(deadline).getTime() <= Date.now()) {
+    fieldErrors.deadline = t("newDeal.errorDeadlinePast");
+  }
+
   const valid =
     fundingMint.trim().length > 0 &&
+    isValidPubkey(fundingMint) &&
     Number(valuation) > 0 &&
     Number(equityPercent) > 0 &&
+    Number(equityPercent) <= 100 &&
     Number(minInvestment) > 0 &&
     Number(maxCap) >= Number(minInvestment) &&
-    deadline.length > 0;
+    deadline.length > 0 &&
+    new Date(deadline).getTime() > Date.now();
 
   if (!publicKey) {
     return (
@@ -186,7 +213,7 @@ export default function NewDealPage() {
       <p className="mt-1 text-sm text-muted-foreground">{t("newDeal.subtitle")}</p>
 
       <div className="mt-6 space-y-4 avs-elevate rounded-xl border border-border bg-card p-5">
-        <Field label={t("newDeal.fundingMint")}>
+        <Field label={t("newDeal.fundingMint")} error={fieldErrors.fundingMint}>
           <input
             value={fundingMint}
             onChange={(e) => setFundingMint(e.target.value)}
@@ -204,10 +231,11 @@ export default function NewDealPage() {
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label={t("newDeal.equityPercent")}>
+          <Field label={t("newDeal.equityPercent")} error={fieldErrors.equityPercent}>
             <input
               type="number"
               step="0.1"
+              max={100}
               value={equityPercent}
               onChange={(e) => setEquityPercent(e.target.value)}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
@@ -221,7 +249,7 @@ export default function NewDealPage() {
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label={t("newDeal.maxCap")}>
+          <Field label={t("newDeal.maxCap")} error={fieldErrors.maxCap}>
             <input
               type="number"
               value={maxCap}
@@ -247,7 +275,7 @@ export default function NewDealPage() {
           </Field>
         </div>
 
-        <Field label={t("newDeal.deadline")}>
+        <Field label={t("newDeal.deadline")} error={fieldErrors.deadline}>
           <input
             type="datetime-local"
             value={deadline}
@@ -285,11 +313,20 @@ export default function NewDealPage() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
   return (
     <label className="block text-sm">
       <span className="mb-1 block text-xs text-muted-foreground">{label}</span>
       {children}
+      {error && <span className="mt-1 block text-xs text-red-600 dark:text-red-400">{error}</span>}
     </label>
   );
 }
