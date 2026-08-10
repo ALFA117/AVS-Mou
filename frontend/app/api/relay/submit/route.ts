@@ -7,9 +7,16 @@ import {
   assertFeePayerIsSponsor,
   RelayRejectedError,
 } from "@/lib/relayServer";
+import { checkIpRateLimit, clientIp, RateLimitedError } from "@/lib/rateLimiter";
 
 export async function POST(request: Request) {
   try {
+    // See docs/RELAY.md's "Known limitations" — this route was previously
+    // unauthenticated with no rate limiting at all, bounded only by the
+    // program-id allowlist. A per-IP cap is a cheap first line of defense
+    // against draining the sponsor's SOL float with spammed bids/votes.
+    checkIpRateLimit(clientIp(request), 20, 60_000);
+
     const body = (await request.json()) as { transaction?: string };
     if (!body.transaction) {
       return NextResponse.json({ error: "Missing 'transaction' field" }, { status: 400 });
@@ -46,6 +53,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ signature });
   } catch (err) {
+    if (err instanceof RateLimitedError) {
+      return NextResponse.json({ error: err.message }, { status: 429 });
+    }
     if (err instanceof RelayRejectedError) {
       return NextResponse.json({ error: err.message }, { status: 400 });
     }

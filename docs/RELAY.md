@@ -81,7 +81,8 @@ runs low — check with `solana balance <pubkey> --url devnet`.
   ledger provides — there's no separate audit trail today.
 - The relay is unauthenticated (anyone can POST to `/api/relay/submit`).
   The allowlist + on-chain constraints bound the blast radius to "pay rent
-  for a legitimate bid/vote," but a malicious actor could still spam the
-  sponsor with many small, valid bids/votes to drain its balance faster
-  than intended. Acceptable for a hackathon devnet demo; would need rate
-  limiting (e.g. per-IP or per-investor) before any real deployment.
+  for a legitimate bid/vote." A per-IP rate limit (`lib/rateLimiter.ts`,
+  20 req/min) now caps how fast that can happen, but it's in-memory and
+  per-serverless-instance — real protection before a production deployment
+  would still want a shared store (Upstash/Redis) and per-investor limits,
+  not just per-IP.

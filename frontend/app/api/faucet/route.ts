@@ -18,6 +18,7 @@ import {
   isPublicKey,
   FaucetRejectedError,
 } from "@/lib/faucetServer";
+import { checkIpRateLimit, clientIp, RateLimitedError } from "@/lib/rateLimiter";
 
 const FAUCET_AMOUNT_WHOLE_TOKENS = 10_000;
 const SOL_TOPUP_LAMPORTS = 0.02 * LAMPORTS_PER_SOL;
@@ -25,6 +26,11 @@ const SOL_TOPUP_THRESHOLD_LAMPORTS = 0.01 * LAMPORTS_PER_SOL;
 
 export async function POST(request: Request) {
   try {
+    // Per-recipient cooldown (checkCooldown below) alone can't stop a
+    // script that just generates a fresh wallet address each request — an
+    // IP-level cap closes that gap.
+    checkIpRateLimit(clientIp(request), 10, 60_000);
+
     const body = (await request.json()) as { recipient?: string; mint?: string };
     if (!body.recipient || !isPublicKey(body.recipient)) {
       return NextResponse.json({ error: "Missing or invalid 'recipient'" }, { status: 400 });
@@ -94,7 +100,7 @@ export async function POST(request: Request) {
       toppedUpSol,
     });
   } catch (err) {
-    if (err instanceof FaucetRejectedError) {
+    if (err instanceof FaucetRejectedError || err instanceof RateLimitedError) {
       return NextResponse.json({ error: err.message }, { status: 429 });
     }
     return NextResponse.json(
