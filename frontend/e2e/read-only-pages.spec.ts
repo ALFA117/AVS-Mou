@@ -11,12 +11,12 @@ test.describe("read-only pages (no wallet required)", () => {
   test("analytics page renders platform stats without a wallet", async ({ page }) => {
     await page.goto("/analytics");
     await expect(page.getByRole("heading", { name: "Analytics" })).toBeVisible();
-    await expect(page.getByText(/connect your wallet/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /connect your wallet/i })).toBeVisible();
   });
 
   test("dashboard prompts an unconnected visitor to connect", async ({ page }) => {
     await page.goto("/dashboard");
-    await expect(page.getByText(/connect your wallet/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /connect your wallet/i })).toBeVisible();
   });
 
   test("vote page renders without a wallet connected", async ({ page }) => {

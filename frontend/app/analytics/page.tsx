@@ -3,13 +3,15 @@
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
-import { BarChart3, CircleAlert } from "lucide-react";
+import { BarChart3, CircleAlert, Wallet } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { usePublicStats } from "@/hooks/usePublicStats";
 import { formatInt, formatTokenAmount, shortenAddress } from "@/lib/format";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Skeleton, SkeletonStat } from "@/components/Skeleton";
+import { EmptyState } from "@/components/EmptyState";
+import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { useTranslation } from "@/lib/LanguageContext";
 
 // recharts is a meaningful chunk of JS — split each chart out of this
@@ -182,7 +184,12 @@ export default function AnalyticsPage() {
       <section className="mt-10 border-t border-border pt-8">
         <h2 className="font-heading text-lg font-light tracking-tight text-foreground">{t("analytics.myStats")}</h2>
         {!publicKey ? (
-          <p className="mt-4 text-sm text-muted-foreground">{t("analytics.connectPrompt")}</p>
+          <EmptyState
+            icon={Wallet}
+            title={t("analytics.connectTitle")}
+            description={t("analytics.connectPrompt")}
+            action={<WalletConnectButton />}
+          />
         ) : loading ? (
           <div className="mt-4 space-y-6">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

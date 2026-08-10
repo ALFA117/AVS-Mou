@@ -179,6 +179,7 @@ const en = {
   },
   dashboard: {
     title: "Dashboard",
+    connectTitle: "Connect your wallet",
     connectPrompt: "Connect your wallet to see your positions.",
     totalInvested: "Total invested",
     activePositions: "Active positions",
@@ -194,6 +195,7 @@ const en = {
     title: "Create a deal",
     subtitle:
       "Sets your deal live and sealed on MagicBlock's Ephemeral Rollup — bid amounts stay hidden from everyone, including you, until reveal.",
+    connectTitle: "Connect your wallet",
     connectPrompt: "Connect your wallet to create a deal.",
     fundingMint: "Funding token mint address",
     fundingMintPlaceholder: "An existing SPL token mint on Devnet",
@@ -245,6 +247,7 @@ const en = {
     noBidsSettled: "No sealed bids settled yet.",
     dealsSuffix: "{count} deal{plural}",
     myStats: "My Stats",
+    connectTitle: "Connect your wallet",
     connectPrompt: "Connect your wallet to see your own stats.",
     noPositions: "No positions yet.",
     avgBidAmount: "Avg bid amount",
@@ -276,6 +279,7 @@ const en = {
   },
   settings: {
     title: "Settings",
+    connectTitle: "Connect your wallet",
     connectPrompt: "Connect your wallet to manage settings.",
     sessionKeysTitle: "Session keys",
     sessionKeysSeeFaq: "See",
@@ -336,6 +340,7 @@ const en = {
     localOnlyNote:
       "Local-only for now — see docs note in lib/chatStore.ts for the planned on-chain ephemeral-account-chats upgrade.",
     members: "Members",
+    connectTitle: "Connect your wallet",
     connectPrompt: "Connect your wallet to open syndicate chat.",
     notFound: "Syndicate not found.",
     notMember: "Chat is only visible to syndicate members with a settled bid on this deal.",
@@ -650,6 +655,7 @@ const es = {
   },
   dashboard: {
     title: "Panel",
+    connectTitle: "Conecta tu wallet",
     connectPrompt: "Conecta tu wallet para ver tus posiciones.",
     totalInvested: "Total invertido",
     activePositions: "Posiciones activas",
@@ -665,6 +671,7 @@ const es = {
     title: "Crear un deal",
     subtitle:
       "Publica tu deal en vivo y sellado en el Ephemeral Rollup de MagicBlock — los montos de puja quedan ocultos para todos, incluido tú, hasta el reveal.",
+    connectTitle: "Conecta tu wallet",
     connectPrompt: "Conecta tu wallet para crear un deal.",
     fundingMint: "Dirección del mint del token de financiamiento",
     fundingMintPlaceholder: "Un mint de token SPL existente en Devnet",
@@ -716,6 +723,7 @@ const es = {
     noBidsSettled: "Aún no hay pujas selladas liquidadas.",
     dealsSuffix: "{count} deal{plural}",
     myStats: "Mis estadísticas",
+    connectTitle: "Conecta tu wallet",
     connectPrompt: "Conecta tu wallet para ver tus propias estadísticas.",
     noPositions: "Aún no hay posiciones.",
     avgBidAmount: "Monto promedio de puja",
@@ -747,6 +755,7 @@ const es = {
   },
   settings: {
     title: "Ajustes",
+    connectTitle: "Conecta tu wallet",
     connectPrompt: "Conecta tu wallet para administrar los ajustes.",
     sessionKeysTitle: "Session keys",
     sessionKeysSeeFaq: "Consulta",
@@ -807,6 +816,7 @@ const es = {
     localOnlyNote:
       "Por ahora es solo local — mira la nota en lib/chatStore.ts sobre la futura migración a chats on-chain con cuentas efímeras.",
     members: "Miembros",
+    connectTitle: "Conecta tu wallet",
     connectPrompt: "Conecta tu wallet para abrir el chat del sindicato.",
     notFound: "Sindicato no encontrado.",
     notMember: "El chat solo es visible para miembros del sindicato con una puja liquidada en este deal.",
@@ -1118,6 +1128,7 @@ const pt = {
   },
   dashboard: {
     title: "Painel",
+    connectTitle: "Conecte sua carteira",
     connectPrompt: "Conecte sua carteira para ver suas posições.",
     totalInvested: "Total investido",
     activePositions: "Posições ativas",
@@ -1133,6 +1144,7 @@ const pt = {
     title: "Criar um deal",
     subtitle:
       "Publica seu deal ao vivo e selado no Ephemeral Rollup da MagicBlock — os valores de lance ficam ocultos para todos, inclusive você, até a revelação.",
+    connectTitle: "Conecte sua carteira",
     connectPrompt: "Conecte sua carteira para criar um deal.",
     fundingMint: "Endereço do mint do token de financiamento",
     fundingMintPlaceholder: "Um mint de token SPL existente na Devnet",
@@ -1184,6 +1196,7 @@ const pt = {
     noBidsSettled: "Ainda não há lances selados liquidados.",
     dealsSuffix: "{count} deal{plural}",
     myStats: "Minhas estatísticas",
+    connectTitle: "Conecte sua carteira",
     connectPrompt: "Conecte sua carteira para ver suas próprias estatísticas.",
     noPositions: "Ainda não há posições.",
     avgBidAmount: "Valor médio do lance",
@@ -1215,6 +1228,7 @@ const pt = {
   },
   settings: {
     title: "Configurações",
+    connectTitle: "Conecte sua carteira",
     connectPrompt: "Conecte sua carteira para gerenciar as configurações.",
     sessionKeysTitle: "Session keys",
     sessionKeysSeeFaq: "Veja",
@@ -1275,6 +1289,7 @@ const pt = {
     localOnlyNote:
       "Por enquanto é só local — veja a nota em lib/chatStore.ts sobre a futura migração para chats on-chain com contas efêmeras.",
     members: "Membros",
+    connectTitle: "Conecte sua carteira",
     connectPrompt: "Conecte sua carteira para abrir o chat do sindicato.",
     notFound: "Sindicato não encontrado.",
     notMember: "O chat só é visível para membros do sindicato com um lance liquidado neste deal.",

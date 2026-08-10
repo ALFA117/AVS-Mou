@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, Users, Wallet } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useDeal } from "@/hooks/useDeal";
 import { useBids } from "@/hooks/useBids";
 import { ChatPanel, roleLabel } from "@/components/ChatPanel";
 import { Skeleton } from "@/components/Skeleton";
+import { EmptyState } from "@/components/EmptyState";
+import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { formatEquity, shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { MemberRole } from "@/lib/types";
@@ -41,7 +43,12 @@ export default function ChatPage({ params }: { params: { syndicateId: string } }
   if (!publicKey) {
     return (
       <main className="mx-auto max-w-4xl px-6 py-10">
-        <p className="text-muted-foreground">{t("chatPage.connectPrompt")}</p>
+        <EmptyState
+          icon={Wallet}
+          title={t("chatPage.connectTitle")}
+          description={t("chatPage.connectPrompt")}
+          action={<WalletConnectButton />}
+        />
       </main>
     );
   }

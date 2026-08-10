@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Download, CircleCheck, Trash2, KeyRound } from "lucide-react";
+import { Download, CircleCheck, Trash2, KeyRound, Wallet } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useSessionKey } from "@/hooks/useSessionKey";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { SEALED_AUCTION_PROGRAM_ID, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
 import { downloadCsv, positionsToCsv } from "@/lib/csv";
+import { EmptyState } from "@/components/EmptyState";
+import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { useTranslation } from "@/lib/LanguageContext";
 
 const NOTIF_STORAGE_KEY = "avs.settings.notifications";
@@ -29,7 +31,12 @@ export default function SettingsPage() {
     return (
       <main className="mx-auto max-w-2xl px-6 py-10">
         <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">{t("settings.title")}</h1>
-        <p className="mt-6 text-sm text-muted-foreground">{t("settings.connectPrompt")}</p>
+        <EmptyState
+          icon={Wallet}
+          title={t("settings.connectTitle")}
+          description={t("settings.connectPrompt")}
+          action={<WalletConnectButton />}
+        />
       </main>
     );
   }

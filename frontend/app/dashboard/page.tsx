@@ -9,6 +9,8 @@ import { formatEquity, formatInt, formatTokenAmount, shortenAddress } from "@/li
 import { downloadCsv, positionsToCsv } from "@/lib/csv";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { SkeletonRow } from "@/components/Skeleton";
+import { EmptyState } from "@/components/EmptyState";
+import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { useTranslation } from "@/lib/LanguageContext";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -42,7 +44,12 @@ export default function DashboardPage() {
       </div>
 
       {!publicKey ? (
-        <p className="mt-10 text-center text-muted-foreground">{t("dashboard.connectPrompt")}</p>
+        <EmptyState
+          icon={Wallet}
+          title={t("dashboard.connectTitle")}
+          description={t("dashboard.connectPrompt")}
+          action={<WalletConnectButton />}
+        />
       ) : (
         <>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">

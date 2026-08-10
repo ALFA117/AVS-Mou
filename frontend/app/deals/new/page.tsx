@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Rocket, CircleAlert, Link2 } from "lucide-react";
+import { Rocket, CircleAlert, Link2, Wallet } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { getMint, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
@@ -23,6 +23,8 @@ import {
 } from "@/lib/programs";
 import { getWalletErConnection, ER_VALIDATOR } from "@/lib/ephemeralRollup";
 import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { EmptyState } from "@/components/EmptyState";
+import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { useTranslation } from "@/lib/LanguageContext";
 
 type Step = "idle" | "creating" | "permissioning" | "done";
@@ -229,9 +231,12 @@ export default function NewDealPage() {
   if (!publicKey) {
     return (
       <main className="mx-auto max-w-xl px-6 py-10">
-        <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
-          {t("newDeal.connectPrompt")}
-        </p>
+        <EmptyState
+          icon={Wallet}
+          title={t("newDeal.connectTitle")}
+          description={t("newDeal.connectPrompt")}
+          action={<WalletConnectButton />}
+        />
       </main>
     );
   }
