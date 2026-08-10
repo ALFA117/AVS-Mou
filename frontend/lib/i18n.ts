@@ -208,8 +208,7 @@ const en = {
     errorMaxBelowMin: "Max cap must be at least the min investment.",
     errorDeadlinePast: "Deadline must be in the future.",
     createDeal: "Create deal",
-    stepCreating: "Creating deal on-chain…",
-    stepDelegating: "Delegating to the Ephemeral Rollup…",
+    stepCreating: "Creating and delegating deal on-chain…",
     stepPermissioning: "Sealing bid visibility…",
     stepWorking: "Working…",
     signMessageNotice:
@@ -224,8 +223,7 @@ const en = {
     deadline: "Vote deadline",
     rewardPool: "Reward pool (SOL)",
     createButton: "Propose milestone",
-    stepCreating: "Creating milestone on-chain…",
-    stepDelegating: "Delegating to the Ephemeral Rollup…",
+    stepCreating: "Creating and delegating milestone on-chain…",
     stepPermissioning: "Sealing vote visibility…",
     stepWorking: "Working…",
     signMessageNotice:
@@ -672,8 +670,7 @@ const es = {
     errorMaxBelowMin: "El tope máximo debe ser al menos la inversión mínima.",
     errorDeadlinePast: "La fecha límite debe estar en el futuro.",
     createDeal: "Crear deal",
-    stepCreating: "Creando deal on-chain…",
-    stepDelegating: "Delegando al Ephemeral Rollup…",
+    stepCreating: "Creando y delegando el deal on-chain…",
     stepPermissioning: "Sellando la visibilidad de las pujas…",
     stepWorking: "Procesando…",
     signMessageNotice:
@@ -688,8 +685,7 @@ const es = {
     deadline: "Plazo de votación",
     rewardPool: "Fondo de recompensa (SOL)",
     createButton: "Proponer hito",
-    stepCreating: "Creando hito on-chain…",
-    stepDelegating: "Delegando al Ephemeral Rollup…",
+    stepCreating: "Creando y delegando el hito on-chain…",
     stepPermissioning: "Sellando la visibilidad del voto…",
     stepWorking: "Trabajando…",
     signMessageNotice:
@@ -1133,8 +1129,7 @@ const pt = {
     errorMaxBelowMin: "O teto máximo deve ser pelo menos o investimento mínimo.",
     errorDeadlinePast: "O prazo final deve estar no futuro.",
     createDeal: "Criar deal",
-    stepCreating: "Criando deal on-chain…",
-    stepDelegating: "Delegando ao Ephemeral Rollup…",
+    stepCreating: "Criando e delegando o deal on-chain…",
     stepPermissioning: "Selando a visibilidade dos lances…",
     stepWorking: "Processando…",
     signMessageNotice:
@@ -1149,8 +1144,7 @@ const pt = {
     deadline: "Prazo de votação",
     rewardPool: "Fundo de recompensa (SOL)",
     createButton: "Propor marco",
-    stepCreating: "Criando marco on-chain…",
-    stepDelegating: "Delegando ao Ephemeral Rollup…",
+    stepCreating: "Criando e delegando o marco on-chain…",
     stepPermissioning: "Selando a visibilidade do voto…",
     stepWorking: "Trabalhando…",
     signMessageNotice:

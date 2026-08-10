@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CircleAlert, Link2, Plus } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, SystemProgram, LAMPORTS_PER_SOL, Transaction } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import {
   permissionPdaFromAccount,
@@ -23,7 +23,7 @@ async function sha256Bytes(text: string): Promise<number[]> {
   return Array.from(new Uint8Array(digest));
 }
 
-type Step = "idle" | "creating" | "delegating" | "permissioning" | "done";
+type Step = "idle" | "creating" | "permissioning" | "done";
 
 /**
  * No frontend page anywhere lets a startup create a milestone —
@@ -64,21 +64,21 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
 
       const program = privateVotingProgram(connection, wallet.adapter as never);
 
+      // Bundled into one signature — see app/deals/new/page.tsx's identical
+      // initialize+delegate combination for why this is safe (delegate only
+      // needs the derived milestone address, not confirmed on-chain data).
       setStep("creating");
-      const initTx = await program.methods
+      const initIx = await program.methods
         .initializeMilestone(milestoneId, dealPk, descriptionHash, deadlineTs, rewardLamports, new BN(1_000_000))
         .accountsPartial({ startup: publicKey, milestone, systemProgram: SystemProgram.programId })
-        .transaction();
-      const initSig = await sendTransaction(initTx, connection);
-      await connection.confirmTransaction(initSig, "confirmed");
-
-      setStep("delegating");
-      const delegateTx = await program.methods
+        .instruction();
+      const delegateIx = await program.methods
         .delegateMilestone(milestoneId)
         .accountsPartial({ startup: publicKey, milestone, validator: ER_VALIDATOR })
-        .transaction();
-      const delegateSig = await sendTransaction(delegateTx, connection);
-      await connection.confirmTransaction(delegateSig, "confirmed");
+        .instruction();
+      const initAndDelegateTx = new Transaction().add(initIx, delegateIx);
+      const initSig = await sendTransaction(initAndDelegateTx, connection);
+      await connection.confirmTransaction(initSig, "confirmed");
 
       // Same propagation wait app/deals/new/page.tsx uses before the ER
       // will recognize the account as ready.
@@ -215,8 +215,6 @@ function StepLabel({ step }: { step: Step }) {
   switch (step) {
     case "creating":
       return <>{t("createMilestone.stepCreating")}</>;
-    case "delegating":
-      return <>{t("createMilestone.stepDelegating")}</>;
     case "permissioning":
       return <>{t("createMilestone.stepPermissioning")}</>;
     default:

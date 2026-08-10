@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Rocket, CircleAlert, Link2 } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { getMint, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import {
@@ -25,7 +25,7 @@ import { getWalletErConnection, ER_VALIDATOR } from "@/lib/ephemeralRollup";
 import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { useTranslation } from "@/lib/LanguageContext";
 
-type Step = "idle" | "creating" | "delegating" | "permissioning" | "done";
+type Step = "idle" | "creating" | "permissioning" | "done";
 
 export default function NewDealPage() {
   const router = useRouter();
@@ -84,8 +84,15 @@ export default function NewDealPage() {
 
       const program = sealedAuctionProgram(connection, wallet.adapter as never);
 
+      // initialize_deal and delegate_deal both sign as the startup on the
+      // same L1 connection with no dependency on the first being confirmed
+      // before building the second (delegate_deal only needs `deal`'s
+      // derived address, not its on-chain data) — bundling them into one
+      // transaction cuts a wallet round-trip and means the deal can never
+      // end up created-but-undelegated if the flow is interrupted between
+      // the two.
       setStep("creating");
-      const initTx = await program.methods
+      const initIx = await program.methods
         .initializeDeal(
           dealId,
           new BN(Math.round(Number(valuation) * scale)),
@@ -113,17 +120,14 @@ export default function NewDealPage() {
           associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
         })
-        .transaction();
-      const initSig = await sendTransaction(initTx, connection);
-      await connection.confirmTransaction(initSig, "confirmed");
-
-      setStep("delegating");
-      const delegateTx = await program.methods
+        .instruction();
+      const delegateIx = await program.methods
         .delegateDeal(dealId)
         .accountsPartial({ startup: publicKey, deal, validator: ER_VALIDATOR })
-        .transaction();
-      const delegateSig = await sendTransaction(delegateTx, connection);
-      await connection.confirmTransaction(delegateSig, "confirmed");
+        .instruction();
+      const initAndDelegateTx = new Transaction().add(initIx, delegateIx);
+      const initSig = await sendTransaction(initAndDelegateTx, connection);
+      await connection.confirmTransaction(initSig, "confirmed");
 
       // Give the delegation a moment to propagate before the ER will
       // recognize the account as ready — matches the pattern proven in
@@ -342,8 +346,6 @@ function StepLabel({ step }: { step: Step }) {
   switch (step) {
     case "creating":
       return <>{t("newDeal.stepCreating")}</>;
-    case "delegating":
-      return <>{t("newDeal.stepDelegating")}</>;
     case "permissioning":
       return <>{t("newDeal.stepPermissioning")}</>;
     default:
