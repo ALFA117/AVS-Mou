@@ -16,6 +16,14 @@ export function DealCard({ deal }: { deal: Deal }) {
     revealed: "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-400",
     settled: "bg-muted text-muted-foreground",
   };
+  const AWAITING_REVEAL_STYLE = "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-400";
+
+  // deal.status only flips from "open" once someone calls reveal_deal — a
+  // deal whose deadline already passed stays "open" on-chain until then, so
+  // showing the live green "open" badge next to a countdown that reads
+  // "Closed" read as a contradiction (reported directly by a user testing
+  // the app). Treat "open past its own deadline" as its own visual state.
+  const awaitingReveal = deal.status === "open" && deal.deadlineTs * 1000 < Date.now();
 
   return (
     <motion.div
@@ -32,9 +40,11 @@ export function DealCard({ deal }: { deal: Deal }) {
             {shortenAddress(deal.startup)}
           </span>
           <span
-            className={`flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[deal.status]}`}
+            className={`flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${
+              awaitingReveal ? AWAITING_REVEAL_STYLE : STATUS_STYLES[deal.status]
+            }`}
           >
-            {deal.status === "open" && (
+            {deal.status === "open" && !awaitingReveal && (
               <span className="relative flex h-1.5 w-1.5">
                 {!reduceMotion && (
                   <motion.span
@@ -46,7 +56,7 @@ export function DealCard({ deal }: { deal: Deal }) {
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-600 dark:bg-green-400" />
               </span>
             )}
-            {deal.status}
+            {awaitingReveal ? t("dealCard.awaitingReveal") : deal.status}
           </span>
         </div>
         <h2 className="mt-2 font-heading text-lg font-light tracking-tight text-card-foreground">
@@ -71,10 +81,16 @@ export function DealCard({ deal }: { deal: Deal }) {
           </div>
           <div>
             <dt className="text-muted-foreground">
-              {deal.status === "open" ? t("dealCard.closesIn") : t("dealCard.status")}
+              {deal.status === "open" && !awaitingReveal ? t("dealCard.closesIn") : t("dealCard.status")}
             </dt>
             <dd className="font-medium">
-              {deal.status === "open" ? <Countdown deadlineTs={deal.deadlineTs} /> : deal.status}
+              {awaitingReveal ? (
+                t("dealCard.awaitingReveal")
+              ) : deal.status === "open" ? (
+                <Countdown deadlineTs={deal.deadlineTs} />
+              ) : (
+                deal.status
+              )}
             </dd>
           </div>
         </dl>

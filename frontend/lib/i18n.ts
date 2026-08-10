@@ -86,6 +86,7 @@ const en = {
     closesIn: "Closes in",
     status: "Status",
     sealedBids: "{count} sealed bids",
+    awaitingReveal: "Awaiting reveal",
   },
   dealDetail: {
     allDeals: "All deals",
@@ -547,6 +548,7 @@ const es = {
     closesIn: "Cierra en",
     status: "Estado",
     sealedBids: "{count} pujas selladas",
+    awaitingReveal: "Esperando el reveal",
   },
   dealDetail: {
     allDeals: "Todos los deals",
@@ -1007,6 +1009,7 @@ const pt = {
     closesIn: "Fecha em",
     status: "Status",
     sealedBids: "{count} lances selados",
+    awaitingReveal: "Aguardando a revelação",
   },
   dealDetail: {
     allDeals: "Todos os deals",

@@ -70,6 +70,13 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
     );
   }
 
+  // deal.status only flips from "open" once someone calls reveal_deal — a
+  // deal whose deadline already passed stays "open" on-chain until then, so
+  // pairing the live "open" badge with a countdown reading "Closed" read as
+  // a contradiction (reported directly by a user testing the app). See
+  // components/DealCard.tsx for the identical fix on the list view.
+  const awaitingReveal = deal.status === "open" && deal.deadlineTs * 1000 < Date.now();
+
   return (
     <motion.main
       initial={{ opacity: 0, y: 8 }}
@@ -94,8 +101,12 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
             {t("dealDetail.startup", { address: shortenAddress(deal.startup) })}
           </p>
         </div>
-        <span className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_STYLES[deal.status]}`}>
-          {deal.status}
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-medium ${
+            awaitingReveal ? STATUS_STYLES.revealed : STATUS_STYLES[deal.status]
+          }`}
+        >
+          {awaitingReveal ? t("dealCard.awaitingReveal") : deal.status}
         </span>
       </div>
 
@@ -113,8 +124,22 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
           value={t("dealDetail.vestingValue", { cliff: deal.cliffMonths, vesting: deal.vestingMonths })}
         />
         <Stat
-          label={deal.status === "open" ? t("dealDetail.closesIn") : t("dealDetail.deadlineWas")}
-          value={deal.status === "open" ? <Countdown deadlineTs={deal.deadlineTs} /> : formatDate(deal.deadlineTs)}
+          label={
+            awaitingReveal
+              ? t("dealCard.status")
+              : deal.status === "open"
+                ? t("dealDetail.closesIn")
+                : t("dealDetail.deadlineWas")
+          }
+          value={
+            awaitingReveal ? (
+              t("dealCard.awaitingReveal")
+            ) : deal.status === "open" ? (
+              <Countdown deadlineTs={deal.deadlineTs} />
+            ) : (
+              formatDate(deal.deadlineTs)
+            )
+          }
         />
         <Stat label={t("dealDetail.oversubscribed")} value={deal.oversubscribed ? t("dealDetail.yes") : t("dealDetail.no")} />
       </dl>
