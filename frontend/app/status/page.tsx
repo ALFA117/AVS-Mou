@@ -162,12 +162,12 @@ function StatusRow({
   latencyMs?: number | null;
 }) {
   return (
-    <div className="flex items-center justify-between avs-elevate rounded-xl border border-border bg-card p-4">
-      <div>
+    <div className="flex items-center justify-between gap-3 avs-elevate rounded-xl border border-border bg-card p-4">
+      <div className="min-w-0">
         <p className="font-medium text-card-foreground">{label}</p>
-        {detail && <p className="font-mono-avs text-xs text-muted-foreground">{detail}</p>}
+        {detail && <p className="break-all font-mono-avs text-xs text-muted-foreground">{detail}</p>}
       </div>
-      <span className="flex items-center gap-2 text-sm text-foreground">
+      <span className="flex shrink-0 items-center gap-2 text-sm text-foreground">
         {typeof latencyMs === "number" && (
           <span className="font-mono-avs text-xs text-muted-foreground">{latencyMs}ms</span>
         )}
