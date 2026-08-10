@@ -84,7 +84,12 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
         .delegateMilestone(milestoneId)
         .accountsPartial({ startup: publicKey, milestone, validator: ER_VALIDATOR })
         .instruction();
+      // See app/deals/new/page.tsx's identical fix: building from raw
+      // .instruction()s doesn't get Anchor's automatic feePayer the way
+      // .transaction() did, so set it (and the blockhash) explicitly.
       const initAndDelegateTx = new Transaction().add(initIx, delegateIx);
+      initAndDelegateTx.feePayer = publicKey;
+      initAndDelegateTx.recentBlockhash = (await connection.getLatestBlockhash("confirmed")).blockhash;
       const initSig = await sendTransaction(initAndDelegateTx, connection);
       await connection.confirmTransaction(initSig, "confirmed");
 

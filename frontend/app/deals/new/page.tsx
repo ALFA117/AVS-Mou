@@ -134,7 +134,14 @@ export default function NewDealPage() {
         .delegateDeal(dealId)
         .accountsPartial({ startup: publicKey, deal, validator: ER_VALIDATOR })
         .instruction();
+      // Anchor's own .transaction() builder used to set feePayer for us —
+      // building from raw .instruction()s to combine two into one signature
+      // doesn't, so set both explicitly rather than relying on
+      // wallet-adapter's own fallback (it does have one, but don't depend
+      // on undocumented behavior for something this easy to just set).
       const initAndDelegateTx = new Transaction().add(initIx, delegateIx);
+      initAndDelegateTx.feePayer = publicKey;
+      initAndDelegateTx.recentBlockhash = (await connection.getLatestBlockhash("confirmed")).blockhash;
       const initSig = await sendTransaction(initAndDelegateTx, connection);
       await connection.confirmTransaction(initSig, "confirmed");
 
