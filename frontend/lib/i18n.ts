@@ -425,6 +425,7 @@ const en = {
     corsNote:
       "The ER check may show a false \"Unreachable\" if the endpoint's CORS policy blocks browser requests — it's a best-effort client-side ping, not a guarantee.",
     deployedPrograms: "Deployed programs",
+    copyProgramId: "Copy {name} program ID",
     links: "Links",
     solanaStatusLink: "Solana network status",
     magicblockDocsLink: "MagicBlock docs",
@@ -888,6 +889,7 @@ const es = {
     corsNote:
       "La verificación del ER puede mostrar falsamente \"Inaccesible\" si la política CORS del endpoint bloquea las solicitudes del navegador — es un ping desde el cliente, no una garantía.",
     deployedPrograms: "Programas desplegados",
+    copyProgramId: "Copiar ID del programa {name}",
     links: "Enlaces",
     solanaStatusLink: "Estado de la red Solana",
     magicblockDocsLink: "Documentación de MagicBlock",
@@ -1348,6 +1350,7 @@ const pt = {
     corsNote:
       "A verificação do ER pode mostrar falsamente \"Inacessível\" se a política CORS do endpoint bloquear solicitações do navegador — é um ping best-effort do lado do cliente, não uma garantia.",
     deployedPrograms: "Programas implantados",
+    copyProgramId: "Copiar ID do programa {name}",
     links: "Links",
     solanaStatusLink: "Status da rede Solana",
     magicblockDocsLink: "Documentação da MagicBlock",

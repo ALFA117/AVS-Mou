@@ -1,6 +1,7 @@
 "use client";
 
-import { RefreshCw, Server, Link2, Droplet } from "lucide-react";
+import { useState } from "react";
+import { RefreshCw, Server, Link2, Droplet, Copy, Check } from "lucide-react";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { useSystemStatus, type ServiceStatus } from "@/hooks/useSystemStatus";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -51,12 +52,14 @@ export default function StatusPage() {
               ? `${t("status.slot", { slot: status.solanaSlot.toLocaleString() })} · ${connection.rpcEndpoint}`
               : connection.rpcEndpoint
           }
+          latencyMs={status.solanaLatencyMs}
         />
         <StatusRow
           label={t("status.magicblockLabel")}
           status={status.magicblockEr}
           statusLabel={STATUS_LABEL}
           detail={erEndpoint}
+          latencyMs={status.erLatencyMs}
         />
       </div>
 
@@ -71,14 +74,17 @@ export default function StatusPage() {
           {PROGRAM_IDS.map((p) => (
             <div key={p.id} className="flex flex-col gap-0.5 text-sm sm:flex-row sm:items-center sm:justify-between">
               <span className="text-foreground">{p.name}</span>
-              <a
-                href={`https://explorer.solana.com/address/${p.id}?cluster=devnet`}
-                target="_blank"
-                rel="noreferrer"
-                className="break-all font-mono-avs text-xs text-primary underline"
-              >
-                {p.id}
-              </a>
+              <span className="flex items-center gap-1.5">
+                <a
+                  href={`https://explorer.solana.com/address/${p.id}?cluster=devnet`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="break-all font-mono-avs text-xs text-primary underline"
+                >
+                  {p.id}
+                </a>
+                <CopyButton value={p.id} label={t("status.copyProgramId", { name: p.name })} />
+              </span>
             </div>
           ))}
         </div>
@@ -147,11 +153,13 @@ function StatusRow({
   status,
   statusLabel,
   detail,
+  latencyMs,
 }: {
   label: string;
   status: ServiceStatus;
   statusLabel: Record<ServiceStatus, string>;
   detail?: string;
+  latencyMs?: number | null;
 }) {
   return (
     <div className="flex items-center justify-between avs-elevate rounded-xl border border-border bg-card p-4">
@@ -160,9 +168,34 @@ function StatusRow({
         {detail && <p className="font-mono-avs text-xs text-muted-foreground">{detail}</p>}
       </div>
       <span className="flex items-center gap-2 text-sm text-foreground">
+        {typeof latencyMs === "number" && (
+          <span className="font-mono-avs text-xs text-muted-foreground">{latencyMs}ms</span>
+        )}
         <span className={`h-2 w-2 rounded-full ${STATUS_DOT[status]}`} />
         {statusLabel[status]}
       </span>
     </div>
+  );
+}
+
+function CopyButton({ value, label }: { value: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        await navigator.clipboard.writeText(value);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }}
+      aria-label={label}
+      className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center text-muted-foreground transition-colors duration-200 hover:text-foreground"
+    >
+      {copied ? (
+        <Check className="h-3.5 w-3.5 text-green-600 dark:text-green-400" strokeWidth={2} />
+      ) : (
+        <Copy className="h-3.5 w-3.5" strokeWidth={2} />
+      )}
+    </button>
   );
 }
