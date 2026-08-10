@@ -7,7 +7,7 @@ import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { splTokenManagerProgram } from "@/lib/programs";
-import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { SuccessFlash } from "@/components/SuccessFlash";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Syndicate } from "@/lib/types";
@@ -53,7 +53,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
       setRecipient("");
       setAmount("");
     } catch (err) {
-      setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+      setStatus({ kind: "error", message: describeError(err) });
     } finally {
       setSubmitting(false);
     }

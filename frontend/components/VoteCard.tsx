@@ -10,7 +10,7 @@ import { votePda, privateVotingProgram, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
 import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/lib/relayClient";
 import { getAnonymousTeeConnection } from "@/lib/ephemeralRollup";
-import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { Countdown } from "@/components/Countdown";
 import { VoteConfirmModal } from "@/components/VoteConfirmModal";
 import { SuccessFlash } from "@/components/SuccessFlash";
@@ -121,7 +121,7 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
       setHasVoted(true);
       onVoted?.();
     } catch (err) {
-      setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+      setStatus({ kind: "error", message: describeError(err) });
     } finally {
       setSubmitting(false);
     }

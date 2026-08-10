@@ -22,7 +22,7 @@ import {
   DELEGATION_PROGRAM_ID,
 } from "@/lib/programs";
 import { getWalletErConnection, ER_VALIDATOR } from "@/lib/ephemeralRollup";
-import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { EmptyState } from "@/components/EmptyState";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -173,7 +173,7 @@ export default function NewDealPage() {
       router.push(`/deals/${deal.toBase58()}`);
     } catch (err) {
       setStep("idle");
-      setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+      setStatus({ kind: "error", message: describeError(err) });
     } finally {
       submittingRef.current = false;
     }

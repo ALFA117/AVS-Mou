@@ -20,7 +20,7 @@ import {
   requestFaucetTokens,
 } from "@/lib/relayClient";
 import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
-import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { formatTokenAmount } from "@/lib/format";
 import { BidConfirmModal } from "@/components/BidConfirmModal";
 import { SuccessFlash } from "@/components/SuccessFlash";
@@ -60,7 +60,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
     } catch (err) {
       setFaucetStatus({
         kind: "error",
-        message: err instanceof Error ? err.message : String(err),
+        message: describeError(err),
       });
     } finally {
       setFaucetLoading(false);
@@ -154,7 +154,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
       onBidPlaced?.();
     } catch (err) {
       setDelegating(false);
-      setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+      setStatus({ kind: "error", message: describeError(err) });
     } finally {
       setSubmitting(false);
     }

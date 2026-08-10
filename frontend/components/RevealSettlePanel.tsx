@@ -15,7 +15,7 @@ import {
 import { sealedAuctionProgram } from "@/lib/programs";
 import { getWalletErConnection } from "@/lib/ephemeralRollup";
 import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
-import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { SuccessFlash } from "@/components/SuccessFlash";
 import { formatTokenAmount, shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -78,7 +78,7 @@ export function RevealSettlePanel({
       setStatus({ kind: "success", message: t("revealSettle.revealSuccess") });
       onChanged?.();
     } catch (err) {
-      setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+      setStatus({ kind: "error", message: describeError(err) });
     } finally {
       setBusy(null);
     }
@@ -131,7 +131,7 @@ export function RevealSettlePanel({
       setStatus({ kind: "success", message: t("revealSettle.settleSuccess") });
       onChanged?.();
     } catch (err) {
-      setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+      setStatus({ kind: "error", message: describeError(err) });
     } finally {
       setBusy(null);
     }

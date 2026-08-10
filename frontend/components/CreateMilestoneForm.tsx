@@ -14,7 +14,7 @@ import {
 } from "@magicblock-labs/ephemeral-rollups-sdk";
 import { privateVotingProgram, milestonePda } from "@/lib/programs";
 import { getWalletErConnection, ER_VALIDATOR } from "@/lib/ephemeralRollup";
-import { isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { useTranslation } from "@/lib/LanguageContext";
 
 async function sha256Bytes(text: string): Promise<number[]> {
@@ -122,7 +122,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
       onCreated?.();
     } catch (err) {
       setStep("idle");
-      setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+      setStatus({ kind: "error", message: describeError(err) });
     } finally {
       submittingRef.current = false;
     }

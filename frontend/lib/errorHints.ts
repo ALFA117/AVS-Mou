@@ -19,3 +19,28 @@ const NETWORK_MISMATCH_PATTERNS = [
 export function isLikelyNetworkMismatch(message: string): boolean {
   return NETWORK_MISMATCH_PATTERNS.some((pattern) => pattern.test(message));
 }
+
+/**
+ * wallet-adapter's WalletError subclasses (WalletSendTransactionError,
+ * WalletSignTransactionError, ...) set `.message` to a generic string like
+ * "Unexpected error" and stash the actual cause — often a simulation
+ * failure with real program logs — on an untyped `.error` property that
+ * every naive `err.message` read silently discards. Unwrap it so users
+ * (and we, when they report a bug) see the real failure instead of a dead
+ * end. Falls back through increasingly generic shapes so this never throws
+ * on an error it doesn't recognize.
+ */
+export function describeError(err: unknown): string {
+  if (err instanceof Error) {
+    const nested = (err as { error?: unknown }).error;
+    if (nested instanceof Error && nested.message) return nested.message;
+    if (nested && typeof nested === "object") {
+      const logs = (nested as { logs?: unknown }).logs;
+      if (Array.isArray(logs) && logs.length > 0) return `${err.message}: ${logs.join(" | ")}`;
+      const nestedMessage = (nested as { message?: unknown }).message;
+      if (typeof nestedMessage === "string" && nestedMessage) return nestedMessage;
+    }
+    return err.message;
+  }
+  return String(err);
+}
