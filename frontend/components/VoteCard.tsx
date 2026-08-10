@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CircleCheck, CircleAlert, Lock, Vote as VoteIcon } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -9,6 +9,7 @@ import { BN } from "@coral-xyz/anchor";
 import { votePda, privateVotingProgram, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
 import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/lib/relayClient";
+import { getAnonymousTeeConnection } from "@/lib/ephemeralRollup";
 import { isLikelyNetworkMismatch } from "@/lib/errorHints";
 import { Countdown } from "@/components/Countdown";
 import { VoteConfirmModal } from "@/components/VoteConfirmModal";
@@ -29,6 +30,36 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
     kind: "idle",
   });
+  // The `vote` PDA is an ER-only account with an `init` constraint — a
+  // second cast_vote for the same (milestone, voter) fails on-chain with a
+  // generic "invalid account data" instead of a clear error, since Anchor's
+  // init rejects an already-existing account before any custom program
+  // logic runs. Checking existence isn't identity-gated (only the sealed
+  // choice is), so this can run anonymously without a wallet signature.
+  const [hasVoted, setHasVoted] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!publicKey) {
+      setHasVoted(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const erConnection = await getAnonymousTeeConnection();
+        const vote = votePda(new PublicKey(milestone.publicKey), publicKey);
+        const info = await erConnection.getAccountInfo(vote);
+        if (!cancelled) setHasVoted(info !== null);
+      } catch {
+        // Fail open — worst case is the same unhelpful on-chain error the
+        // user already gets today, not a regression.
+        if (!cancelled) setHasVoted(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [publicKey, milestone.publicKey]);
 
   async function submitVote(choice: Choice) {
     if (!publicKey || !wallet?.adapter) return;
@@ -87,6 +118,7 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
       await submitViaRelay(tx);
 
       setStatus({ kind: "success" });
+      setHasVoted(true);
       onVoted?.();
     } catch (err) {
       setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
@@ -125,6 +157,11 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
         </p>
       ) : !publicKey ? (
         <p className="mt-4 text-sm text-muted-foreground">{t("voteCard.connectToVote")}</p>
+      ) : hasVoted ? (
+        <p className="mt-4 flex items-center gap-1.5 text-sm text-muted-foreground">
+          <CircleCheck className="h-4 w-4 shrink-0" strokeWidth={2} />
+          {t("voteCard.alreadyVoted")}
+        </p>
       ) : (
         <div className="mt-4 flex gap-2">
           <motion.button
