@@ -6,7 +6,7 @@ import { useTranslation } from "@/lib/LanguageContext";
 export default function FaqPage() {
   const { t } = useTranslation();
 
-  const FAQS = [1, 2, 3, 4, 5, 6].map((n) => ({
+  const FAQS = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
     q: t(`faq.q${n}`),
     a: t(`faq.a${n}`),
   }));
