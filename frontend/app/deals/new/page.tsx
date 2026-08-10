@@ -187,7 +187,13 @@ export default function NewDealPage() {
     }
   }
 
-  const fieldErrors: Partial<Record<"fundingMint" | "equityPercent" | "maxCap" | "deadline", string>> = {};
+  function isNonNegativeInteger(value: string): boolean {
+    return value !== "" && Number.isInteger(Number(value)) && Number(value) >= 0;
+  }
+
+  const fieldErrors: Partial<
+    Record<"fundingMint" | "equityPercent" | "maxCap" | "deadline" | "cliffMonths" | "vestingMonths", string>
+  > = {};
   if (fundingMint.trim().length > 0 && !isValidPubkey(fundingMint)) {
     fieldErrors.fundingMint = t("newDeal.errorInvalidMint");
   }
@@ -200,6 +206,12 @@ export default function NewDealPage() {
   if (deadline.length > 0 && new Date(deadline).getTime() <= Date.now()) {
     fieldErrors.deadline = t("newDeal.errorDeadlinePast");
   }
+  if (cliffMonths !== "" && !isNonNegativeInteger(cliffMonths)) {
+    fieldErrors.cliffMonths = t("newDeal.errorMustBeWholeMonths");
+  }
+  if (vestingMonths !== "" && !isNonNegativeInteger(vestingMonths)) {
+    fieldErrors.vestingMonths = t("newDeal.errorMustBeWholeMonths");
+  }
 
   const valid =
     fundingMint.trim().length > 0 &&
@@ -209,6 +221,8 @@ export default function NewDealPage() {
     Number(equityPercent) <= 100 &&
     Number(minInvestment) > 0 &&
     Number(maxCap) >= Number(minInvestment) &&
+    isNonNegativeInteger(cliffMonths) &&
+    isNonNegativeInteger(vestingMonths) &&
     deadline.length > 0 &&
     new Date(deadline).getTime() > Date.now();
 
@@ -249,6 +263,8 @@ export default function NewDealPage() {
           <Field label={t("newDeal.valuation")}>
             <input
               type="number"
+              min={0}
+              step="0.01"
               value={valuation}
               onChange={(e) => setValuation(e.target.value)}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
@@ -257,6 +273,7 @@ export default function NewDealPage() {
           <Field label={t("newDeal.equityPercent")} error={fieldErrors.equityPercent}>
             <input
               type="number"
+              min={0}
               step="0.1"
               max={100}
               value={equityPercent}
@@ -267,6 +284,8 @@ export default function NewDealPage() {
           <Field label={t("newDeal.minInvestment")}>
             <input
               type="number"
+              min={0}
+              step="0.01"
               value={minInvestment}
               onChange={(e) => setMinInvestment(e.target.value)}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
@@ -275,22 +294,28 @@ export default function NewDealPage() {
           <Field label={t("newDeal.maxCap")} error={fieldErrors.maxCap}>
             <input
               type="number"
+              min={0}
+              step="0.01"
               value={maxCap}
               onChange={(e) => setMaxCap(e.target.value)}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label={t("newDeal.cliffMonths")}>
+          <Field label={t("newDeal.cliffMonths")} error={fieldErrors.cliffMonths}>
             <input
               type="number"
+              min={0}
+              step="1"
               value={cliffMonths}
               onChange={(e) => setCliffMonths(e.target.value)}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
             />
           </Field>
-          <Field label={t("newDeal.vestingMonths")}>
+          <Field label={t("newDeal.vestingMonths")} error={fieldErrors.vestingMonths}>
             <input
               type="number"
+              min={0}
+              step="1"
               value={vestingMonths}
               onChange={(e) => setVestingMonths(e.target.value)}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"

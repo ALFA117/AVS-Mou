@@ -91,7 +91,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
               type="number"
               min={0}
               step="1"
-              placeholder="0.00"
+              placeholder="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
@@ -99,7 +99,9 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
           </div>
           <button
             type="button"
-            disabled={!recipient || !amount || Number(amount) <= 0 || submitting}
+            disabled={
+              !recipient || !amount || !Number.isInteger(Number(amount)) || Number(amount) <= 0 || submitting
+            }
             onClick={() => {
               if (window.confirm(t("transferEquity.confirmPrompt", { amount, recipient }))) {
                 void submit();
