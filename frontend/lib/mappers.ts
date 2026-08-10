@@ -4,17 +4,7 @@
  */
 import type { BN } from "@coral-xyz/anchor";
 import type { PublicKey } from "@solana/web3.js";
-import type {
-  Bid,
-  Deal,
-  DealStatus,
-  Milestone,
-  MilestoneStatus,
-  Outcome,
-  Syndicate,
-  Vote,
-  Choice,
-} from "./types";
+import type { Bid, Deal, DealStatus, Milestone, MilestoneStatus, Outcome, Syndicate } from "./types";
 
 function enumVariant<T extends string>(value: Record<string, unknown>): T {
   return Object.keys(value)[0] as T;
@@ -69,16 +59,6 @@ export function mapMilestone(publicKey: PublicKey, account: Record<string, unkno
     outcome: enumVariant<Outcome>(account.outcome as Record<string, unknown>),
     status: enumVariant<MilestoneStatus>(account.status as Record<string, unknown>),
     randomnessFulfilled: account.randomnessFulfilled as boolean,
-  };
-}
-
-export function mapVote(publicKey: PublicKey, account: Record<string, unknown>): Vote {
-  return {
-    publicKey: publicKey.toBase58(),
-    milestone: (account.milestone as PublicKey).toBase58(),
-    voter: (account.voter as PublicKey).toBase58(),
-    choice: enumVariant<Choice>(account.choice as Record<string, unknown>),
-    voterIndex: account.voterIndex as number,
   };
 }
 

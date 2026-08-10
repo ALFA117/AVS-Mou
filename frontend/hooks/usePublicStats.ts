@@ -24,7 +24,7 @@ const READONLY_WALLET = {
   },
 };
 
-export interface LeaderboardEntry {
+interface LeaderboardEntry {
   /** First 4 + last 4 chars only — public leaderboard stays anonymous (Task 080). */
   investor: string;
   totalInvested: number;

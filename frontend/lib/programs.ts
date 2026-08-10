@@ -14,7 +14,7 @@ export const SEALED_AUCTION_PROGRAM_ID = new PublicKey(
 export const PRIVATE_VOTING_PROGRAM_ID = new PublicKey(
   "ErRYzAmuTFGHQSzZ7A38zX2rmwosGxDYTvPtPCSPq4Qs",
 );
-export const SPL_TOKEN_MANAGER_PROGRAM_ID = new PublicKey(
+const SPL_TOKEN_MANAGER_PROGRAM_ID = new PublicKey(
   "fNkSCkp2szKMND8ouKwfxNpGqhAsnCdQ4PTzsxnDKa3",
 );
 
@@ -27,11 +27,11 @@ export const DELEGATION_PROGRAM_ID = new PublicKey(
   "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh",
 );
 
-export const DEAL_SEED = Buffer.from("deal");
-export const BID_SEED = Buffer.from("bid");
-export const MILESTONE_SEED = Buffer.from("milestone");
-export const VOTE_SEED = Buffer.from("vote");
-export const SYNDICATE_SEED = Buffer.from("syndicate");
+const DEAL_SEED = Buffer.from("deal");
+const BID_SEED = Buffer.from("bid");
+const MILESTONE_SEED = Buffer.from("milestone");
+const VOTE_SEED = Buffer.from("vote");
+const SYNDICATE_SEED = Buffer.from("syndicate");
 
 function provider(connection: Connection, wallet: Wallet): AnchorProvider {
   return new AnchorProvider(connection, wallet, { commitment: "confirmed" });

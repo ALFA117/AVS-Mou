@@ -1,4 +1,4 @@
-import { Connection, Keypair, Transaction, PublicKey, ComputeBudgetProgram, clusterApiUrl } from "@solana/web3.js";
+import { Connection, Keypair, Transaction, PublicKey, ComputeBudgetProgram } from "@solana/web3.js";
 import * as nacl from "tweetnacl";
 import { getAuthToken, verifyTeeRpcIntegrity } from "@magicblock-labs/ephemeral-rollups-sdk";
 import { SEALED_AUCTION_PROGRAM_ID, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
@@ -8,8 +8,6 @@ import { SEALED_AUCTION_PROGRAM_ID, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/prog
  * RELAY_SPONSOR_SECRET_KEY (no NEXT_PUBLIC_ prefix, so Next.js already
  * refuses to inline it client-side, but keep the import boundary explicit).
  */
-
-const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl("devnet");
 
 // place_bid/cast_vote only ever exist on MagicBlock's Private Ephemeral
 // Rollup (bid/vote are `eph`-only accounts) — see docs/RELAY.md and
@@ -35,10 +33,6 @@ export function relaySponsorKeypair(): Keypair {
   const secretKey = Uint8Array.from(JSON.parse(raw) as number[]);
   cachedSponsor = Keypair.fromSecretKey(secretKey);
   return cachedSponsor;
-}
-
-export function relayConnection(): Connection {
-  return new Connection(RPC_URL, "confirmed");
 }
 
 let cachedErConnection: { connection: Connection; expiresAt: number } | null = null;

@@ -58,14 +58,6 @@ export interface Milestone {
 
 export type Choice = "yes" | "no";
 
-export interface Vote {
-  publicKey: string;
-  milestone: string;
-  voter: string;
-  choice: Choice;
-  voterIndex: number;
-}
-
 export interface Syndicate {
   publicKey: string;
   deal: string;
