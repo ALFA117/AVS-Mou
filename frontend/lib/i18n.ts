@@ -164,6 +164,8 @@ const en = {
     submitting: "Submitting…",
     success: "Vote cast. Waiting for reveal.",
     error: "Vote failed: {message}",
+    awaitingReveal: "Voting deadline passed — waiting for reveal.",
+    votingClosed: "Voting is closed for this milestone.",
   },
   votePage: {
     title: "Milestone Votes",
@@ -624,6 +626,8 @@ const es = {
     submitting: "Enviando…",
     success: "Voto emitido. Esperando el reveal.",
     error: "El voto falló: {message}",
+    awaitingReveal: "El plazo de votación venció — esperando el reveal.",
+    votingClosed: "La votación de este hito está cerrada.",
   },
   votePage: {
     title: "Votos de hitos",
@@ -1083,6 +1087,8 @@ const pt = {
     submitting: "Enviando…",
     success: "Voto registrado. Aguardando a revelação.",
     error: "Falha no voto: {message}",
+    awaitingReveal: "Prazo de votação encerrado — aguardando a revelação.",
+    votingClosed: "A votação deste marco está encerrada.",
   },
   votePage: {
     title: "Votos de marcos",

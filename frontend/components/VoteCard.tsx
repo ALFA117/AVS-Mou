@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CircleCheck, CircleAlert, Vote as VoteIcon } from "lucide-react";
+import { CircleCheck, CircleAlert, Lock, Vote as VoteIcon } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
@@ -113,7 +113,17 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
       <p className="mt-1 text-xs text-muted-foreground">
         {t("voteCard.sealedNotice", { count: milestone.voterCount })}
       </p>
-      {!publicKey ? (
+      {milestone.status !== "open" ? (
+        <p className="mt-4 flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Lock className="h-4 w-4 shrink-0" strokeWidth={2} />
+          {t("voteCard.votingClosed")}
+        </p>
+      ) : milestone.deadlineTs * 1000 < Date.now() ? (
+        <p className="mt-4 flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Lock className="h-4 w-4 shrink-0" strokeWidth={2} />
+          {t("voteCard.awaitingReveal")}
+        </p>
+      ) : !publicKey ? (
         <p className="mt-4 text-sm text-muted-foreground">{t("voteCard.connectToVote")}</p>
       ) : (
         <div className="mt-4 flex gap-2">
