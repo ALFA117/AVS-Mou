@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Lock, Vote, Zap, ShieldCheck, Dices, ArrowRight, ChevronDown } from "lucide-react";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { ConstellationBackground } from "@/components/ConstellationBackground";
 import { DealsMockup } from "@/components/DealsMockup";
 import { StatsBand } from "@/components/StatsBand";
 import { useTranslation } from "@/lib/LanguageContext";
@@ -46,6 +47,7 @@ export default function Home() {
     <main>
       <section className="relative overflow-hidden px-6 py-16 sm:py-20 md:py-24">
         <AnimatedBackground />
+        <ConstellationBackground className="-z-10" />
         <motion.div
           initial="hidden"
           animate="show"
