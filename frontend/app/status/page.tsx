@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RefreshCw, Server, Link2, Droplet, Copy, Check } from "lucide-react";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { useSystemStatus, type ServiceStatus } from "@/hooks/useSystemStatus";
@@ -180,8 +181,9 @@ function StatusRow({
 
 function CopyButton({ value, label }: { value: string; label: string }) {
   const [copied, setCopied] = useState(false);
+  const reduceMotion = useReducedMotion();
   return (
-    <button
+    <motion.button
       type="button"
       onClick={async () => {
         await navigator.clipboard.writeText(value);
@@ -189,13 +191,35 @@ function CopyButton({ value, label }: { value: string; label: string }) {
         setTimeout(() => setCopied(false), 1500);
       }}
       aria-label={label}
+      whileTap={reduceMotion ? undefined : { scale: 0.85 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
       className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center text-muted-foreground transition-colors duration-200 hover:text-foreground"
     >
-      {copied ? (
-        <Check className="h-3.5 w-3.5 text-green-600 dark:text-green-400" strokeWidth={2} />
-      ) : (
-        <Copy className="h-3.5 w-3.5" strokeWidth={2} />
-      )}
-    </button>
+      <AnimatePresence mode="wait" initial={false}>
+        {copied ? (
+          <motion.span
+            key="check"
+            initial={reduceMotion ? undefined : { opacity: 0, scale: 0.6, rotate: -90 }}
+            animate={reduceMotion ? undefined : { opacity: 1, scale: 1, rotate: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.6, rotate: 90 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="flex"
+          >
+            <Check className="h-3.5 w-3.5 text-green-600 dark:text-green-400" strokeWidth={2} />
+          </motion.span>
+        ) : (
+          <motion.span
+            key="copy"
+            initial={reduceMotion ? undefined : { opacity: 0, scale: 0.6, rotate: -90 }}
+            animate={reduceMotion ? undefined : { opacity: 1, scale: 1, rotate: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.6, rotate: 90 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="flex"
+          >
+            <Copy className="h-3.5 w-3.5" strokeWidth={2} />
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
   );
 }

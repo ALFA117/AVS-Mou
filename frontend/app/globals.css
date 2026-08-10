@@ -101,6 +101,22 @@ body {
   font-feature-settings: "ss01";
 }
 
+/* --ring is defined (light + dark) and mapped in tailwind.config, but
+   nothing applied it — every interactive element fell back to the
+   browser's default outline, which is inconsistent and gets clipped by
+   overflow-hidden pill buttons. :focus-visible keeps this keyboard-only
+   so it never flashes on a mouse click. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* Stripe's editorial signature: thin (300) display weight with negative
    tracking, scaling down from -1.4px at the largest size to -0.2px at
    the smallest heading tier. Space Grotesk (this app's previous display
