@@ -1,5 +1,69 @@
 # Known issues
 
+## Phantom throws a bare "Unexpected error" on `sendTransaction` with no detail
+
+**Status:** Open, not root-caused for the specific report that triggered this
+— but the investigation ruled out the two most likely causes and found a
+real, distinct bug in how the app surfaces this class of error, which is
+now fixed.
+
+**Symptom:** clicking a wallet-signed action (reported first for deal
+creation) throws `WalletSendTransactionError: Unexpected error` with zero
+underlying detail — no program logs, no error code, nothing to unwrap.
+Reproducible every time for the affected user, across multiple attempts.
+
+**Ruled out via live Devnet reproduction** (not simulation — actual
+`sendRawTransaction` + `confirmTransaction` against
+`https://api.devnet.solana.com`, using the exact parameters from the bug
+report and a funded local keypair):
+
+1. **Insufficient SOL** — the combined `initialize_deal` + `delegate_deal`
+   transaction succeeded end-to-end (both that and the follow-up
+   `init_deal_permission` signature), costing ~0.013 SOL total. The
+   reporting user's wallet had 4.92 SOL — far more than enough. This also
+   calibrated `lib/solBalance.ts`'s `LOW_BALANCE_THRESHOLD_SOL` (0.05 SOL,
+   ~4x the real cost) for the low-balance warning added this session.
+2. **Transaction size** — measured the serialized combined transaction at
+   785 bytes, and 837 bytes with two `ComputeBudgetProgram` instructions
+   prepended (matching what Phantom auto-injects for priority fees) —
+   comfortably under Solana's 1232-byte legacy transaction limit.
+
+**What "Unexpected error" actually is:** grepped every `@solana/wallet-
+adapter-*` and `@solana/wallet-standard-*` package in `node_modules` for
+the literal string — zero hits. It is not a message our dependencies ever
+construct; it's Phantom's own extension code, external to this repo, with
+no way to inspect why it decided to fail.
+
+**A real, related bug found along the way:** the wallet-standard adapter
+(`node_modules/@solana/wallet-standard-wallet-adapter-*/adapter.js`,
+`sendTransaction`) derives a "chain" from `connection.rpcEndpoint` via
+`getChainForEndpoint()` (`@solana/wallet-standard-util`) — a regex match
+for the literal word "devnet"/"mainnet"/"testnet"/"localhost" in the URL,
+defaulting to **mainnet** if none match — and throws a `WalletSend
+TransactionError` (with no message at all, i.e. `.message === ""`) before
+ever asking the wallet to sign, if the connected account's `chains` don't
+include that derived chain. This is a *different* code path than the
+"reverted during simulation" network-mismatch case already documented in
+`lib/errorHints.ts`'s comment (the MetaMask incident), but the same root
+category: **this app talking devnet while the wallet's active network is
+mainnet**. Confirmed both of this app's actual connection endpoints
+(`api.devnet.solana.com`, `devnet-tee.magicblock.app`) match the regex
+correctly, so this specific throw site isn't proven to be the reporting
+user's cause — but the failure mode (Phantom's own confirm dialog would
+show "Mainnet" instead of "Devnet") is real and worth checking directly
+in the wallet UI.
+
+**Fixed:** `isLikelyNetworkMismatch()` (`lib/errorHints.ts`) now also
+matches the exact string `"Unexpected error"` — so even without knowing
+the precise cause, the app now shows the "check your wallet's network"
+hint whenever this happens, instead of a bare, unexplained message.
+
+**Next steps if picked back up:** ask the reporting user (or reproduce
+directly) whether Phantom's own confirmation popup — which shows the
+target network at the top before signing — says "Devnet" or something
+else. If it's genuinely Devnet on both sides, this becomes a Phantom-side
+bug report rather than something fixable in this codebase.
+
 ## `delegate_equity_account` never deposits the member's existing balance
 
 **Status:** Open, reproducible, root cause confirmed — this one has a clear fix.

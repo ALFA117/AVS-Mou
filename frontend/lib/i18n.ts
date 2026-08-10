@@ -35,6 +35,9 @@ const en = {
     clearFilters: "Clear filters",
     networkMismatchHint:
       "Tip: make sure your wallet is connected to Solana Devnet, not Mainnet — every deal, bid, and vote here only exists on Devnet. Check your wallet's network selector and try again.",
+    lowBalanceWarning:
+      "Your wallet has only {balance} SOL on Devnet — this needs rent/fees to complete, so it may fail with an unhelpful error if you run out mid-transaction.",
+    lowBalanceFaucetLink: "Get free Devnet SOL",
   },
   home: {
     badge: "Built on MagicBlock Ephemeral Rollups",
@@ -213,8 +216,6 @@ const en = {
     errorMaxBelowMin: "Max cap must be at least the min investment.",
     errorDeadlinePast: "Deadline must be in the future.",
     errorMustBeWholeMonths: "Must be a whole number of months, 0 or more.",
-    lowBalanceWarning: "Your wallet has only {balance} SOL on Devnet — creating a deal needs rent for several new accounts, so this may fail with an unhelpful error if you run out mid-transaction.",
-    lowBalanceFaucetLink: "Get free Devnet SOL",
     createDeal: "Create deal",
     stepCreating: "Creating and delegating deal on-chain…",
     stepPermissioning: "Sealing bid visibility…",
@@ -509,6 +510,9 @@ const es = {
     clearFilters: "Limpiar filtros",
     networkMismatchHint:
       "Tip: revisa que tu wallet esté conectada a Solana Devnet, no Mainnet — cada deal, puja y voto aquí solo existe en Devnet. Cambia la red en tu wallet e intenta de nuevo.",
+    lowBalanceWarning:
+      "Tu wallet solo tiene {balance} SOL en Devnet — esto necesita rent/comisiones para completarse, así que podría fallar con un error poco claro si te quedas sin saldo a mitad de la transacción.",
+    lowBalanceFaucetLink: "Consigue SOL de Devnet gratis",
   },
   home: {
     badge: "Construido sobre MagicBlock Ephemeral Rollups",
@@ -693,8 +697,6 @@ const es = {
     errorMaxBelowMin: "El tope máximo debe ser al menos la inversión mínima.",
     errorDeadlinePast: "La fecha límite debe estar en el futuro.",
     errorMustBeWholeMonths: "Debe ser un número entero de meses, 0 o más.",
-    lowBalanceWarning: "Tu wallet solo tiene {balance} SOL en Devnet — crear un deal necesita rent para varias cuentas nuevas, así que podría fallar con un error poco claro si te quedas sin saldo a mitad de la transacción.",
-    lowBalanceFaucetLink: "Consigue SOL de Devnet gratis",
     createDeal: "Crear deal",
     stepCreating: "Creando y delegando el deal on-chain…",
     stepPermissioning: "Sellando la visibilidad de las pujas…",
@@ -987,6 +989,9 @@ const pt = {
     clearFilters: "Limpar filtros",
     networkMismatchHint:
       "Dica: confira se sua carteira está conectada à Solana Devnet, não à Mainnet — cada deal, lance e voto aqui só existe na Devnet. Troque a rede na sua carteira e tente de novo.",
+    lowBalanceWarning:
+      "Sua carteira tem apenas {balance} SOL na Devnet — isso precisa de rent/taxas para ser concluído, então pode falhar com um erro pouco claro se o saldo acabar no meio da transação.",
+    lowBalanceFaucetLink: "Consiga SOL de Devnet grátis",
   },
   home: {
     badge: "Construído sobre os Ephemeral Rollups da MagicBlock",
@@ -1170,8 +1175,6 @@ const pt = {
     errorMaxBelowMin: "O teto máximo deve ser pelo menos o investimento mínimo.",
     errorDeadlinePast: "O prazo final deve estar no futuro.",
     errorMustBeWholeMonths: "Deve ser um número inteiro de meses, 0 ou mais.",
-    lowBalanceWarning: "Sua carteira tem apenas {balance} SOL na Devnet — criar um deal precisa de rent para várias contas novas, então isso pode falhar com um erro pouco claro se o saldo acabar no meio da transação.",
-    lowBalanceFaucetLink: "Consiga SOL de Devnet grátis",
     createDeal: "Criar deal",
     stepCreating: "Criando e delegando o deal on-chain…",
     stepPermissioning: "Selando a visibilidade dos lances…",

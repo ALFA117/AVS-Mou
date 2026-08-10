@@ -10,10 +10,21 @@
  * why. Recognized from a real report this session (MetaMask showed
  * "Network: Solana Mainnet" in its confirm dialog for a devnet-only vote).
  */
+// "Unexpected error" is a bare string Phantom's own extension throws (not
+// from @solana/wallet-adapter-* — confirmed by grepping node_modules, it
+// isn't there) with no underlying detail to unwrap. The wallet-standard
+// adapter (node_modules/@solana/wallet-standard-wallet-adapter-*/adapter.js)
+// derives a chain from connection.rpcEndpoint via getChainForEndpoint()
+// (matches the literal word "devnet"/"mainnet"/"testnet"/"localhost" in the
+// URL) and throws before ever asking the wallet to sign if the connected
+// account's `chains` don't include it — the same failure class as the
+// MetaMask case below, just surfacing as this specific generic string
+// instead of a "reverted during simulation" message.
 const NETWORK_MISMATCH_PATTERNS = [
   /reverted during simulation/i,
   /user rejected/i,
   /simulation failed/i,
+  /^unexpected error$/i,
 ];
 
 export function isLikelyNetworkMismatch(message: string): boolean {

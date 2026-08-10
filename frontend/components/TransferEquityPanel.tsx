@@ -8,7 +8,9 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { splTokenManagerProgram } from "@/lib/programs";
 import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { useSolBalance } from "@/hooks/useSolBalance";
 import { SuccessFlash } from "@/components/SuccessFlash";
+import { LowBalanceWarning } from "@/components/LowBalanceWarning";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Syndicate } from "@/lib/types";
 
@@ -22,6 +24,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
   const { connection } = useConnection();
   const { publicKey, wallet, sendTransaction } = useWallet();
   const { t } = useTranslation();
+  const solBalance = useSolBalance(publicKey, connection);
   const [recipient, setRecipient] = useState("");
   const [amount, setAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -68,6 +71,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
         </span>
         {t("transferEquity.title")}
       </h3>
+      <LowBalanceWarning solBalance={solBalance} />
       <div className="mt-3 space-y-3">
         <div>
           <label htmlFor="transfer-recipient" className="text-xs text-muted-foreground">

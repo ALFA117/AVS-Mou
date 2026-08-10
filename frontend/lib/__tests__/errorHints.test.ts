@@ -11,6 +11,10 @@ describe("isLikelyNetworkMismatch", () => {
   it("does not match unrelated messages", () => {
     expect(isLikelyNetworkMismatch("Insufficient funds")).toBe(false);
   });
+
+  it("matches Phantom's bare 'Unexpected error' (chain-mismatch signal)", () => {
+    expect(isLikelyNetworkMismatch("Unexpected error")).toBe(true);
+  });
 });
 
 describe("describeError", () => {

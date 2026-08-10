@@ -15,6 +15,8 @@ import {
 import { privateVotingProgram, milestonePda } from "@/lib/programs";
 import { getWalletErConnection, ER_VALIDATOR } from "@/lib/ephemeralRollup";
 import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { useSolBalance } from "@/hooks/useSolBalance";
+import { LowBalanceWarning } from "@/components/LowBalanceWarning";
 import { useTranslation } from "@/lib/LanguageContext";
 
 async function sha256Bytes(text: string): Promise<number[]> {
@@ -40,6 +42,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
   const { publicKey, wallet, sendTransaction, signMessage } = useWallet();
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
+  const solBalance = useSolBalance(publicKey, connection);
   const [open, setOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
@@ -149,6 +152,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
       className="avs-elevate rounded-xl border border-border bg-card p-4"
     >
       <div className="space-y-3">
+        <LowBalanceWarning solBalance={solBalance} />
         <label className="block text-sm">
           <span className="mb-1 block text-xs text-muted-foreground">{t("createMilestone.description")}</span>
           <textarea

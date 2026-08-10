@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Rocket, CircleAlert, Link2, Wallet } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, SystemProgram, Transaction, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { getMint, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import {
@@ -23,25 +23,20 @@ import {
 } from "@/lib/programs";
 import { getWalletErConnection, ER_VALIDATOR } from "@/lib/ephemeralRollup";
 import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { useSolBalance } from "@/hooks/useSolBalance";
 import { EmptyState } from "@/components/EmptyState";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
+import { LowBalanceWarning } from "@/components/LowBalanceWarning";
 import { useTranslation } from "@/lib/LanguageContext";
 
 type Step = "idle" | "creating" | "permissioning" | "done";
-
-// Creating a deal funds rent for ~6 new accounts (deal, funding ATA,
-// ephemeral ATA + buffer + record + metadata) plus the 0.001 SOL
-// sponsor_lamports and tx fees. 0.05 SOL is a comfortable margin above
-// that — low enough that a real attempt won't false-positive, high
-// enough to catch the "forgot to fund the devnet wallet" case before it
-// becomes a confusing WalletSendTransactionError with no useful detail.
-const LOW_BALANCE_THRESHOLD_SOL = 0.05;
 
 export default function NewDealPage() {
   const router = useRouter();
   const { connection } = useConnection();
   const { publicKey, wallet, sendTransaction, signMessage } = useWallet();
   const { t } = useTranslation();
+  const solBalance = useSolBalance(publicKey, connection);
 
   const [fundingMint, setFundingMint] = useState("");
   const [valuation, setValuation] = useState("");
@@ -54,26 +49,6 @@ export default function NewDealPage() {
 
   const [step, setStep] = useState<Step>("idle");
   const [status, setStatus] = useState<{ kind: "idle" | "error"; message?: string }>({ kind: "idle" });
-  const [solBalance, setSolBalance] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (!publicKey) {
-      setSolBalance(null);
-      return;
-    }
-    let cancelled = false;
-    connection
-      .getBalance(publicKey)
-      .then((lamports) => {
-        if (!cancelled) setSolBalance(lamports / LAMPORTS_PER_SOL);
-      })
-      .catch(() => {
-        if (!cancelled) setSolBalance(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [publicKey, connection]);
   // `busy` (derived from `step`) only becomes true once setStep("creating")
   // runs below — but that's after an await (getMint), so a second click
   // during that gap isn't caught by the disabled prop's next render and
@@ -282,25 +257,7 @@ export default function NewDealPage() {
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">{t("newDeal.subtitle")}</p>
 
-      {solBalance !== null && solBalance < LOW_BALANCE_THRESHOLD_SOL && (
-        <div
-          role="alert"
-          className="mt-4 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400"
-        >
-          <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} />
-          <p>
-            {t("newDeal.lowBalanceWarning", { balance: solBalance.toFixed(4) })}{" "}
-            <a
-              href="https://faucet.solana.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium underline underline-offset-2"
-            >
-              {t("newDeal.lowBalanceFaucetLink")}
-            </a>
-          </p>
-        </div>
-      )}
+      <LowBalanceWarning solBalance={solBalance} />
 
       <div className="mt-6 space-y-4 avs-elevate rounded-xl border border-border bg-card p-5">
         <Field label={t("newDeal.fundingMint")} error={fieldErrors.fundingMint}>

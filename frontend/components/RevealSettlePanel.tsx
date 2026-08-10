@@ -16,7 +16,9 @@ import { sealedAuctionProgram } from "@/lib/programs";
 import { getWalletErConnection } from "@/lib/ephemeralRollup";
 import { isFundingAccountDelegated, delegateFundingAccount } from "@/lib/ephemeralDelegation";
 import { describeError, isLikelyNetworkMismatch } from "@/lib/errorHints";
+import { useSolBalance } from "@/hooks/useSolBalance";
 import { SuccessFlash } from "@/components/SuccessFlash";
+import { LowBalanceWarning } from "@/components/LowBalanceWarning";
 import { formatTokenAmount, shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Bid, Deal } from "@/lib/types";
@@ -41,6 +43,7 @@ export function RevealSettlePanel({
   const { connection } = useConnection();
   const { publicKey, wallet, signMessage, sendTransaction } = useWallet();
   const { t } = useTranslation();
+  const solBalance = useSolBalance(publicKey, connection);
   const [busy, setBusy] = useState<string | null>(null); // "reveal" | bid pubkey | null
   const [delegating, setDelegating] = useState(false);
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
@@ -147,6 +150,7 @@ export function RevealSettlePanel({
         {t("revealSettle.title")}
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">{t("revealSettle.subtitle")}</p>
+      <LowBalanceWarning solBalance={solBalance} />
 
       {deal.status === "open" && pastDeadline && (
         <button

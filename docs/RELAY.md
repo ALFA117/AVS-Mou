@@ -86,3 +86,7 @@ runs low — check with `solana balance <pubkey> --url devnet`.
   per-serverless-instance — real protection before a production deployment
   would still want a shared store (Upstash/Redis) and per-investor limits,
   not just per-IP.
+- `/api/relay/blockhash` (fetches a fresh ER blockhash for the client to
+  sign against) hits the same live TEE RPC on every call and is rate
+  limited the same way (30 req/min — higher than submit's since it's a
+  cheap read called once per transaction attempt, including retries).
