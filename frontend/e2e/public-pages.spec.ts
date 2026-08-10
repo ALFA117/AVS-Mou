@@ -58,9 +58,14 @@ test.describe("public pages (no wallet required)", () => {
   });
 
   test("no console errors on the landing page", async ({ page }) => {
+    // See e2e/read-only-pages.spec.ts for why @vercel/analytics's local
+    // 404 noise (it only exists on real Vercel infrastructure) is
+    // excluded — this check is about JS runtime errors.
     const errors: string[] = [];
     page.on("console", (msg) => {
-      if (msg.type() === "error") errors.push(msg.text());
+      const text = msg.text();
+      const isKnownHarmless = /^Failed to load resource:.*404/.test(text) || /_vercel\/insights\/script\.js/.test(text);
+      if (msg.type() === "error" && !isKnownHarmless) errors.push(text);
     });
     await page.goto("/");
     await page.waitForLoadState("networkidle");
