@@ -48,6 +48,12 @@ export function NavBar() {
             <Image src="/avs-logo-mark.jpg" alt="" fill sizes="36px" className="object-cover" priority />
           </motion.span>
           AVS
+          <span
+            title={t("nav.devnetBadgeTitle")}
+            className="hidden shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-amber-800 dark:bg-amber-500/15 dark:text-amber-400 sm:inline-flex"
+          >
+            {t("nav.devnetBadge")}
+          </span>
         </Link>
 
         {/* Desktop nav — collapses behind the hamburger below `md` */}

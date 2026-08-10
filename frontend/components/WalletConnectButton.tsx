@@ -58,7 +58,10 @@ export function WalletConnectButton() {
 
   if (wallets.length === 0 && !connected) {
     return (
-      <span className="max-w-[6.5rem] truncate text-xs text-muted-foreground sm:max-w-none sm:whitespace-nowrap sm:text-sm">
+      <span
+        title={t("walletConnect.noWallet")}
+        className="max-w-[3.5rem] truncate text-xs text-muted-foreground sm:max-w-[9rem] sm:text-sm"
+      >
         {t("walletConnect.noWallet")}
       </span>
     );

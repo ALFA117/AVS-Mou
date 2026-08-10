@@ -14,6 +14,8 @@ const en = {
     dashboard: "Dashboard",
     vote: "Vote",
     analytics: "Analytics",
+    devnetBadge: "Devnet",
+    devnetBadgeTitle: "Everything here runs on Solana Devnet, not Mainnet — no real funds are involved.",
   },
   footer: {
     about: "About",
@@ -484,6 +486,8 @@ const es = {
     dashboard: "Panel",
     vote: "Votar",
     analytics: "Analítica",
+    devnetBadge: "Devnet",
+    devnetBadgeTitle: "Todo aquí corre en Solana Devnet, no en Mainnet — no hay fondos reales involucrados.",
   },
   footer: {
     about: "Acerca de",
@@ -958,6 +962,8 @@ const pt = {
     dashboard: "Painel",
     vote: "Votar",
     analytics: "Análises",
+    devnetBadge: "Devnet",
+    devnetBadgeTitle: "Tudo aqui roda na Solana Devnet, não na Mainnet — nenhum fundo real está envolvido.",
   },
   footer: {
     about: "Sobre",
