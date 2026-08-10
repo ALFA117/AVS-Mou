@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CircleAlert, Link2, Plus } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -46,12 +46,20 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
   const [rewardPool, setRewardPool] = useState("0");
   const [step, setStep] = useState<Step>("idle");
   const [status, setStatus] = useState<{ kind: "idle" | "error"; message?: string }>({ kind: "idle" });
+  // See app/deals/new/page.tsx's identical guard: `busy` only becomes true
+  // after setStep("creating") runs below, which is after an await
+  // (sha256Bytes) — a second click in that gap isn't caught by the
+  // disabled prop's next render and fires a second submit(), popping a
+  // second wallet confirmation for the same milestone.
+  const submittingRef = useRef(false);
 
   const busy = step !== "idle" && step !== "done";
   const valid = description.trim().length > 0 && deadline.length > 0 && Number(rewardPool) >= 0;
 
   async function submit() {
     if (!publicKey || !wallet?.adapter || !sendTransaction || !signMessage) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setStatus({ kind: "idle" });
 
     try {
@@ -110,6 +118,8 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
     } catch (err) {
       setStep("idle");
       setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+    } finally {
+      submittingRef.current = false;
     }
   }
 

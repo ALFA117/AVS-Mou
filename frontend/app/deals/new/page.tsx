@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Rocket, CircleAlert, Link2 } from "lucide-react";
@@ -44,6 +44,13 @@ export default function NewDealPage() {
 
   const [step, setStep] = useState<Step>("idle");
   const [status, setStatus] = useState<{ kind: "idle" | "error"; message?: string }>({ kind: "idle" });
+  // `busy` (derived from `step`) only becomes true once setStep("creating")
+  // runs below — but that's after an await (getMint), so a second click
+  // during that gap isn't caught by the disabled prop's next render and
+  // fires a second full submit(), popping a second wallet confirmation for
+  // the same deal. A ref is checked synchronously, before React re-renders,
+  // so it closes that window.
+  const submittingRef = useRef(false);
 
   const busy = step !== "idle" && step !== "done";
 
@@ -56,6 +63,8 @@ export default function NewDealPage() {
       });
       return;
     }
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setStatus({ kind: "idle" });
 
     try {
@@ -156,6 +165,8 @@ export default function NewDealPage() {
     } catch (err) {
       setStep("idle");
       setStatus({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+    } finally {
+      submittingRef.current = false;
     }
   }
 
