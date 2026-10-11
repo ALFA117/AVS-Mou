@@ -50,7 +50,7 @@ export function NavBar() {
           AVS
           <span
             title={t("nav.devnetBadgeTitle")}
-            className="hidden shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-amber-800 dark:bg-amber-500/15 dark:text-amber-400 sm:inline-flex"
+            className="inline-flex shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-amber-800 dark:bg-amber-500/15 dark:text-amber-400"
           >
             {t("nav.devnetBadge")}
           </span>

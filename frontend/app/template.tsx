@@ -14,8 +14,10 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   return (
     <motion.div
-      initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
+      // Solo desplazamiento, sin opacity 0: el HTML del servidor se ve aunque
+      // el JS tarde o falle; la entrada sigue notándose en cada navegación.
+      initial={reduceMotion ? false : { y: 8 }}
+      animate={{ y: 0 }}
       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}

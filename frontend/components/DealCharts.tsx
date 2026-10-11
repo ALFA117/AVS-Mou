@@ -70,7 +70,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
   });
 
   const bidAmounts = bidDistribution.map((b) => b.amount);
-  const numberFormat = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  const numberFormat = (n: number) => n.toLocaleString("en-US", { maximumFractionDigits: 2 });
   const topBidSummary =
     bidAmounts.length > 0
       ? t("dealCharts.topBidAmountsA11y", {
