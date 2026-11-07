@@ -6,6 +6,12 @@ import { CircleCheck, CircleAlert, Lock, Vote as VoteIcon } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
+import {
+  permissionPdaFromAccount,
+  PERMISSION_PROGRAM_ID,
+  EPHEMERAL_VAULT_ID,
+  MAGIC_PROGRAM_ID,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
 import { votePda, privateVotingProgram, PRIVATE_VOTING_PROGRAM_ID } from "@/lib/programs";
 import { sessionTokenPda, loadSession, isSessionValid, sessionKeypairFrom } from "@/lib/sessionKeys";
 import { fetchRelaySponsorPubkey, fetchRelayBlockhash, submitViaRelay } from "@/lib/relayClient";
@@ -16,6 +22,7 @@ import { VoteConfirmModal } from "@/components/VoteConfirmModal";
 import { SuccessFlash } from "@/components/SuccessFlash";
 import { formatTokenAmount } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
+import { rememberSealed, hasSealed } from "@/lib/sealedLocal";
 import type { Choice, Milestone } from "@/lib/types";
 
 const MAGIC_VAULT = new PublicKey("MagicVau1t999999999999999999999999999999999");
@@ -34,8 +41,9 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
   // second cast_vote for the same (milestone, voter) fails on-chain with a
   // generic "invalid account data" instead of a clear error, since Anchor's
   // init rejects an already-existing account before any custom program
-  // logic runs. Checking existence isn't identity-gated (only the sealed
-  // choice is), so this can run anonymously without a wallet signature.
+  // logic runs. An unsealed vote is visible to the anonymous read below; a
+  // sealed one (init_vote_permission, which this card now always sends) is
+  // hidden from it by design, so a per-browser record covers that case.
   const [hasVoted, setHasVoted] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -49,7 +57,8 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
         const erConnection = await getAnonymousTeeConnection();
         const vote = votePda(new PublicKey(milestone.publicKey), publicKey);
         const info = await erConnection.getAccountInfo(vote);
-        if (!cancelled) setHasVoted(info !== null);
+        const votedHere = hasSealed("vote", milestone.publicKey, publicKey.toBase58());
+        if (!cancelled) setHasVoted(info !== null || votedHere);
       } catch {
         // Fail open — worst case is the same unhelpful on-chain error the
         // user already gets today, not a regression.
@@ -100,6 +109,23 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
         })
         .transaction();
 
+      // Seal the vote in the same relay-sponsored transaction: without
+      // init_vote_permission, any TEE-authenticated reader could see the
+      // choice before reveal. Permissionless — the Milestone PDA pays rent.
+      tx.add(
+        await program.methods
+          .initVotePermission(new BN(milestone.milestoneId))
+          .accountsPartial({
+            milestone: milestonePk,
+            vote,
+            votePermission: permissionPdaFromAccount(vote),
+            permissionProgram: PERMISSION_PROGRAM_ID,
+            ephemeralVault: EPHEMERAL_VAULT_ID,
+            magicProgram: MAGIC_PROGRAM_ID,
+          })
+          .instruction(),
+      );
+
       tx.feePayer = sponsorPubkey;
       // cast_vote runs on MagicBlock's Private Ephemeral Rollup (vote is an
       // ER-only account) — the blockhash must be valid there, not on L1.
@@ -116,6 +142,7 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
       // The relay confirms server-side (it holds the only TEE auth on our
       // side) before returning, so no client-side confirmTransaction here.
       await submitViaRelay(tx);
+      rememberSealed("vote", milestone.publicKey, publicKey.toBase58());
 
       setStatus({ kind: "success" });
       setHasVoted(true);

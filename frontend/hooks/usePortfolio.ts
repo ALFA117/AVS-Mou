@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { sealedAuctionProgram } from "@/lib/programs";
-import { getAnonymousTeeConnection } from "@/lib/ephemeralRollup";
+import { getAnonymousTeeConnection, getWalletErConnection, peekWalletErConnection } from "@/lib/ephemeralRollup";
 import { mapBid, mapDeal } from "@/lib/mappers";
 import type { Position } from "@/lib/types";
 
@@ -15,9 +15,15 @@ import type { Position } from "@/lib/types";
  */
 export function usePortfolio() {
   const { connection } = useConnection();
-  const { publicKey, wallet } = useWallet();
+  const { publicKey, wallet, signMessage } = useWallet();
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
+  // Bids sealed with init_bid_permission are readable only by the bidder
+  // and the startup — the anonymous TEE connection can't list them. Once
+  // the wallet signs the TEE auth message (unlock), reads go through its
+  // own identity and its sealed bids show up too.
+  const [unlockCount, setUnlockCount] = useState(0);
+  const unlocked = Boolean(peekWalletErConnection(publicKey));
 
   const refresh = useCallback(async () => {
     if (!publicKey || !wallet?.adapter) {
@@ -31,7 +37,7 @@ export function usePortfolio() {
       // L1 copy is a frozen initialize_deal-time snapshot (see useDeals.ts)
       // — fetch each from wherever it's actually live, falling back to L1
       // for anything genuinely undelegated back.
-      const erConnection = await getAnonymousTeeConnection();
+      const erConnection = peekWalletErConnection(publicKey) ?? (await getAnonymousTeeConnection());
       const erProgram = sealedAuctionProgram(erConnection, wallet.adapter as never);
       const l1Program = sealedAuctionProgram(connection, wallet.adapter as never);
 
@@ -73,11 +79,19 @@ export function usePortfolio() {
     } finally {
       setLoading(false);
     }
-  }, [connection, publicKey, wallet]);
+    // unlockCount: re-run after unlock() caches an authenticated connection.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connection, publicKey, wallet, unlockCount]);
 
   useEffect(() => {
     void refresh();
   }, [refresh]);
 
-  return { positions, loading, refresh };
+  const unlock = useCallback(async () => {
+    if (!publicKey || !signMessage) throw new Error("This wallet can't sign messages");
+    await getWalletErConnection(publicKey, signMessage);
+    setUnlockCount((n) => n + 1);
+  }, [publicKey, signMessage]);
+
+  return { positions, loading, refresh, unlocked, unlock, canUnlock: Boolean(signMessage) };
 }

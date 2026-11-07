@@ -44,6 +44,16 @@ describe("DealCharts", () => {
     expect(screen.queryByText("Hidden until reveal")).toBeFalsy();
   });
 
+  it("says bids are sealed (not settled) when a revealed deal's bids aren't readable anonymously", () => {
+    // init_bid_permission seals each bid to {bidder, startup}; after reveal
+    // the anonymous reader still can't list them — that isn't "settled".
+    render(<DealCharts deal={baseDeal} bids={[]} />);
+    expect(
+      screen.getByText("Individual bids stay sealed to each bidder and the startup — only the total raised is public."),
+    ).toBeTruthy();
+    expect(screen.queryByText("All bids settled — funds already paid out to the startup.")).toBeFalsy();
+  });
+
   it("explains settled bids instead of showing a blank chart once bids are closed", () => {
     // settle_bid closes each Bid account after paying out — a settled deal
     // legitimately has zero Bid accounts left, which isn't a bug.

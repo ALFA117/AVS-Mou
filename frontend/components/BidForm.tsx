@@ -8,6 +8,12 @@ import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import {
+  permissionPdaFromAccount,
+  PERMISSION_PROGRAM_ID,
+  EPHEMERAL_VAULT_ID,
+  MAGIC_PROGRAM_ID,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
+import {
   bidPda,
   sealedAuctionProgram,
   SEALED_AUCTION_PROGRAM_ID,
@@ -25,6 +31,7 @@ import { formatTokenAmount } from "@/lib/format";
 import { BidConfirmModal } from "@/components/BidConfirmModal";
 import { SuccessFlash } from "@/components/SuccessFlash";
 import { useTranslation } from "@/lib/LanguageContext";
+import { rememberSealed, hasSealed } from "@/lib/sealedLocal";
 import type { Deal } from "@/lib/types";
 
 const MAGIC_VAULT = new PublicKey("MagicVau1t999999999999999999999999999999999");
@@ -135,6 +142,25 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         })
         .transaction();
 
+      // place_bid alone leaves the new Bid account readable by any
+      // TEE-authenticated identity — it's init_bid_permission that actually
+      // seals it to {bidder, startup}. It's permissionless (the Deal PDA
+      // pays the permission rent), so it rides in the same relay-sponsored
+      // transaction: the bid is never visible, not even for a moment.
+      tx.add(
+        await program.methods
+          .initBidPermission(new BN(deal.dealId))
+          .accountsPartial({
+            deal: dealPk,
+            bid,
+            bidPermission: permissionPdaFromAccount(bid),
+            permissionProgram: PERMISSION_PROGRAM_ID,
+            ephemeralVault: EPHEMERAL_VAULT_ID,
+            magicProgram: MAGIC_PROGRAM_ID,
+          })
+          .instruction(),
+      );
+
       tx.feePayer = sponsorPubkey;
       tx.recentBlockhash = await fetchRelayBlockhash();
 
@@ -148,6 +174,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
       // The relay confirms server-side (it holds the only TEE auth on our
       // side) before returning, so no client-side confirmTransaction here.
       await submitViaRelay(tx);
+      rememberSealed("bid", deal.publicKey, publicKey.toBase58());
 
       setStatus({ kind: "success" });
       setAmount("");
@@ -195,6 +222,12 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
         {t("bidForm.title")}
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">{t("bidForm.subtitle")}</p>
+      {status.kind !== "success" && hasSealed("bid", deal.publicKey, publicKey.toBase58()) && (
+        <p className="mt-2 flex items-center gap-1.5 rounded-md bg-primary-subdued p-2.5 text-sm text-primary-deep">
+          <CircleCheck className="h-4 w-4 shrink-0" strokeWidth={2} />
+          {t("bidForm.alreadyBid")}
+        </p>
+      )}
 
       <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md bg-muted p-2.5">
         <Droplet className="h-3.5 w-3.5 shrink-0 text-primary" strokeWidth={2} />

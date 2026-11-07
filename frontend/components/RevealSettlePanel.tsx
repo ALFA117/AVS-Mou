@@ -21,6 +21,7 @@ import { SuccessFlash } from "@/components/SuccessFlash";
 import { LowBalanceWarning } from "@/components/LowBalanceWarning";
 import { formatTokenAmount, shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
+import { mapBid } from "@/lib/mappers";
 import type { Bid, Deal } from "@/lib/types";
 
 /**
@@ -49,6 +50,10 @@ export function RevealSettlePanel({
   const [status, setStatus] = useState<{ kind: "idle" | "success" | "error"; message?: string }>({
     kind: "idle",
   });
+  // Sealed bids (init_bid_permission) are readable only by the bidder and
+  // the startup, so the page's anonymous `bids` prop can't see them. The
+  // startup re-reads them through its own authenticated TEE connection.
+  const [startupBids, setStartupBids] = useState<Bid[] | null>(null);
 
   const isStartup = publicKey?.toBase58() === deal.startup;
   const pastDeadline = deal.deadlineTs * 1000 < Date.now();
@@ -65,17 +70,47 @@ export function RevealSettlePanel({
     return sealedAuctionProgram(erConnection, wallet.adapter as never);
   }
 
+  async function loadSealedBids(program: Awaited<ReturnType<typeof erProgram>>): Promise<Bid[]> {
+    const accounts = await program.account.bid.all([
+      { memcmp: { offset: 8, bytes: deal.publicKey } }, // Bid.deal is the first field
+    ]);
+    const byKey = new Map(bids.map((b) => [b.publicKey, b]));
+    for (const a of accounts) {
+      const mapped = mapBid(a.publicKey, a.account as unknown as Record<string, unknown>);
+      byKey.set(mapped.publicKey, mapped);
+    }
+    const all = Array.from(byKey.values());
+    setStartupBids(all);
+    return all;
+  }
+
+  async function loadBidsAsStartup() {
+    setBusy("load");
+    setStatus({ kind: "idle" });
+    try {
+      await loadSealedBids(await erProgram());
+    } catch (err) {
+      setStatus({ kind: "error", message: describeError(err) });
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function reveal() {
     setBusy("reveal");
     setStatus({ kind: "idle" });
     try {
       const program = await erProgram();
       const dealPk = new PublicKey(deal.publicKey);
+      // reveal_deal needs every bid as a remaining account (it checks the
+      // count against bid_count) — read them as the startup, a member of
+      // each sealed bid's permission.
+      const allBids = await loadSealedBids(program);
       await program.methods
         .revealDeal(new BN(deal.dealId))
         .accountsPartial({ startup: publicKey!, deal: dealPk })
         .remainingAccounts(
-          bids.map((b) => ({ pubkey: new PublicKey(b.publicKey), isSigner: false, isWritable: false })),
+          allBids.map((b) => ({ pubkey: new PublicKey(b.publicKey), isSigner: false, isWritable: false })),
         )
         .rpc();
       setStatus({ kind: "success", message: t("revealSettle.revealSuccess") });
@@ -132,6 +167,7 @@ export function RevealSettlePanel({
         })
         .rpc();
       setStatus({ kind: "success", message: t("revealSettle.settleSuccess") });
+      setStartupBids((prev) => (prev ? prev.filter((b) => b.publicKey !== bid.publicKey) : prev));
       onChanged?.();
     } catch (err) {
       setStatus({ kind: "error", message: describeError(err) });
@@ -139,6 +175,9 @@ export function RevealSettlePanel({
       setBusy(null);
     }
   }
+
+  const visibleBids = startupBids ?? bids;
+  const outstanding = Math.max(deal.bidCount - deal.closedBidCount, 0);
 
   return (
     <div className="avs-elevate relative overflow-hidden rounded-xl border border-border bg-card p-5">
@@ -165,10 +204,22 @@ export function RevealSettlePanel({
 
       {deal.status === "revealed" && (
         <div className="mt-4 space-y-2">
-          {bids.length === 0 ? (
+          {visibleBids.length === 0 && outstanding > 0 ? (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">{t("revealSettle.sealedHint", { count: outstanding })}</p>
+              <button
+                type="button"
+                disabled={busy !== null}
+                onClick={() => void loadBidsAsStartup()}
+                className="flex min-h-11 cursor-pointer items-center rounded-full border border-primary px-4 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {busy === "load" ? t("common.loading") : t("revealSettle.loadBids")}
+              </button>
+            </div>
+          ) : visibleBids.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("revealSettle.allSettled")}</p>
           ) : (
-            bids.map((b) => (
+            visibleBids.map((b) => (
               <div
                 key={b.publicKey}
                 className="flex items-center justify-between gap-2 rounded-md bg-muted p-3 text-sm"

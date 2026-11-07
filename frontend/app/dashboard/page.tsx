@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { Download, Wallet } from "lucide-react";
+import { Download, Wallet, KeyRound } from "lucide-react";
+import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
 import { formatEquity, formatInt, formatTokenAmount, shortenAddress } from "@/lib/format";
@@ -12,6 +13,7 @@ import { SkeletonRow } from "@/components/Skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { WalletConnectButton } from "@/components/WalletConnectButton";
 import { useTranslation } from "@/lib/LanguageContext";
+import { describeError } from "@/lib/errorHints";
 
 const STATUS_STYLES: Record<string, string> = {
   active: "bg-green-100 text-green-800 dark:bg-green-500/15 dark:text-green-400",
@@ -30,9 +32,29 @@ const item = {
 
 export default function DashboardPage() {
   const { publicKey } = useWallet();
-  const { positions, loading } = usePortfolio();
+  const { positions, loading, unlocked, unlock, canUnlock } = usePortfolio();
   const reducedMotion = useReducedMotion();
   const { t } = useTranslation();
+  const [unlocking, setUnlocking] = useState(false);
+  const [unlockError, setUnlockError] = useState<string | null>(null);
+
+  async function onUnlock() {
+    setUnlocking(true);
+    setUnlockError(null);
+    try {
+      await unlock();
+    } catch (err) {
+      setUnlockError(describeError(err));
+    } finally {
+      setUnlocking(false);
+    }
+  }
+
+  const STATUS_LABELS: Record<string, string> = {
+    active: t("dashboard.statusActive"),
+    voting: t("dashboard.statusVoting"),
+    liquidated: t("dashboard.statusLiquidated"),
+  };
 
   const totalInvested = positions.reduce((sum, p) => sum + Number(p.bidAmount), 0);
   const activeCount = positions.filter((p) => p.status !== "liquidated").length;
@@ -78,6 +100,26 @@ export default function DashboardPage() {
             )}
           </div>
 
+          {!unlocked && canUnlock && (
+            <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-muted p-4">
+              <KeyRound className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
+              <p className="min-w-0 flex-1 text-sm text-muted-foreground">{t("dashboard.sealedNote")}</p>
+              <button
+                type="button"
+                disabled={unlocking}
+                onClick={() => void onUnlock()}
+                className="flex min-h-11 shrink-0 cursor-pointer items-center rounded-full border border-primary px-4 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {unlocking ? t("common.connecting") : t("dashboard.unlockButton")}
+              </button>
+              {unlockError && (
+                <p role="alert" className="basis-full text-sm text-red-600 dark:text-red-400">
+                  {unlockError}
+                </p>
+              )}
+            </div>
+          )}
+
           {loading && (
             <div className="mt-4 space-y-2">
               <SkeletonRow />
@@ -121,7 +163,7 @@ export default function DashboardPage() {
                       </p>
                     </div>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[p.status]}`}>
-                      {p.status}
+                      {STATUS_LABELS[p.status] ?? p.status}
                     </span>
                   </Link>
                 </motion.div>

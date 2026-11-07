@@ -39,7 +39,7 @@ function renderPercentLabel(props: PieLabelRenderProps) {
       x={x}
       y={y}
       fill="var(--muted-foreground)"
-      fontSize={11}
+      fontSize={12}
       textAnchor={x > Number(cx) ? "start" : "end"}
       dominantBaseline="central"
     >
@@ -106,7 +106,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
                 height={28}
                 iconType="circle"
                 iconSize={8}
-                wrapperStyle={{ fontSize: 11, color: "var(--muted-foreground)" }}
+                wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }}
               />
               <Tooltip formatter={(v) => formatTokenAmount(Number(v ?? 0))} />
             </PieChart>
@@ -124,6 +124,14 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
               <Lock className="h-4 w-4" strokeWidth={2} />
               {t("dealCharts.hiddenUntilReveal")}
             </div>
+          ) : bidDistribution.length === 0 && deal.status === "revealed" && deal.bidCount > deal.closedBidCount ? (
+            // Revealed, but the bids were sealed with init_bid_permission:
+            // only each bidder and the startup can read an individual amount,
+            // the total above is what's public.
+            <div className="flex h-full items-center justify-center gap-1.5 px-2 text-center text-sm text-muted-foreground">
+              <Lock className="h-4 w-4 shrink-0" strokeWidth={2} />
+              {t("dealCharts.bidsPrivate")}
+            </div>
           ) : bidDistribution.length === 0 ? (
             <div className="flex h-full items-center justify-center gap-1.5 text-center text-sm text-muted-foreground">
               <CircleCheck className="h-4 w-4 shrink-0" strokeWidth={2} />
@@ -139,7 +147,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
                   <LabelList
                     dataKey="amount"
                     position="top"
-                    fontSize={11}
+                    fontSize={12}
                     fill="var(--muted-foreground)"
                     formatter={(v) => Number(v ?? 0).toFixed(2)}
                   />

@@ -11,7 +11,8 @@ import nacl from "tweetnacl";
  * and docs/KNOWN_ISSUES.md for why this exists at all.
  */
 
-const TEE_RPC_URL = "https://devnet-tee.magicblock.app";
+/** The TEE validator every deal/milestone here is delegated to — also what /status pings. */
+export const TEE_RPC_URL = "https://devnet-tee.magicblock.app";
 const TEE_WS_URL = "wss://devnet-tee.magicblock.app";
 export const ER_VALIDATOR = new PublicKey("MTEWGuqxUpYZGFJQcp8tLN7x5v9BSeoFHYWQQ3n3xzo");
 
@@ -42,14 +43,45 @@ export async function getAnonymousTeeConnection(): Promise<Connection> {
   return anonTeeConnection;
 }
 
+// Wallet-authenticated TEE connections, cached per wallet until shortly
+// before the token expires — so a startup revealing + settling several bids,
+// or an investor loading their own sealed bids, signs the auth message once
+// per session instead of once per action.
+const walletErCache = new Map<string, { connection: Connection; expiresAtMs: number }>();
+const DEFAULT_TOKEN_TTL_MS = 10 * 60_000;
+
+function toExpiryMs(expiresAt: number | undefined): number {
+  if (!expiresAt) return Date.now() + DEFAULT_TOKEN_TTL_MS;
+  // The SDK reports seconds; tolerate milliseconds too.
+  const ms = expiresAt > 1e12 ? expiresAt : expiresAt * 1000;
+  return ms - 60_000;
+}
+
+/**
+ * A TEE connection authenticated as `publicKey`, if one was already
+ * created this session and hasn't expired — never prompts the wallet.
+ * Members of a sealed bid/vote permission (the bidder/voter and the
+ * startup) can read it through this; the anonymous connection can't.
+ */
+export function peekWalletErConnection(publicKey: PublicKey | null | undefined): Connection | null {
+  if (!publicKey) return null;
+  const cached = walletErCache.get(publicKey.toBase58());
+  if (!cached || cached.expiresAtMs <= Date.now()) return null;
+  return cached.connection;
+}
+
 export async function getWalletErConnection(
   publicKey: PublicKey,
   signMessage: (message: Uint8Array) => Promise<Uint8Array>,
 ): Promise<Connection> {
+  const cached = peekWalletErConnection(publicKey);
+  if (cached) return cached;
   await verifyTeeRpcIntegrity(TEE_RPC_URL);
-  const { token } = await getAuthToken(TEE_RPC_URL, publicKey, signMessage);
-  return new Connection(`${TEE_RPC_URL}?token=${token}`, {
+  const { token, expiresAt } = await getAuthToken(TEE_RPC_URL, publicKey, signMessage);
+  const connection = new Connection(`${TEE_RPC_URL}?token=${token}`, {
     wsEndpoint: `${TEE_WS_URL}?token=${token}`,
     commitment: "confirmed",
   });
+  walletErCache.set(publicKey.toBase58(), { connection, expiresAtMs: toExpiryMs(expiresAt) });
+  return connection;
 }
