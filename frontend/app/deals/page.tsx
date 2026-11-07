@@ -206,60 +206,66 @@ export default function DealsPage() {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
-        {(["all", "open", "awaiting", "revealed", "settled"] as StatusFilter[]).map((s) => (
+        {/* Status chips and the search/sort controls wrap as two units, so
+            a narrow row never strands a single control on its own line. */}
+        <div className="flex flex-wrap items-center gap-2">
+          {(["all", "open", "awaiting", "revealed", "settled"] as StatusFilter[]).map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`flex min-h-11 cursor-pointer items-center rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
+                statusFilter === s
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-border"
+              }`}
+            >
+              {STATUS_LABELS[s]}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex min-w-[min(100%,560px)] flex-1 flex-wrap items-center gap-2">
+          <div className="relative min-w-[200px] flex-1">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t("deals.searchPlaceholder")}
+              className="w-full rounded-md border border-border bg-background py-1 pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
+
+          <select
+            value={sortKey}
+            onChange={(e) => setSortKey(e.target.value as SortKey)}
+            className="rounded-md border border-border bg-background px-2 py-1 text-sm text-foreground"
+          >
+            <option value="deadline">{t("deals.sortDeadline")}</option>
+            <option value="valuation">{t("deals.sortValuation")}</option>
+            <option value="popularity">{t("deals.sortPopularity")}</option>
+          </select>
+
           <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            className={`flex min-h-11 cursor-pointer items-center rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
-              statusFilter === s
+            onClick={() => setFiltersOpen((v) => !v)}
+            aria-expanded={filtersOpen}
+            className={`flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
+              filtersOpen || rangeFiltersActive
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:bg-border"
             }`}
           >
-            {STATUS_LABELS[s]}
+            <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={2} />
+            {t("deals.filtersButton")}
           </button>
-        ))}
 
-        <div className="relative ml-2 min-w-[220px] flex-1">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t("deals.searchPlaceholder")}
-            className="w-full rounded-md border border-border bg-background py-1 pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground"
-          />
+          <button
+            onClick={() => void refresh()}
+            className="flex min-h-11 cursor-pointer items-center gap-1.5 px-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+          >
+            <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
+            {t("common.refresh")}
+          </button>
         </div>
-
-        <select
-          value={sortKey}
-          onChange={(e) => setSortKey(e.target.value as SortKey)}
-          className="rounded-md border border-border bg-background px-2 py-1 text-sm text-foreground"
-        >
-          <option value="deadline">{t("deals.sortDeadline")}</option>
-          <option value="valuation">{t("deals.sortValuation")}</option>
-          <option value="popularity">{t("deals.sortPopularity")}</option>
-        </select>
-
-        <button
-          onClick={() => setFiltersOpen((v) => !v)}
-          aria-expanded={filtersOpen}
-          className={`flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
-            filtersOpen || rangeFiltersActive
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:bg-border"
-          }`}
-        >
-          <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={2} />
-          {t("deals.filtersButton")}
-        </button>
-
-        <button
-          onClick={() => void refresh()}
-          className="flex min-h-11 cursor-pointer items-center gap-1.5 px-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
-        >
-          <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
-          {t("common.refresh")}
-        </button>
       </div>
 
       <AnimatePresence initial={false}>

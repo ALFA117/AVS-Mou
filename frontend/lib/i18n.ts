@@ -272,7 +272,7 @@ const en = {
   analytics: {
     title: "Analytics",
     subtitle:
-      "Platform-wide stats are public — no wallet needed. Individual bid amounts stay sealed until each deal reveals.",
+      "Platform-wide stats are public — no wallet needed. Individual bid amounts stay sealed; a deal's total raised becomes public when it reveals.",
     loadError: "Couldn't load platform stats.",
     totalDeals: "Total deals",
     capitalDeployed: "Raised in revealed deals",
@@ -300,7 +300,7 @@ const en = {
   },
   dealCharts: {
     raiseProgress: "Raise progress",
-    sealedHidden: "Sealed — visible only after reveal",
+    sealedHidden: "Bid amounts (sealed)",
     topBidAmounts: "Top bid amounts",
     hiddenUntilReveal: "Hidden until reveal",
     bidsSettled: "All bids settled — funds already paid out to the startup.",
@@ -788,7 +788,7 @@ const es = {
   analytics: {
     title: "Analítica",
     subtitle:
-      "Las estadísticas de toda la plataforma son públicas — no necesitas wallet. Los montos de puja individuales permanecen sellados hasta que cada deal se revela.",
+      "Las estadísticas de toda la plataforma son públicas — no necesitas wallet. Los montos de puja individuales permanecen sellados; el total recaudado de cada deal se hace público cuando se revela.",
     loadError: "No se pudieron cargar las estadísticas de la plataforma.",
     totalDeals: "Deals totales",
     capitalDeployed: "Recaudado en deals revelados",
@@ -816,7 +816,7 @@ const es = {
   },
   dealCharts: {
     raiseProgress: "Progreso de la ronda",
-    sealedHidden: "Sellado — visible solo después del reveal",
+    sealedHidden: "Montos de las pujas (sellados)",
     topBidAmounts: "Montos de las pujas más altas",
     hiddenUntilReveal: "Oculto hasta el reveal",
     bidsSettled: "Todas las pujas liquidadas — los fondos ya se pagaron a la startup.",
@@ -1301,7 +1301,7 @@ const pt = {
   analytics: {
     title: "Análises",
     subtitle:
-      "As estatísticas de toda a plataforma são públicas — não precisa de carteira. Os valores de lances individuais permanecem selados até cada deal ser revelado.",
+      "As estatísticas de toda a plataforma são públicas — não precisa de carteira. Os valores de lances individuais permanecem selados; o total arrecadado de cada deal se torna público quando ele é revelado.",
     loadError: "Não foi possível carregar as estatísticas da plataforma.",
     totalDeals: "Total de deals",
     capitalDeployed: "Arrecadado em deals revelados",
@@ -1329,7 +1329,7 @@ const pt = {
   },
   dealCharts: {
     raiseProgress: "Progresso da captação",
-    sealedHidden: "Selado — visível só após a revelação",
+    sealedHidden: "Valores dos lances (selados)",
     topBidAmounts: "Maiores valores de lance",
     hiddenUntilReveal: "Oculto até a revelação",
     bidsSettled: "Todos os lances liquidados — os fundos já foram pagos à startup.",
