@@ -23,9 +23,11 @@ export function useMilestones(dealFilter?: string) {
   const { wallet } = useWallet();
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const refresh = useCallback(async () => {
     setLoading(true);
+    setError(false);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const readonlyWallet = (wallet?.adapter as any) ?? READONLY_WALLET;
@@ -48,6 +50,7 @@ export function useMilestones(dealFilter?: string) {
       setMilestones(Array.from(byPubkey.values()).map((a) => mapMilestone(a.publicKey, a.account)));
     } catch {
       setMilestones([]);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -57,5 +60,5 @@ export function useMilestones(dealFilter?: string) {
     void refresh();
   }, [refresh]);
 
-  return { milestones, loading, refresh };
+  return { milestones, loading, error, refresh };
 }

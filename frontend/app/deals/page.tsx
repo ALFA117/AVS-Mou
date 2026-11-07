@@ -20,7 +20,27 @@ const item = {
   show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 26 } },
 };
 
-type StatusFilter = "all" | Deal["status"];
+// "open" here means open for bids (status open AND deadline still ahead);
+// a deal past its deadline stays "open" on-chain until its startup runs
+// reveal_deal, which the UI shows as its own "awaiting reveal" state.
+type StatusFilter = "all" | "open" | "awaiting" | "revealed" | "settled";
+
+function isBiddable(d: Deal, now: number): boolean {
+  return d.status === "open" && d.deadlineTs * 1000 > now;
+}
+
+function matchesStatus(d: Deal, filter: StatusFilter, now: number): boolean {
+  switch (filter) {
+    case "all":
+      return true;
+    case "open":
+      return isBiddable(d, now);
+    case "awaiting":
+      return d.status === "open" && !isBiddable(d, now);
+    default:
+      return d.status === filter;
+  }
+}
 type SortKey = "deadline" | "valuation" | "popularity";
 
 const PAGE_SIZE = 12;
@@ -52,12 +72,14 @@ export default function DealsPage() {
   const STATUS_LABELS: Record<StatusFilter, string> = {
     all: t("deals.filterAll"),
     open: t("deals.filterOpen"),
+    awaiting: t("deals.filterAwaiting"),
     revealed: t("deals.filterRevealed"),
     settled: t("deals.filterSettled"),
   };
 
   const filtered = useMemo(() => {
-    let result = statusFilter === "all" ? deals : deals.filter((d) => d.status === statusFilter);
+    const now = Date.now();
+    let result = deals.filter((d) => matchesStatus(d, statusFilter, now));
 
     const query = search.trim().toLowerCase();
     if (query) {
@@ -99,7 +121,15 @@ export default function DealsPage() {
         break;
       case "deadline":
       default:
-        sorted.sort((a, b) => a.deadlineTs - b.deadlineTs);
+        // Deals you can still bid on first (closing soonest first), then
+        // everything else with the most recent deadline first — otherwise
+        // the oldest long-closed deals bury the live ones.
+        sorted.sort((a, b) => {
+          const ab = isBiddable(a, now);
+          const bb = isBiddable(b, now);
+          if (ab !== bb) return ab ? -1 : 1;
+          return ab ? a.deadlineTs - b.deadlineTs : b.deadlineTs - a.deadlineTs;
+        });
     }
     return sorted;
   }, [deals, statusFilter, search, sortKey, minValuation, maxValuation, minEquity, maxEquity]);
@@ -116,7 +146,8 @@ export default function DealsPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const status = params.get("status");
-    if (status === "open" || status === "revealed" || status === "settled") setStatusFilter(status);
+    if (status === "open" || status === "awaiting" || status === "revealed" || status === "settled")
+      setStatusFilter(status);
     const q = params.get("q");
     if (q) setSearch(q);
     const sort = params.get("sort");
@@ -154,6 +185,7 @@ export default function DealsPage() {
   }, [statusFilter, search, sortKey, minValuation, maxValuation, minEquity, maxEquity]);
 
   const visible = filtered.slice(0, visibleCount);
+  const noSearchOrRange = search.trim() === "" && !rangeFiltersActive;
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
@@ -174,7 +206,7 @@ export default function DealsPage() {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-2">
-        {(["all", "open", "revealed", "settled"] as StatusFilter[]).map((s) => (
+        {(["all", "open", "awaiting", "revealed", "settled"] as StatusFilter[]).map((s) => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
@@ -314,9 +346,13 @@ export default function DealsPage() {
           icon={PackageSearch}
           title={t("deals.emptyTitle")}
           description={
-            statusFilter === "all"
-              ? t("deals.noResultsAny")
-              : t("deals.noResults", { status: STATUS_LABELS[statusFilter].toLowerCase() })
+            noSearchOrRange && statusFilter === "open"
+              ? t("deals.noOpenDeals")
+              : noSearchOrRange && statusFilter === "settled"
+                ? t("deals.settledNote")
+                : statusFilter === "all"
+                  ? t("deals.noResultsAny")
+                  : t("deals.noResults", { status: STATUS_LABELS[statusFilter].toLowerCase() })
           }
           action={
             (search.trim() !== "" || statusFilter !== "all" || rangeFiltersActive) && (

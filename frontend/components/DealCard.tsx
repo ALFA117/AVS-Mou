@@ -16,6 +16,11 @@ export function DealCard({ deal }: { deal: Deal }) {
     revealed: "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-400",
     settled: "bg-muted text-muted-foreground",
   };
+  const STATUS_LABELS: Record<Deal["status"], string> = {
+    open: t("dealCard.statusOpen"),
+    revealed: t("dealCard.statusRevealed"),
+    settled: t("dealCard.statusSettled"),
+  };
   const AWAITING_REVEAL_STYLE = "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-400";
 
   // deal.status only flips from "open" once someone calls reveal_deal — a
@@ -56,7 +61,7 @@ export function DealCard({ deal }: { deal: Deal }) {
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-600 dark:bg-green-400" />
               </span>
             )}
-            {awaitingReveal ? t("dealCard.awaitingReveal") : deal.status}
+            {awaitingReveal ? t("dealCard.awaitingReveal") : STATUS_LABELS[deal.status]}
           </span>
         </div>
         <h2 className="mt-2 font-heading text-lg font-light tracking-tight text-card-foreground">
@@ -75,7 +80,9 @@ export function DealCard({ deal }: { deal: Deal }) {
             <dt className="text-muted-foreground">{t("dealCard.raisedSoFar")}</dt>
             <dd className="font-mono-avs font-medium text-card-foreground">
               {deal.status === "open"
-                ? t("dealCard.sealedBids", { count: deal.bidCount })
+                ? deal.bidCount === 1
+                  ? t("dealCard.sealedBidOne")
+                  : t("dealCard.sealedBids", { count: deal.bidCount })
                 : formatTokenAmount(deal.totalRaised)}
             </dd>
           </div>
@@ -89,7 +96,7 @@ export function DealCard({ deal }: { deal: Deal }) {
               ) : deal.status === "open" ? (
                 <Countdown deadlineTs={deal.deadlineTs} />
               ) : (
-                deal.status
+                STATUS_LABELS[deal.status]
               )}
             </dd>
           </div>
