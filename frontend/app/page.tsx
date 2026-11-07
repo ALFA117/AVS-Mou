@@ -4,11 +4,32 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Lock, Vote, Zap, ShieldCheck, Dices, ArrowRight, ChevronDown } from "lucide-react";
-import { AnimatedBackground } from "@/components/AnimatedBackground";
-import { ConstellationBackground } from "@/components/ConstellationBackground";
 import { DealsMockup } from "@/components/DealsMockup";
 import { StatsBand } from "@/components/StatsBand";
 import { useTranslation } from "@/lib/LanguageContext";
+
+/**
+ * Elemento propio del hero: una puja sellada de verdad se ve así — el monto
+ * tachado con una barra que brilla, y el estado. Solo ilustra la mecánica;
+ * no muestra ninguna puja real.
+ */
+function SealedBidLine() {
+  const { t } = useTranslation();
+  return (
+    <div
+      className="avs-rise mx-auto mt-6 flex w-fit max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl border border-border bg-card/70 px-4 py-2.5 font-mono text-sm text-muted-foreground shadow-sm backdrop-blur"
+      style={{ animationDelay: "180ms" }}
+    >
+      <Lock className="h-4 w-4 text-primary" strokeWidth={2} aria-hidden="true" />
+      <span>{t("home.sealedLabel")}:</span>
+      <span className="avs-redact" aria-label="•••••">
+        <span aria-hidden="true">00 000.00</span>
+      </span>
+      <span>USDC</span>
+      <span className="text-primary">· {t("home.sealedStatus")}</span>
+    </div>
+  );
+}
 
 export default function Home() {
   const reduceMotion = useReducedMotion();
@@ -34,11 +55,13 @@ export default function Home() {
     hidden: {},
     show: { transition: { staggerChildren: reduceMotion ? 0 : 0.08 } },
   };
+  // Sin opacity 0 en "hidden": ese estado sale en el HTML del servidor y,
+  // sin JS, las secciones quedarían invisibles. Solo se desplazan al entrar.
   const item = {
-    hidden: { opacity: 0, y: reduceMotion ? 0 : 12 },
+    hidden: { y: reduceMotion ? 0 : 18, scale: reduceMotion ? 1 : 0.985 },
     show: {
-      opacity: 1,
       y: 0,
+      scale: 1,
       transition: reduceMotion ? { duration: 0 } : { type: "spring" as const, stiffness: 260, damping: 26 },
     },
   };
@@ -46,34 +69,29 @@ export default function Home() {
   return (
     <main>
       <section className="relative overflow-hidden px-6 py-16 sm:py-20 md:py-24">
-        <AnimatedBackground />
-        <ConstellationBackground className="-z-10" />
-        <motion.div
-          initial="hidden"
-          animate="show"
-          variants={container}
-          className="mx-auto max-w-3xl text-center"
-        >
-          <motion.div
-            variants={item}
-            className="mx-auto flex w-fit items-center gap-2 rounded-full bg-primary-subdued px-3 py-1 text-xs text-primary-deep"
+        <div className="mx-auto max-w-3xl text-center">
+          <div
+            className="avs-rise mx-auto flex w-fit items-center gap-2 rounded-full bg-primary-subdued px-3 py-1 text-xs text-primary-deep"
+            style={{ animationDelay: "60ms" }}
           >
             <ShieldCheck className="h-3.5 w-3.5" strokeWidth={2} />
             {t("home.badge")}
-          </motion.div>
+          </div>
 
-          <motion.h1
-            variants={item}
-            className="mt-6 font-heading text-5xl font-light tracking-tight text-foreground sm:text-6xl md:text-7xl"
+          <h1
+            className="avs-rise mt-6 font-heading text-[clamp(2.75rem,11vw,4.75rem)] font-light leading-[1.02] tracking-tight text-foreground"
+            style={{ animationDelay: "120ms" }}
           >
             {t("home.title")}
-          </motion.h1>
+          </h1>
 
-          <motion.p variants={item} className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
+          <SealedBidLine />
+
+          <p className="avs-rise mx-auto mt-5 max-w-xl text-lg text-muted-foreground" style={{ animationDelay: "240ms" }}>
             {t("home.subtitle")}
-          </motion.p>
+          </p>
 
-          <motion.div variants={item} className="mt-9 flex flex-wrap justify-center gap-3">
+          <div className="avs-rise mt-9 flex flex-wrap justify-center gap-3" style={{ animationDelay: "300ms" }}>
             <motion.div
               whileHover={reduceMotion ? undefined : { scale: 1.03 }}
               whileTap={reduceMotion ? undefined : { scale: 0.97 }}
@@ -98,8 +116,8 @@ export default function Home() {
                 {t("home.myDashboard")}
               </Link>
             </motion.div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </section>
 
       <motion.section

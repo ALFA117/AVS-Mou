@@ -2,9 +2,14 @@
 
 const FUNDING_DECIMALS = 6; // matches devnet USDC-style mints used in .env examples
 
+// A fixed locale, not the runtime default: the server (Node, en-US) and a
+// browser set to another language disagreed on "1,000" vs "1000", which broke
+// hydration of the whole landing page.
+const NUMBER_LOCALE = "en-US";
+
 export function formatTokenAmount(raw: string | number, decimals = FUNDING_DECIMALS): string {
   const value = Number(raw) / 10 ** decimals;
-  return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return value.toLocaleString(NUMBER_LOCALE, { maximumFractionDigits: 2 });
 }
 
 export function formatBps(bps: number): string {
@@ -12,7 +17,7 @@ export function formatBps(bps: number): string {
 }
 
 export function formatInt(n: number): string {
-  return Math.round(n).toLocaleString();
+  return Math.round(n).toLocaleString(NUMBER_LOCALE);
 }
 
 export function formatEquity(raw: string | number, totalSupply = 1_000_000_000_000): string {

@@ -42,6 +42,8 @@ const en = {
   home: {
     badge: "Built on MagicBlock Ephemeral Rollups",
     title: "Anonymous Venture Syndicate",
+    sealedLabel: "Your bid",
+    sealedStatus: "sealed until the reveal",
     subtitle: "Sealed-bid deal syndicates on Solana. Bid or vote in secret — everyone reveals at once.",
     browseDeals: "Browse Deals",
     myDashboard: "My Dashboard",
@@ -517,6 +519,8 @@ const es = {
   home: {
     badge: "Construido sobre MagicBlock Ephemeral Rollups",
     title: "Anonymous Venture Syndicate",
+    sealedLabel: "Tu puja",
+    sealedStatus: "sellada hasta el reveal",
     subtitle:
       "Sindicatos de inversión con pujas selladas en Solana. Puja o vota en secreto — todos se revelan al mismo tiempo.",
     browseDeals: "Ver deals",
@@ -996,6 +1000,8 @@ const pt = {
   home: {
     badge: "Construído sobre os Ephemeral Rollups da MagicBlock",
     title: "Anonymous Venture Syndicate",
+    sealedLabel: "Seu lance",
+    sealedStatus: "selado até o reveal",
     subtitle:
       "Sindicatos de investimento com lances selados na Solana. Dê lances ou vote em segredo — todos revelam ao mesmo tempo.",
     browseDeals: "Ver deals",

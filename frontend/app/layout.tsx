@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/lib/LanguageContext";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import { SkipLink } from "@/components/SkipLink";
+import { AmbientBackground } from "@/components/AmbientBackground";
 
 // Font system per the Stripe DESIGN.md reference (VoltAgent/awesome-design-md):
 // one family (Inter, the documented open-source substitute for the
@@ -68,6 +69,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
         <LanguageProvider>
           <WalletContextProvider>
+            <AmbientBackground />
             <SkipLink />
             <NavBar />
             {/* Every page's own root element is already a <main> — this id

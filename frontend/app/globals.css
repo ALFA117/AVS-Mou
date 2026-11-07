@@ -208,3 +208,72 @@ h1, h2, h3, h4, h5, h6 {
     animation: none;
   }
 }
+
+/* ─── Fondo ambiental (AmbientBackground + VaultScene, receta 6) ───────────
+   La aurora usa la misma paleta "gradient mesh" de la marca, pero como
+   gradientes radiales sin filter: blur (barato en celular). */
+body { isolation: isolate; }
+.amb-root {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--background);
+}
+.amb-aurora { position: absolute; inset: -10% -10% 0; height: 70vh; }
+.amb-blob { position: absolute; border-radius: 50%; animation: avs-blob-float 22s ease-in-out infinite; }
+.amb-blob-1 { left: -8%; top: -30%; width: 55vmax; height: 55vmax; background: radial-gradient(circle, rgba(240, 185, 105, 0.45), transparent 62%); }
+.amb-blob-2 { left: 30%; top: -36%; width: 60vmax; height: 60vmax; background: radial-gradient(circle, rgba(83, 58, 253, 0.32), transparent 60%); animation-delay: -8s; }
+.amb-blob-3 { right: -14%; top: -26%; width: 50vmax; height: 50vmax; background: radial-gradient(circle, rgba(234, 34, 97, 0.22), transparent 62%); animation-delay: -14s; }
+.dark .amb-aurora { opacity: 0.45; }
+.amb-calm .amb-aurora { opacity: 0.5; }
+.dark .amb-calm .amb-aurora { opacity: 0.25; }
+.amb-scene { position: absolute; inset: 0; }
+.amb-calm .amb-scene { opacity: 0.6; }
+.amb-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 38%, color-mix(in srgb, var(--background) 55%, transparent), transparent 75%);
+}
+@media (max-width: 767px) {
+  .amb-blob { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .amb-blob { animation: none; }
+}
+
+/* Entradas del hero en CSS: el contenido siempre termina visible, aun sin JS. */
+@keyframes avs-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.avs-rise { animation: avs-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .avs-rise { animation: none; }
+}
+
+/* Monto tachado de la puja sellada del hero: barra sólida con un brillo que la recorre. */
+.avs-redact {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--foreground);
+  color: transparent;
+  padding: 0 0.35em;
+}
+.avs-redact::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--primary) 70%, white) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: avs-redact-shine 3.2s ease-in-out infinite 1s;
+}
+@keyframes avs-redact-shine {
+  to { transform: translateX(120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avs-redact::after { animation: none; }
+}

@@ -16,12 +16,12 @@ export function Footer() {
 
   return (
     <footer className="mt-16 border-t border-border">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-4 px-6 py-16 text-xs text-muted-foreground">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-6 py-12 text-sm text-muted-foreground">
         {LINKS.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="transition-colors duration-200 hover:text-foreground"
+            className="inline-flex min-h-11 items-center px-1 transition-colors duration-200 hover:text-foreground"
           >
             {link.label}
           </Link>
