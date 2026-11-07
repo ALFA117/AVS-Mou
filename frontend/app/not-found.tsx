@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Compass } from "lucide-react";
@@ -7,6 +8,12 @@ import { useTranslation } from "@/lib/LanguageContext";
 
 export default function NotFound() {
   const { t } = useTranslation();
+
+  // A client not-found page can't export metadata, so without this every
+  // 404 kept the home page's title.
+  useEffect(() => {
+    document.title = `${t("notFound.title")} · AVS`;
+  }, [t]);
 
   return (
     <main className="mx-auto flex max-w-xl flex-col items-center px-6 py-24 text-center">

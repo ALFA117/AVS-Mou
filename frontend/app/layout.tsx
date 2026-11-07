@@ -29,7 +29,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 const TITLE = "AVS — Anonymous Venture Syndicate";
 const DESCRIPTION =
-  "Sealed-bid deal syndicates on Solana. Bid or vote in secret — everyone reveals at once. Powered by MagicBlock Ephemeral Rollups.";
+  "Sealed-bid deal syndicates on Solana devnet. Bid or vote in secret — the outcome reveals at once. Powered by MagicBlock Ephemeral Rollups.";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -40,22 +40,23 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://avs-mou.vercel.app"),
-  title: TITLE,
+  // Each route's layout.tsx sets its own short title ("Deals", "FAQ", …).
+  title: { default: TITLE, template: "%s · AVS" },
   description: DESCRIPTION,
   manifest: "/manifest.json",
+  // The share image itself comes from app/opengraph-image.tsx (1200×630);
+  // app/deals/[id]/opengraph-image.tsx overrides it per deal.
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
     url: "https://avs-mou.vercel.app",
     siteName: "AVS",
-    images: [{ url: "/icon.png", width: 256, height: 256 }],
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/icon.png"],
   },
 };
 
