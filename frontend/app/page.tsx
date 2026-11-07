@@ -25,8 +25,15 @@ function SealedBidLine() {
       <span className="avs-redact" aria-label="•••••">
         <span aria-hidden="true">00 000.00</span>
       </span>
-      <span>USDC</span>
-      <span className="text-primary">· {t("home.sealedStatus")}</span>
+      <span>{t("home.sealedUnit")}</span>
+      {/* En móvil el estado baja a su propia línea: el punto separador solo
+          tiene sentido cuando va en la misma línea. */}
+      <span className="basis-full text-center text-primary sm:basis-auto">
+        <span className="hidden sm:inline" aria-hidden="true">
+          ·{" "}
+        </span>
+        {t("home.sealedStatus")}
+      </span>
     </div>
   );
 }
@@ -146,7 +153,7 @@ export default function Home() {
         className="mx-auto max-w-5xl px-6 pb-16 sm:pb-20"
       >
         <motion.div variants={item}>
-          <StatsBand title={t("home.statsTitle")} />
+          <StatsBand title={t("home.statsTitle")} note={t("home.statsNote")} />
         </motion.div>
       </motion.section>
 

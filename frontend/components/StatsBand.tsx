@@ -5,7 +5,7 @@ import { formatTokenAmount } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import { SkeletonStat } from "@/components/Skeleton";
 
-export function StatsBand({ title }: { title: string }) {
+export function StatsBand({ title, note }: { title: string; note?: string }) {
   const { stats, loading } = usePublicStats();
   const { t } = useTranslation();
 
@@ -33,6 +33,7 @@ export function StatsBand({ title }: { title: string }) {
           </>
         )}
       </div>
+      {note && <p className="mt-3 text-center text-xs text-muted-foreground">{note}</p>}
     </div>
   );
 }

@@ -14,19 +14,26 @@ Built for **Solana Blitz V7 Hackathon** (Collaboration Track).
    is inconsistent across versions and is not what this app was validated
    against.) In Phantom: **Settings → Developer Settings → Testnet Mode**,
    then pick **Solana Devnet** from the network selector at the top.
-2. **Get test SOL** for transaction fees: https://faucet.solana.com — paste
-   your Devnet address.
+2. **Get a little test SOL** for the one-time setup fee. The in-app faucet
+   button (step 4) tops you up with 0.02 devnet SOL if you're low; for more,
+   use https://faucet.solana.com and paste your Devnet address.
 3. **Browse `/deals`.** Every deal, bid, and equity split shown is real
    on-chain state, read live from Devnet — nothing is mocked. A deal
    showing **"Awaiting reveal"** simply means its bidding deadline passed
    but nobody has called `reveal_deal` yet; that's expected, not broken.
-4. **Bid on a deal with status `open`** and time left on its countdown.
+   Three demo deals (and two milestones) stay open for bidding/voting into
+   2027 — filter by **"Open for bids"**.
+4. **Bid on a deal under "Open for bids"** (time left on its countdown).
    Each deal uses its own dedicated SPL "funding" mint — use the in-app
-   faucet button next to the amount field to mint yourself test tokens for
-   that specific deal, then place a bid. The amount stays sealed — even
-   you can't see it again — until the deadline's simultaneous reveal.
-5. **Vote on a milestone** at `/vote` — same sealed-until-reveal pattern,
-   one wallet signature, no gas.
+   faucet button above the amount field to mint yourself test tokens for
+   that specific deal, then place a bid. The first bid per token needs one
+   setup transaction from your wallet (~0.008 devnet SOL); the bid itself
+   is fee-sponsored by the relay. The amount is sealed in the same
+   transaction (`place_bid` + `init_bid_permission`): only you and the
+   startup can read it. Reveal publishes the deal's total raised, not
+   individual amounts.
+5. **Vote on a milestone** at `/vote` — sealed the same way
+   (`cast_vote` + `init_vote_permission`), fee paid by the relay.
 6. **`/analytics`** has platform-wide stats; **`/status`** has on-chain
    health plus block-explorer links for every deployed program.
 
@@ -37,10 +44,12 @@ signatures**, no more.
 ## What is AVS?
 
 AVS lets startups post investment deals and angel investors place **sealed
-bids** with zero visibility into competitors' amounts — not other bidders,
-not even the startup. At the deadline, all bids reveal simultaneously,
-equity is distributed proportionally, and syndicate members can privately
-vote on milestones — all gasless, via MagicBlock's Ephemeral Rollup.
+bids** that other bidders and the public can't read — only the bidder and
+the startup can. After the deadline the startup reveals the deal and the
+total raised becomes public at once, equity is distributed proportionally
+at settlement, and syndicate members can privately vote on milestones.
+Bid and vote fees are sponsored by a relay on MagicBlock's Ephemeral
+Rollup.
 
 "Sealed" here means **access-controlled, not encrypted**: bid and vote
 amounts are never ciphertext. They live on a MagicBlock Private Ephemeral
@@ -69,14 +78,16 @@ contents before `reveal_deal`/`reveal_milestone` runs and the tally
 becomes public on L1. That's what "sealed" means here: access control at
 the infrastructure layer, not ciphertext.
 
-The same ER also makes the product **gasless**: `place_bid` and `cast_vote`
-run against the rollup's own low-latency state, sponsored by a relay that
-only ever co-signs those two instructions (see
-[`docs/RELAY.md`](docs/RELAY.md)) — so an investor authorizes a session key
-once and then bids or votes with zero wallet popups and zero SOL in their
-wallet. Building the reveal-at-once sealed auction *and* the gasless UX on
-L1 alone would each need its own bespoke, harder-to-trust workaround; the
-ER gives both for free from one piece of infrastructure.
+The same ER also lets the product **sponsor fees**: `place_bid` and
+`cast_vote` run against the rollup's own state, paid by a relay that only
+co-signs sealed-auction / private-voting instructions (see
+[`docs/RELAY.md`](docs/RELAY.md)). An investor still pays two small,
+one-time costs in devnet SOL: delegating their funding-token account to the
+ER (once per deal token, ~0.008 SOL) and authorizing a session key. After
+that, bids and votes need no SOL, and with a session key no wallet popup.
+Building the reveal-at-once sealed auction *and* the sponsored UX on L1
+alone would each need its own bespoke, harder-to-trust workaround; the ER
+gives both from one piece of infrastructure.
 
 ## Core flow
 
@@ -84,14 +95,15 @@ ER gives both for free from one piece of infrastructure.
 2. **Sealed bidding** — angels bid via session keys (no wallet popup per
    bid); amounts are hidden by access control on the Ephemeral Rollup, not
    client-side encryption.
-3. **Simultaneous reveal** — every bid becomes visible at once after the
-   deadline; equity distributed proportionally as SPL tokens.
+3. **Simultaneous reveal** — after the deadline the startup reveals the
+   deal: the total raised becomes public at once; settlement allocates
+   equity proportionally as SPL tokens.
 4. **Private milestone voting** — syndicate members vote YES/NO (sealed the
-   same way); rewards gated on a verifiable random function so payout order
-   can't be front-run.
+   same way); rewards can only settle after an on-chain VRF request is
+   fulfilled, then the pool is split evenly among the winning side.
 5. **Syndicate chat & equity transfers** — a local per-browser chat (not
-   yet on-chain — see `frontend/lib/chatStore.ts`), gasless SPL transfers
-   for equity.
+   yet on-chain — see `frontend/lib/chatStore.ts`), SPL transfers for
+   equity.
 
 ## Monorepo layout
 
@@ -100,7 +112,6 @@ ER gives both for free from one piece of infrastructure.
 /frontend   Next.js + TypeScript app
 /tests      Integration & e2e tests (structural + live-Devnet, see docs/ARCHITECTURE.md)
 /docs       Architecture, setup, and design docs — see the Docs section below
-/scripts    Deployment & seed scripts
 /vendor     Reference clone of magicblock-engine-examples (gitignored)
 ```
 
@@ -108,7 +119,7 @@ ER gives both for free from one piece of infrastructure.
 
 - **Contracts**: Anchor + Rust, `spl-token`, `ephemeral-rollups-sdk`'s own VRF (`#[vrf]`/`#[vrf_callback]` — not `orao-solana-vrf`), `session-keys`
 - **Frontend**: Next.js 14, React 18, `@solana/web3.js`, `@solana/wallet-adapter-react`, Tailwind, Recharts, Framer Motion
-- **Execution**: MagicBlock Private Ephemeral Rollup Permissions — gasless, access-controlled reads (see `docs/ARCHITECTURE.md`; no Query Filtering Service — that's only for the local `mb-stack` simulation layer, not the hosted devnet ER this project targets)
+- **Execution**: MagicBlock Private Ephemeral Rollup Permissions — access-controlled reads, relay-sponsored fees (see `docs/ARCHITECTURE.md`; no Query Filtering Service — that's only for the local `mb-stack` simulation layer, not the hosted devnet ER this project targets)
 
 ## Getting started
 
@@ -142,7 +153,7 @@ Copy `.env.local.example` → `.env.local` (and `.env.testnet.example` → `.env
 - [`docs/AVS_100_TASKS.md`](docs/AVS_100_TASKS.md) — full 100-task build roadmap
 - [`docs/WINDOWS_NOTES.md`](docs/WINDOWS_NOTES.md) — native-Windows toolchain issues and workarounds
 - [`docs/SESSION_KEYS.md`](docs/SESSION_KEYS.md) — session key design and security tradeoffs
-- [`docs/RELAY.md`](docs/RELAY.md) — gasless bidding/voting relay backend
+- [`docs/RELAY.md`](docs/RELAY.md) — fee-sponsoring relay for bids/votes
 - [`docs/KNOWN_ISSUES.md`](docs/KNOWN_ISSUES.md) — open bugs, with repro steps
 
 ## Status

@@ -6,8 +6,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { BarChart3, CircleAlert, Wallet } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePortfolio } from "@/hooks/usePortfolio";
-import { usePublicStats } from "@/hooks/usePublicStats";
-import { formatInt, formatTokenAmount, shortenAddress } from "@/lib/format";
+import { usePublicStats, anonymize } from "@/hooks/usePublicStats";
+import { formatInt, formatTokenAmount } from "@/lib/format";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Skeleton, SkeletonStat } from "@/components/Skeleton";
 import { EmptyState } from "@/components/EmptyState";
@@ -126,6 +126,7 @@ export default function AnalyticsPage() {
                 value={<AnimatedNumber value={Number(stats.avgDealSize)} format={formatTokenAmount} />}
               />
             </div>
+            <p className="mt-2 text-xs text-muted-foreground">{t("home.statsNote")}</p>
 
             <motion.div
               initial={reduceMotion ? undefined : "hidden"}
@@ -150,12 +151,14 @@ export default function AnalyticsPage() {
                   <BarChart3 className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
                   {t("analytics.leaderboard")}
                 </h2>
+                <p className="mt-1 text-xs text-muted-foreground">{t("analytics.leaderboardNote")}</p>
                 <div className="mt-2 space-y-1">
                   {stats.leaderboard.length === 0 && (
                     <p className="text-sm text-muted-foreground">{t("analytics.noBidsSettled")}</p>
                   )}
                   {stats.leaderboard.map((entry, i) => {
-                    const isYou = publicKey && entry.investor === publicKey.toBase58();
+                    // Leaderboard entries are already anonymized (first4…last4).
+                    const isYou = publicKey && entry.investor === anonymize(publicKey.toBase58());
                     return (
                       <div
                         key={entry.investor}
@@ -164,7 +167,7 @@ export default function AnalyticsPage() {
                         }`}
                       >
                         <span className={isYou ? "text-foreground" : "text-muted-foreground"}>
-                          #{i + 1} <span className="font-mono-avs">{shortenAddress(entry.investor)}</span>
+                          #{i + 1} <span className="font-mono-avs">{entry.investor}</span>
                           {isYou && <span className="ml-1 font-medium text-primary">{t("common.you")}</span>}
                         </span>
                         <span className="font-mono-avs text-foreground">
