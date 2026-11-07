@@ -48,14 +48,14 @@ const en = {
     browseDeals: "Browse Deals",
     myDashboard: "My Dashboard",
     feature1Title: "Sealed bids",
-    feature1Desc: "Bid amounts stay hidden on-chain — invisible to everyone, including the startup, until reveal.",
+    feature1Desc: "Bid amounts stay hidden from other bidders and the public until reveal — only you and the startup can read yours.",
     feature2Title: "Private milestone votes",
     feature2Desc: "Members vote YES/NO in secret; outcomes reveal at once and rewards settle only after.",
     feature3Title: "Gasless, one-tap signing",
     feature3Desc: "Session keys skip the wallet popup per action — running on MagicBlock at ~10ms latency.",
     mockupTitle: "See it in action",
     mockupSubtitle: "A real look at the deals board — sealed bids stay hidden until reveal.",
-    statsTitle: "Live on Solana",
+    statsTitle: "Live on Solana devnet",
     feature4Title: "Verifiable, front-run-proof payouts",
     feature4Desc: "A verifiable random function (VRF) gates payout order on-chain — nobody can front-run settlement.",
     faqTeaserSubtitle: "The most common questions about how sealed bids and reveals actually work.",
@@ -153,13 +153,13 @@ const en = {
     amount: "Amount",
     equityOffered: "Equity offered (round)",
     notice:
-      "Your bid is sealed — no one, including the startup, can see this amount until the deal reveals after its deadline.",
+      "Your bid is sealed — other bidders and the public can't see this amount until the deal reveals after its deadline. Only you and the startup can read it.",
     confirm: "Confirm Bid",
   },
   voteConfirmModal: {
     title: "Confirm your vote",
     votingOn: "You're voting {choice}.",
-    notice: "Your vote is sealed — no one, including the startup, can see how you voted until reveal.",
+    notice: "Your vote is sealed — other members and the public can't see how you voted until reveal. Only you and the startup can read it.",
     confirm: "Confirm Vote",
   },
   voteCard: {
@@ -383,11 +383,11 @@ const en = {
     title: "About AVS",
     privacyTitle: "Why privacy matters",
     privacyText:
-      "Public cap tables and bid histories let competitors reverse-engineer an angel's strategy, and let founders play investors off each other during a raise. AVS keeps bid and vote amounts sealed — invisible to everyone, including the startup — until a fixed reveal moment, so every participant commits without seeing anyone else's move.",
+      "Public cap tables and bid histories let competitors reverse-engineer an angel's strategy, and let founders play investors off each other during a raise. AVS keeps bid and vote amounts sealed — hidden from other participants and the public, readable only by you and the startup — until a fixed reveal moment, so every participant commits without seeing anyone else's move.",
     howTitle: "How it works",
     howStep1: "A startup posts a deal — valuation, equity offered, min investment, deadline.",
     howStep2:
-      "Angels place sealed bids. Amounts are hidden by an on-chain access-control permission, not client-side encryption — provably unreadable until reveal.",
+      "Angels place sealed bids. Amounts are hidden by an on-chain access-control permission, not client-side encryption — other bidders and the public can't read them until reveal.",
     howStep3:
       "After the deadline, the deal reveals: every bid becomes visible at once, and equity is allocated proportionally to each bid's share of the total raised.",
     howStep4:
@@ -407,7 +407,7 @@ const en = {
     q1: "Is my bid really private?",
     a1: "Yes — it's stored on an Ephemeral Rollup account gated by MagicBlock's private-permission system, naming only you and the startup as readers. It stays that way until the deal's reveal instruction runs after the deadline.",
     q2: "Can the startup see my bid amount before reveal?",
-    a2: "No. The same access-control permission that hides your bid from other bidders also hides it from the startup until reveal.",
+    a2: "Yes. The startup is one of the two readers on your bid's permission (you are the other), so it can read the amount before reveal. Other bidders and the public can't.",
     q3: "What if I want to change my bid?",
     a3: "sealed-auction doesn't currently support editing a placed bid — each bidder gets one bid PDA per deal. Revoke/re-bid support is tracked as future work.",
     q4: "How do I know the reveal is fair?",
@@ -527,7 +527,7 @@ const es = {
     myDashboard: "Mi panel",
     feature1Title: "Pujas selladas",
     feature1Desc:
-      "Los montos de las pujas se ocultan on-chain — invisibles para todos, incluida la startup, hasta el reveal.",
+      "Los montos de las pujas quedan ocultos para los demás postores y el público hasta el reveal — solo tú y la startup pueden leer la tuya.",
     feature2Title: "Votos privados por hito",
     feature2Desc:
       "Los miembros votan SÍ/NO en secreto; los resultados se revelan a la vez y las recompensas se liquidan después.",
@@ -536,7 +536,7 @@ const es = {
       "Las session keys evitan el popup de wallet por acción — corriendo en MagicBlock con ~10ms de latencia.",
     mockupTitle: "Así se ve en acción",
     mockupSubtitle: "Una vista real del tablero de deals — las pujas selladas permanecen ocultas hasta el reveal.",
-    statsTitle: "En vivo en Solana",
+    statsTitle: "En vivo en Solana devnet",
     feature4Title: "Pagos verificables, a prueba de front-running",
     feature4Desc:
       "Una función aleatoria verificable (VRF) habilita el orden de pago on-chain — nadie puede adelantarse (front-run).",
@@ -635,13 +635,13 @@ const es = {
     amount: "Monto",
     equityOffered: "Equity ofrecido (ronda)",
     notice:
-      "Tu puja está sellada — nadie, ni siquiera la startup, puede ver este monto hasta que el deal se revele después de su fecha límite.",
+      "Tu puja está sellada — los demás postores y el público no pueden ver este monto hasta que el deal se revele después de su fecha límite. Solo tú y la startup pueden leerlo.",
     confirm: "Confirmar puja",
   },
   voteConfirmModal: {
     title: "Confirmar tu voto",
     votingOn: "Estás votando {choice}.",
-    notice: "Tu voto está sellado — nadie, ni siquiera la startup, puede ver cómo votaste hasta el reveal.",
+    notice: "Tu voto está sellado — los demás miembros y el público no pueden ver cómo votaste hasta el reveal. Solo tú y la startup pueden leerlo.",
     confirm: "Confirmar voto",
   },
   voteCard: {
@@ -866,11 +866,11 @@ const es = {
     title: "Acerca de AVS",
     privacyTitle: "Por qué importa la privacidad",
     privacyText:
-      "Las cap tables públicas y el historial de pujas permiten que la competencia deduzca la estrategia de un inversor ángel, y que los founders enfrenten a los inversores entre sí durante una ronda. AVS mantiene los montos de pujas y votos sellados — invisibles para todos, incluida la startup — hasta un momento de reveal fijo, para que cada participante se comprometa sin ver el movimiento de nadie más.",
+      "Las cap tables públicas y el historial de pujas permiten que la competencia deduzca la estrategia de un inversor ángel, y que los founders enfrenten a los inversores entre sí durante una ronda. AVS mantiene los montos de pujas y votos sellados — ocultos para los demás participantes y el público, legibles solo por ti y la startup — hasta un momento de reveal fijo, para que cada participante se comprometa sin ver el movimiento de nadie más.",
     howTitle: "Cómo funciona",
     howStep1: "Una startup publica un deal — valuación, equity ofrecido, inversión mínima, fecha límite.",
     howStep2:
-      "Los ángeles hacen pujas selladas. Los montos se ocultan mediante un permiso de control de acceso on-chain, no encriptación del lado del cliente — comprobablemente ilegibles hasta el reveal.",
+      "Los ángeles hacen pujas selladas. Los montos se ocultan mediante un permiso de control de acceso on-chain, no encriptación del lado del cliente — ni los demás postores ni el público pueden leerlos hasta el reveal.",
     howStep3:
       "Después de la fecha límite, el deal se revela: todas las pujas se vuelven visibles a la vez, y el equity se asigna proporcionalmente según la participación de cada puja en el total recaudado.",
     howStep4:
@@ -890,7 +890,7 @@ const es = {
     q1: "¿Mi puja es realmente privada?",
     a1: "Sí — se guarda en una cuenta del Ephemeral Rollup controlada por el sistema de permisos privados de MagicBlock, que solo te nombra a ti y a la startup como lectores. Se mantiene así hasta que se ejecuta la instrucción de reveal del deal después de la fecha límite.",
     q2: "¿Puede la startup ver el monto de mi puja antes del reveal?",
-    a2: "No. El mismo permiso de control de acceso que oculta tu puja de otros postores también la oculta de la startup hasta el reveal.",
+    a2: "Sí. La startup es uno de los dos lectores del permiso de tu puja (tú eres el otro), así que puede leer el monto antes del reveal. Los demás postores y el público no.",
     q3: "¿Qué pasa si quiero cambiar mi puja?",
     a3: "sealed-auction actualmente no admite editar una puja ya colocada — cada postor recibe un PDA de puja por deal. El soporte para revocar/repujar está anotado como trabajo futuro.",
     q4: "¿Cómo sé que el reveal es justo?",
@@ -1008,7 +1008,7 @@ const pt = {
     myDashboard: "Meu painel",
     feature1Title: "Lances selados",
     feature1Desc:
-      "Os valores dos lances ficam ocultos on-chain — invisíveis para todos, inclusive a startup, até a revelação.",
+      "Os valores dos lances ficam ocultos para os outros participantes e o público até a revelação — só você e a startup podem ler o seu.",
     feature2Title: "Votos privados por marco",
     feature2Desc:
       "Os membros votam SIM/NÃO em segredo; os resultados são revelados de uma vez e as recompensas são liquidadas depois.",
@@ -1017,7 +1017,7 @@ const pt = {
       "As session keys evitam o popup da carteira por ação — rodando na MagicBlock com ~10ms de latência.",
     mockupTitle: "Veja em ação",
     mockupSubtitle: "Uma visão real do painel de deals — os lances selados ficam ocultos até a revelação.",
-    statsTitle: "Ao vivo na Solana",
+    statsTitle: "Ao vivo na Solana devnet",
     feature4Title: "Pagamentos verificáveis, à prova de front-running",
     feature4Desc:
       "Uma função aleatória verificável (VRF) libera a ordem de pagamento on-chain — ninguém pode se antecipar (front-run).",
@@ -1116,13 +1116,13 @@ const pt = {
     amount: "Valor",
     equityOffered: "Equity oferecido (rodada)",
     notice:
-      "Seu lance está selado — ninguém, nem a startup, pode ver esse valor até o deal ser revelado após o prazo final.",
+      "Seu lance está selado — os outros participantes e o público não podem ver esse valor até o deal ser revelado após o prazo final. Só você e a startup podem lê-lo.",
     confirm: "Confirmar lance",
   },
   voteConfirmModal: {
     title: "Confirmar seu voto",
     votingOn: "Você está votando {choice}.",
-    notice: "Seu voto está selado — ninguém, nem a startup, pode ver como você votou até a revelação.",
+    notice: "Seu voto está selado — os outros membros e o público não podem ver como você votou até a revelação. Só você e a startup podem lê-lo.",
     confirm: "Confirmar voto",
   },
   voteCard: {
@@ -1346,11 +1346,11 @@ const pt = {
     title: "Sobre a AVS",
     privacyTitle: "Por que a privacidade importa",
     privacyText:
-      "Cap tables públicas e o histórico de lances permitem que concorrentes deduzam a estratégia de um investidor-anjo, e que fundadores coloquem investidores uns contra os outros durante uma rodada. A AVS mantém valores de lances e votos selados — invisíveis para todos, inclusive a startup — até um momento fixo de revelação, para que cada participante se comprometa sem ver o movimento de ninguém mais.",
+      "Cap tables públicas e o histórico de lances permitem que concorrentes deduzam a estratégia de um investidor-anjo, e que fundadores coloquem investidores uns contra os outros durante uma rodada. A AVS mantém valores de lances e votos selados — ocultos para os outros participantes e o público, legíveis só por você e a startup — até um momento fixo de revelação, para que cada participante se comprometa sem ver o movimento de ninguém mais.",
     howTitle: "Como funciona",
     howStep1: "Uma startup publica um deal — avaliação, equity oferecido, investimento mínimo, prazo final.",
     howStep2:
-      "Investidores-anjo dão lances selados. Os valores ficam ocultos por uma permissão de controle de acesso on-chain, não por criptografia no cliente — comprovadamente ilegíveis até a revelação.",
+      "Investidores-anjo dão lances selados. Os valores ficam ocultos por uma permissão de controle de acesso on-chain, não por criptografia no cliente — nem os outros participantes nem o público podem lê-los até a revelação.",
     howStep3:
       "Após o prazo final, o deal é revelado: todos os lances ficam visíveis de uma vez, e o equity é alocado proporcionalmente à participação de cada lance no total arrecadado.",
     howStep4:
@@ -1370,7 +1370,7 @@ const pt = {
     q1: "Meu lance é realmente privado?",
     a1: "Sim — ele fica guardado em uma conta do Ephemeral Rollup protegida pelo sistema de permissões privadas da MagicBlock, que nomeia só você e a startup como leitores. Continua assim até a instrução de revelação do deal rodar após o prazo final.",
     q2: "A startup pode ver o valor do meu lance antes da revelação?",
-    a2: "Não. A mesma permissão de controle de acesso que oculta seu lance de outros participantes também o oculta da startup até a revelação.",
+    a2: "Sim. A startup é um dos dois leitores da permissão do seu lance (você é o outro), então pode ler o valor antes da revelação. Os outros participantes e o público não.",
     q3: "E se eu quiser mudar meu lance?",
     a3: "O sealed-auction atualmente não suporta editar um lance já feito — cada participante recebe um PDA de lance por deal. O suporte a revogar/relançar está registrado como trabalho futuro.",
     q4: "Como sei que a revelação é justa?",
