@@ -29,11 +29,11 @@ export function PlatformActivityChart({
     <div className="h-56" role={summary ? "img" : undefined} aria-label={summary || undefined}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={dealsOverTime} margin={{ top: 16 }}>
-          <XAxis dataKey="date" fontSize={10} stroke="var(--muted-foreground)" />
+          <XAxis dataKey="date" fontSize={12} stroke="var(--muted-foreground)" />
           <YAxis fontSize={12} allowDecimals={false} stroke="var(--muted-foreground)" />
           <Tooltip />
           <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]}>
-            <LabelList dataKey="count" position="top" fontSize={11} fill="var(--muted-foreground)" />
+            <LabelList dataKey="count" position="top" fontSize={12} fill="var(--muted-foreground)" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

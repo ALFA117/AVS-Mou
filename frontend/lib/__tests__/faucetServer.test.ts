@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { isPublicKey, checkCooldown, FaucetRejectedError } from "@/lib/faucetServer";
+import { isPublicKey, checkCooldown, FaucetRejectedError, FaucetCooldownError } from "@/lib/faucetServer";
 
 describe("isPublicKey", () => {
   it("accepts a valid base58 pubkey", () => {
@@ -34,6 +34,8 @@ describe("checkCooldown", () => {
   it("rejects a second request for the same key within the cooldown window", () => {
     checkCooldown("recipient2:mint1");
     expect(() => checkCooldown("recipient2:mint1")).toThrow(FaucetRejectedError);
+    // The route maps only the cooldown subclass to HTTP 429.
+    expect(() => checkCooldown("recipient2:mint1")).toThrow(FaucetCooldownError);
   });
 
   it("allows a request for a different key even during another key's cooldown", () => {

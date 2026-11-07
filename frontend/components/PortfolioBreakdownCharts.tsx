@@ -18,7 +18,7 @@ function renderPercentLabel(props: PieLabelRenderProps) {
   const x = Number(cx) + radius * Math.cos(-midAngle * RADIAN);
   const y = Number(cy) + radius * Math.sin(-midAngle * RADIAN);
   return (
-    <text x={x} y={y} fill="var(--muted-foreground)" fontSize={11} textAnchor={x > Number(cx) ? "start" : "end"} dominantBaseline="central">
+    <text x={x} y={y} fill="var(--muted-foreground)" fontSize={12} textAnchor={x > Number(cx) ? "start" : "end"} dominantBaseline="central">
       {`${Math.round((percent ?? 0) * 100)}%`}
     </text>
   );
@@ -44,7 +44,7 @@ export function AllocationPieChart({
               <Cell key={i} fill={COLORS[i % COLORS.length]} />
             ))}
           </Pie>
-          <Legend verticalAlign="bottom" height={28} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11, color: "var(--muted-foreground)" }} />
+          <Legend verticalAlign="bottom" height={28} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }} />
           <Tooltip formatter={(v) => formatTokenAmount(Number(v ?? 0))} />
         </PieChart>
       </ResponsiveContainer>

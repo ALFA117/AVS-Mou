@@ -49,13 +49,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY) as Locale | null;
+    let stored: Locale | null = null;
+    try {
+      stored = window.localStorage.getItem(STORAGE_KEY) as Locale | null;
+    } catch {
+      // storage blocked — fall back to the browser language
+    }
     setLocaleState(stored && stored in dictionaries ? stored : detectBrowserLocale());
   }, []);
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
-    window.localStorage.setItem(STORAGE_KEY, l);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, l);
+    } catch {
+      // not persisted, still applied for this visit
+    }
   }, []);
 
   const t = useCallback<TranslateFn>(
@@ -66,6 +75,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     },
     [locale],
   );
+
+  // Keep <html lang> in sync so screen readers and translators know the
+  // page's real language after a switch (the server always renders "en").
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const value = useMemo(() => ({ locale, setLocale, t }), [locale, setLocale, t]);
 

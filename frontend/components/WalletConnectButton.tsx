@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ChevronDown, LogOut, Loader2 } from "lucide-react";
+import { ChevronDown, LogOut, Loader2, ExternalLink, Wallet as WalletIcon } from "lucide-react";
 import { shortenAddress } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 
@@ -57,13 +57,21 @@ export function WalletConnectButton() {
   }
 
   if (wallets.length === 0 && !connected) {
+    // No Wallet Standard wallet in this browser: say so plainly and point to
+    // an install page instead of a truncated, non-interactive label.
     return (
-      <span
-        title={t("walletConnect.noWallet")}
-        className="max-w-[3.5rem] truncate text-xs text-muted-foreground sm:max-w-[9rem] sm:text-sm"
+      <a
+        href="https://phantom.com/download"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={t("walletConnect.getWalletTitle")}
+        aria-label={`${t("walletConnect.noWallet")} — ${t("walletConnect.getWallet")}`}
+        className="flex h-11 min-w-11 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-primary px-2.5 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued sm:h-auto sm:px-3 sm:py-1.5"
       >
-        {t("walletConnect.noWallet")}
-      </span>
+        <WalletIcon className="h-4 w-4 sm:hidden" strokeWidth={2} aria-hidden="true" />
+        <span className="hidden sm:inline">{t("walletConnect.getWallet")}</span>
+        <ExternalLink className="hidden h-3.5 w-3.5 sm:inline" strokeWidth={2} aria-hidden="true" />
+      </a>
     );
   }
 

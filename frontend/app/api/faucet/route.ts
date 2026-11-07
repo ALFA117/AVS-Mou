@@ -17,6 +17,7 @@ import {
   checkCooldown,
   isPublicKey,
   FaucetRejectedError,
+  FaucetCooldownError,
 } from "@/lib/faucetServer";
 import { checkIpRateLimit, clientIp, RateLimitedError } from "@/lib/rateLimiter";
 
@@ -100,8 +101,13 @@ export async function POST(request: Request) {
       toppedUpSol,
     });
   } catch (err) {
-    if (err instanceof FaucetRejectedError || err instanceof RateLimitedError) {
+    // Only real rate limits are 429; a refused request (token the faucet
+    // doesn't control, etc.) is a client error, not "too many requests".
+    if (err instanceof FaucetCooldownError || err instanceof RateLimitedError) {
       return NextResponse.json({ error: err.message }, { status: 429 });
+    }
+    if (err instanceof FaucetRejectedError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
     }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : String(err) },

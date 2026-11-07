@@ -42,13 +42,17 @@ export function faucetConnection(): Connection {
 const lastRequestAt = new Map<string, number>();
 const COOLDOWN_MS = 30_000;
 
+/** A request the faucet won't serve (e.g. a token it doesn't control) — HTTP 400. */
 export class FaucetRejectedError extends Error {}
+
+/** Same recipient+mint asked again too soon — HTTP 429. */
+export class FaucetCooldownError extends FaucetRejectedError {}
 
 export function checkCooldown(key: string): void {
   const last = lastRequestAt.get(key);
   const now = Date.now();
   if (last && now - last < COOLDOWN_MS) {
-    throw new FaucetRejectedError(
+    throw new FaucetCooldownError(
       `Please wait ${Math.ceil((COOLDOWN_MS - (now - last)) / 1000)}s before requesting again`,
     );
   }

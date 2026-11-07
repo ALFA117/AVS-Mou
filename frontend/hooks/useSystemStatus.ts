@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useConnection } from "@solana/wallet-adapter-react";
+import { TEE_RPC_URL } from "@/lib/ephemeralRollup";
 
 export type ServiceStatus = "checking" | "up" | "down";
 
@@ -13,8 +14,10 @@ export interface SystemStatus {
   erLatencyMs: number | null;
 }
 
-const ER_RPC_URL =
-  process.env.NEXT_PUBLIC_MAGICBLOCK_ER_RPC_URL || "https://devnet-us.magicblock.app";
+// Ping the same TEE validator every deal/milestone is delegated to and
+// that bids/votes go through — not a regional ER RPC (devnet-us/eu/as),
+// which is a different validator the app doesn't depend on.
+const ER_RPC_URL = TEE_RPC_URL;
 
 async function pingJsonRpc(url: string, method: string): Promise<{ ok: boolean; latencyMs: number }> {
   const started = performance.now();
