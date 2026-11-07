@@ -22,7 +22,8 @@ Built for **Solana Blitz V7 Hackathon** (Collaboration Track).
    showing **"Awaiting reveal"** simply means its bidding deadline passed
    but nobody has called `reveal_deal` yet; that's expected, not broken.
    Three demo deals (and two milestones) stay open for bidding/voting into
-   2027 — filter by **"Open for bids"**.
+   2027 — filter by **"Open for bids"**. When they expire, re-seed with
+   `node scripts/seed-demo.cjs` (devnet only).
 4. **Bid on a deal under "Open for bids"** (time left on its countdown).
    Each deal uses its own dedicated SPL "funding" mint — use the in-app
    faucet button above the amount field to mint yourself test tokens for
@@ -112,6 +113,7 @@ gives both from one piece of infrastructure.
 /frontend   Next.js + TypeScript app
 /tests      Integration & e2e tests (structural + live-Devnet, see docs/ARCHITECTURE.md)
 /docs       Architecture, setup, and design docs — see the Docs section below
+/scripts    seed-demo.cjs — re-seeds open demo deals/milestones on devnet once the old ones expire
 /vendor     Reference clone of magicblock-engine-examples (gitignored)
 ```
 
