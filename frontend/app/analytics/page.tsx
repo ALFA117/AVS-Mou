@@ -185,7 +185,7 @@ export default function AnalyticsPage() {
       </section>
 
       <section className="mt-10 border-t border-border pt-8">
-        <h2 className="font-heading text-lg font-normal tracking-tight text-foreground">{t("analytics.myStats")}</h2>
+        <h2 className="font-heading text-2xl font-normal text-foreground">{t("analytics.myStats")}</h2>
         {!publicKey ? (
           <EmptyState
             icon={Wallet}

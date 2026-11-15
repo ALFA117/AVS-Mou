@@ -195,6 +195,26 @@ export default function Home() {
         <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <SectionHeader eyebrow={t("home.featuresEyebrow")} title={t("home.featuresTitle")} />
+            <table className="mt-8 w-full border-collapse text-left text-sm">
+              <caption className="mb-2 text-left font-mono-avs text-xs uppercase tracking-wider text-muted-foreground">
+                {t("home.readersCaption")}
+              </caption>
+              <tbody>
+                {[
+                  [t("home.readersRow1"), t("home.readersRow1Value"), "text-primary"],
+                  [t("home.readersRow2"), t("home.readersRow2Value"), "text-brass"],
+                  [t("home.readersRow3"), t("home.readersRow3Value"), "text-foreground"],
+                  [t("home.readersRow4"), t("home.readersRow4Value"), "text-brass"],
+                ].map(([label, value, tone]) => (
+                  <tr key={label} className="border-t border-border last:border-b">
+                    <th scope="row" className="py-3 pr-4 font-normal text-muted-foreground">
+                      {label}
+                    </th>
+                    <td className={`py-3 text-right font-medium ${tone}`}>{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
           <ol className="border-t border-border">
             {FEATURES.map((f, i) => (

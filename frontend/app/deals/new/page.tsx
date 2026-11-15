@@ -233,7 +233,12 @@ export default function NewDealPage() {
 
   if (!publicKey) {
     return (
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 [&>*]:max-w-2xl">
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+        <h1 className="flex items-center gap-2 font-heading text-3xl font-normal leading-tight text-foreground sm:text-4xl">
+          <Rocket className="h-5 w-5 text-primary" strokeWidth={2} aria-hidden="true" />
+          {t("newDeal.title")}
+        </h1>
+        <p className="mt-1 text-base text-muted-foreground">{t("newDeal.subtitle")}</p>
         <EmptyState
           icon={Wallet}
           title={t("newDeal.connectTitle")}

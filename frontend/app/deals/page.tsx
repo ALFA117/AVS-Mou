@@ -205,40 +205,58 @@ export default function DealsPage() {
         </motion.div>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
-        {/* Status chips and the search/sort controls wrap as two units, so
-            a narrow row never strands a single control on its own line. */}
-        <div className="flex flex-wrap items-center gap-2">
-          {(["all", "open", "awaiting", "revealed", "settled"] as StatusFilter[]).map((s) => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`flex min-h-11 cursor-pointer items-center rounded-md px-3 text-sm font-medium transition-colors duration-200 ${
-                statusFilter === s
-                  ? "bg-ink text-ink-foreground"
-                  : "border border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground"
-              }`}
-            >
-              {STATUS_LABELS[s]}
-            </button>
-          ))}
+      {/* Two ruled rows instead of one crowded line: status + refresh on
+          top, then search / sort / filters. */}
+      <div className="mt-6 flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <div
+            role="group"
+            aria-label={t("dealCard.status")}
+            className="-mx-4 flex min-w-0 overflow-x-auto px-4 sm:mx-0 sm:px-0"
+          >
+            <div className="flex shrink-0 rounded-md border border-border bg-card p-0.5">
+              {(["all", "open", "awaiting", "revealed", "settled"] as StatusFilter[]).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  aria-pressed={statusFilter === s}
+                  className={`flex min-h-10 cursor-pointer items-center whitespace-nowrap rounded px-3 text-sm font-medium transition-colors duration-200 ${
+                    statusFilter === s
+                      ? "bg-ink text-ink-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  {STATUS_LABELS[s]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button
+            onClick={() => void refresh()}
+            className="hidden min-h-11 shrink-0 cursor-pointer items-center gap-1.5 px-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground sm:flex"
+          >
+            <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
+            {t("common.refresh")}
+          </button>
         </div>
 
-        <div className="flex min-w-[min(100%,560px)] flex-1 flex-wrap items-center gap-2">
-          <div className="relative min-w-[200px] flex-1">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative min-w-[240px] flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("deals.searchPlaceholder")}
-              className="w-full rounded-md border border-border bg-card py-2.5 pl-8 pr-3 text-base text-foreground placeholder:text-muted-foreground"
+              aria-label={t("deals.searchPlaceholder")}
+              className="h-11 w-full rounded-md border border-border bg-card pl-9 pr-3 text-base text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           <select
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
-            className="rounded-md border border-border bg-card px-2 py-2.5 text-base text-foreground"
+            aria-label={t("deals.sortDeadline")}
+            className="h-11 rounded-md border border-border bg-card px-3 text-base text-foreground"
           >
             <option value="deadline">{t("deals.sortDeadline")}</option>
             <option value="valuation">{t("deals.sortValuation")}</option>
@@ -260,10 +278,10 @@ export default function DealsPage() {
 
           <button
             onClick={() => void refresh()}
-            className="flex min-h-11 cursor-pointer items-center gap-1.5 px-2 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+            aria-label={t("common.refresh")}
+            className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors duration-200 hover:text-foreground sm:hidden"
           >
-            <RefreshCw className="h-3.5 w-3.5" strokeWidth={2} />
-            {t("common.refresh")}
+            <RefreshCw className="h-4 w-4" strokeWidth={2} />
           </button>
         </div>
       </div>
