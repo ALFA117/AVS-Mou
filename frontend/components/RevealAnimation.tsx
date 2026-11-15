@@ -36,8 +36,8 @@ export function RevealAnimation({ bids, currentUser }: { bids: Bid[]; currentUse
                 damping: isTop ? 18 : 22,
               }}
               whileHover={reduceMotion ? undefined : { y: -2 }}
-              className={`rounded-lg border bg-card p-4 transition-shadow duration-200 hover:shadow-md hover:shadow-primary/5 ${
-                isTop ? "avs-glow-primary border-primary bg-primary-subdued" : isYou ? "border-primary/40" : "border-border"
+              className={`rounded-lg border bg-card p-4 transition-shadow duration-200 ${
+                isTop ? "avs-glow-primary border-primary bg-primary-subdued" : isYou ? "border-border-strong" : "border-border"
               }`}
             >
               <div className="flex items-center justify-between text-sm">

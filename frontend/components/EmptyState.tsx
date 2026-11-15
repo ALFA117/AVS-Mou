@@ -22,7 +22,7 @@ export function EmptyState({
       initial={reduceMotion ? undefined : { opacity: 0, y: 12 }}
       animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 280, damping: 26 }}
-      className="mt-10 flex flex-col items-center rounded-xl border border-dashed border-border px-6 py-14 text-center"
+      className="mt-10 flex flex-col items-center rounded-xl border border-border bg-card px-6 py-14 text-center"
     >
       <motion.div
         initial={reduceMotion ? undefined : { scale: 0.7, opacity: 0 }}
@@ -32,7 +32,7 @@ export function EmptyState({
       >
         <Icon className="h-6 w-6 text-primary" strokeWidth={2} />
       </motion.div>
-      <h2 className="mt-4 font-heading text-lg font-light text-foreground">{title}</h2>
+      <h2 className="mt-4 font-heading text-lg font-normal text-foreground">{title}</h2>
       <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">{description}</p>
       {action && <div className="mt-5">{action}</div>}
     </motion.div>

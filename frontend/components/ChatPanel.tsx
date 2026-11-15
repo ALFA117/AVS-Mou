@@ -71,7 +71,7 @@ export function ChatPanel({
             <div
               className={`max-w-xs rounded-lg px-3 py-2 text-sm ${
                 m.senderId === currentUser
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-ink text-ink-foreground"
                   : "bg-muted text-foreground"
               }`}
             >
@@ -106,13 +106,13 @@ export function ChatPanel({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={t("chatPanel.messagePlaceholder")}
-          className="flex-1 rounded-md border border-border bg-background px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground"
+          className="flex-1 rounded-md border border-border bg-card px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground"
         />
         <motion.button
           type="submit"
           whileTap={{ scale: 0.94 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="flex cursor-pointer items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+          className="flex cursor-pointer items-center gap-1.5 rounded-md bg-primary px-3 min-h-11 py-1.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep"
         >
           <Send className="h-3.5 w-3.5" strokeWidth={2} />
           {t("chatPanel.send")}

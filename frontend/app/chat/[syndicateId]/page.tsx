@@ -23,7 +23,7 @@ export default function ChatPage({ params }: { params: { syndicateId: string } }
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-4xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="mt-4 h-7 w-64" />
         <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-[1fr_240px]">
@@ -35,14 +35,14 @@ export default function ChatPage({ params }: { params: { syndicateId: string } }
   }
   if (!deal) {
     return (
-      <main role="alert" className="mx-auto max-w-4xl px-6 py-10 text-red-600 dark:text-red-400">
+      <main role="alert" className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 text-red-600 dark:text-red-400">
         {t("chatPage.notFound")}
       </main>
     );
   }
   if (!publicKey) {
     return (
-      <main className="mx-auto max-w-4xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         <EmptyState
           icon={Wallet}
           title={t("chatPage.connectTitle")}
@@ -54,14 +54,14 @@ export default function ChatPage({ params }: { params: { syndicateId: string } }
   }
   if (!isMember) {
     return (
-      <main className="mx-auto max-w-4xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
         <p className="text-muted-foreground">{t("chatPage.notMember")}</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <Link
         href={`/syndicates/${deal.publicKey}`}
         className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
@@ -70,7 +70,7 @@ export default function ChatPage({ params }: { params: { syndicateId: string } }
         {t("chatPage.syndicate")}
       </Link>
 
-      <h1 className="mt-4 font-heading text-2xl font-light tracking-tight text-foreground">
+      <h1 className="mt-4 font-heading text-3xl font-normal leading-tight text-foreground sm:text-4xl">
         {t("chatPage.title", { id: deal.dealId })}
       </h1>
       <p className="text-xs text-muted-foreground">{t("chatPage.localOnlyNote")}</p>

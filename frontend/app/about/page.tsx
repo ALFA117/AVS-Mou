@@ -9,7 +9,7 @@ export default function AboutPage() {
   const { t } = useTranslation();
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-4 [&>*]:max-w-3xl py-10 sm:px-6 sm:py-14">
       <div className="avs-elevate overflow-hidden rounded-xl border border-border">
         <Image
           src="/avs-logo-lockup.jpg"
@@ -21,10 +21,10 @@ export default function AboutPage() {
         />
       </div>
 
-      <h1 className="mt-8 font-heading text-2xl font-light tracking-tight text-foreground">{t("about.title")}</h1>
+      <h1 className="mt-8 font-heading text-3xl font-normal leading-tight text-foreground sm:text-4xl">{t("about.title")}</h1>
 
       <section className="mt-6">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-foreground">
+        <h2 className="flex items-center gap-2 font-heading text-lg font-normal tracking-tight text-foreground">
           <span className="avs-icon-badge h-7 w-7"><ShieldCheck className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("about.privacyTitle")}
         </h2>
@@ -32,7 +32,7 @@ export default function AboutPage() {
       </section>
 
       <section className="mt-6">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-foreground">
+        <h2 className="flex items-center gap-2 font-heading text-lg font-normal tracking-tight text-foreground">
           <span className="avs-icon-badge h-7 w-7"><Workflow className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("about.howTitle")}
         </h2>
@@ -45,7 +45,7 @@ export default function AboutPage() {
       </section>
 
       <section className="mt-6">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-foreground">
+        <h2 className="flex items-center gap-2 font-heading text-lg font-normal tracking-tight text-foreground">
           <span className="avs-icon-badge h-7 w-7"><Cpu className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("about.techTitle")}
         </h2>
@@ -59,7 +59,7 @@ export default function AboutPage() {
       </section>
 
       <section className="mt-6">
-        <h2 className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-foreground">
+        <h2 className="flex items-center gap-2 font-heading text-lg font-normal tracking-tight text-foreground">
           <span className="avs-icon-badge h-7 w-7"><Link2 className="h-3.5 w-3.5 text-primary" strokeWidth={2} /></span>
           {t("about.linksTitle")}
         </h2>

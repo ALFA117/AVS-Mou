@@ -233,7 +233,7 @@ export default function NewDealPage() {
 
   if (!publicKey) {
     return (
-      <main className="mx-auto max-w-xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 [&>*]:max-w-2xl">
         <EmptyState
           icon={Wallet}
           title={t("newDeal.connectTitle")}
@@ -249,9 +249,9 @@ export default function NewDealPage() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 260, damping: 26 }}
-      className="mx-auto max-w-xl px-6 py-10"
+      className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14 [&>*]:max-w-2xl"
     >
-      <h1 className="flex items-center gap-2 font-heading text-2xl font-light tracking-tight text-foreground">
+      <h1 className="flex items-center gap-2 font-heading text-3xl font-normal leading-tight text-foreground sm:text-4xl">
         <Rocket className="h-5 w-5 text-primary" strokeWidth={2} />
         {t("newDeal.title")}
       </h1>
@@ -265,7 +265,7 @@ export default function NewDealPage() {
             value={fundingMint}
             onChange={(e) => setFundingMint(e.target.value)}
             placeholder={t("newDeal.fundingMintPlaceholder")}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+            className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground"
           />
           <p className="mt-1 text-xs text-muted-foreground">{t("newDeal.fundingMintHint")}</p>
         </Field>
@@ -278,7 +278,7 @@ export default function NewDealPage() {
               step="0.01"
               value={valuation}
               onChange={(e) => setValuation(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
             />
           </Field>
           <Field label={t("newDeal.equityPercent")} error={fieldErrors.equityPercent}>
@@ -289,7 +289,7 @@ export default function NewDealPage() {
               max={100}
               value={equityPercent}
               onChange={(e) => setEquityPercent(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
             />
           </Field>
           <Field label={t("newDeal.minInvestment")}>
@@ -299,7 +299,7 @@ export default function NewDealPage() {
               step="0.01"
               value={minInvestment}
               onChange={(e) => setMinInvestment(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
             />
           </Field>
           <Field label={t("newDeal.maxCap")} error={fieldErrors.maxCap}>
@@ -309,7 +309,7 @@ export default function NewDealPage() {
               step="0.01"
               value={maxCap}
               onChange={(e) => setMaxCap(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
             />
           </Field>
           <Field label={t("newDeal.cliffMonths")} error={fieldErrors.cliffMonths}>
@@ -319,7 +319,7 @@ export default function NewDealPage() {
               step="1"
               value={cliffMonths}
               onChange={(e) => setCliffMonths(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
             />
           </Field>
           <Field label={t("newDeal.vestingMonths")} error={fieldErrors.vestingMonths}>
@@ -329,7 +329,7 @@ export default function NewDealPage() {
               step="1"
               value={vestingMonths}
               onChange={(e) => setVestingMonths(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
             />
           </Field>
         </div>
@@ -339,7 +339,7 @@ export default function NewDealPage() {
             type="datetime-local"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+            className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
           />
         </Field>
 
@@ -349,7 +349,7 @@ export default function NewDealPage() {
           onClick={() => void submit()}
           whileTap={valid && !busy ? { scale: 0.98 } : undefined}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="w-full cursor-pointer avs-glow-primary rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full cursor-pointer avs-glow-primary rounded-md bg-primary px-4 min-h-11 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep disabled:cursor-not-allowed disabled:opacity-40"
         >
           {busy ? <StepLabel step={step} /> : t("newDeal.createDeal")}
         </motion.button>

@@ -25,13 +25,13 @@ export default function NotFound() {
         <div className="avs-icon-badge mx-auto h-14 w-14">
           <Compass className="h-7 w-7 text-primary" strokeWidth={2} />
         </div>
-        <h1 className="mt-6 font-heading text-3xl font-light tracking-tight text-foreground">
+        <h1 className="mt-6 font-heading text-3xl font-normal tracking-tight text-foreground">
           {t("notFound.title")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">{t("notFound.subtitle")}</p>
         <Link
           href="/"
-          className="avs-glow-primary mt-7 inline-block rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep"
+          className="avs-glow-primary mt-7 inline-block rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep"
         >
           {t("notFound.backHome")}
         </Link>

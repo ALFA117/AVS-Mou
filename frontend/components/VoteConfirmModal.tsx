@@ -41,7 +41,7 @@ export function VoteConfirmModal({
       >
         <h3
           id="vote-confirm-title"
-          className="flex items-center gap-2 font-heading text-lg font-light tracking-tight text-card-foreground"
+          className="flex items-center gap-2 font-heading text-lg font-normal tracking-tight text-card-foreground"
         >
           <VoteIcon className="h-4 w-4 text-primary" strokeWidth={2} />
           {t("voteConfirmModal.title")}
@@ -57,7 +57,7 @@ export function VoteConfirmModal({
             onClick={onCancel}
             whileTap={{ scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="cursor-pointer rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+            className="cursor-pointer rounded-md border border-border px-4 min-h-11 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
           >
             {t("common.cancel")}
           </motion.button>
@@ -66,7 +66,7 @@ export function VoteConfirmModal({
             onClick={onConfirm}
             whileTap={{ scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="cursor-pointer avs-glow-primary rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+            className="cursor-pointer avs-glow-primary rounded-md bg-primary px-4 min-h-11 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep"
           >
             {t("voteConfirmModal.confirm")}
           </motion.button>

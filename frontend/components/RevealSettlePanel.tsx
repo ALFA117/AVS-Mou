@@ -182,7 +182,7 @@ export function RevealSettlePanel({
   return (
     <div className="avs-elevate relative overflow-hidden rounded-xl border border-border bg-card p-5">
       <SuccessFlash trigger={status.kind === "success"} />
-      <h3 className="flex items-center gap-2 font-heading font-light tracking-tight text-card-foreground">
+      <h3 className="flex items-center gap-2 font-heading font-normal tracking-tight text-card-foreground">
         <span className="avs-icon-badge h-8 w-8">
           <Unlock className="h-4 w-4 text-primary" strokeWidth={2} />
         </span>
@@ -196,7 +196,7 @@ export function RevealSettlePanel({
           type="button"
           disabled={busy !== null}
           onClick={() => void reveal()}
-          className="mt-4 cursor-pointer whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="mt-4 cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 min-h-11 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep disabled:cursor-not-allowed disabled:opacity-40"
         >
           {busy === "reveal" ? t("revealSettle.revealing") : t("revealSettle.revealButton")}
         </button>
@@ -211,7 +211,7 @@ export function RevealSettlePanel({
                 type="button"
                 disabled={busy !== null}
                 onClick={() => void loadBidsAsStartup()}
-                className="flex min-h-11 cursor-pointer items-center rounded-full border border-primary px-4 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex min-h-11 cursor-pointer items-center rounded-md border border-primary px-4 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {busy === "load" ? t("common.loading") : t("revealSettle.loadBids")}
               </button>
@@ -230,7 +230,7 @@ export function RevealSettlePanel({
                   type="button"
                   disabled={busy !== null}
                   onClick={() => void settle(b)}
-                  className="flex min-h-11 shrink-0 cursor-pointer items-center whitespace-nowrap rounded-full border border-primary px-3 text-xs font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex min-h-11 shrink-0 cursor-pointer items-center whitespace-nowrap rounded-md border border-primary px-3 text-xs font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {busy === b.publicKey
                     ? delegating

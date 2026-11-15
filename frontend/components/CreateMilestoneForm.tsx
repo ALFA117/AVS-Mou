@@ -160,7 +160,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             placeholder={t("createMilestone.descriptionPlaceholder")}
-            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+            className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground"
           />
         </label>
         <div className="grid grid-cols-2 gap-3">
@@ -170,7 +170,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
               type="datetime-local"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
             />
           </label>
           <label className="block text-sm">
@@ -181,7 +181,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
               step="0.01"
               value={rewardPool}
               onChange={(e) => setRewardPool(e.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
             />
           </label>
         </div>
@@ -193,7 +193,7 @@ export function CreateMilestoneForm({ deal, onCreated }: { deal: string; onCreat
             onClick={() => void submit()}
             whileTap={valid && !busy ? { scale: 0.98 } : undefined}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="cursor-pointer whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 min-h-11 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep disabled:cursor-not-allowed disabled:opacity-40"
           >
             {busy ? <StepLabel step={step} /> : t("createMilestone.createButton")}
           </motion.button>

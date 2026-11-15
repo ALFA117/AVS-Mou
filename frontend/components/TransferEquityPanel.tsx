@@ -82,7 +82,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
             placeholder={t("transferEquity.recipientPlaceholder")}
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
-            className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+            className="mt-1 w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground"
           />
         </div>
         <div className="flex gap-2">
@@ -98,7 +98,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
               placeholder="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+              className="mt-1 w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground placeholder:text-muted-foreground"
             />
           </div>
           <button
@@ -111,7 +111,7 @@ export function TransferEquityPanel({ syndicate }: { syndicate: Syndicate }) {
                 void submit();
               }
             }}
-            className="mt-5 h-11 cursor-pointer whitespace-nowrap rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="mt-5 h-11 cursor-pointer whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep disabled:cursor-not-allowed disabled:opacity-40"
           >
             {submitting ? t("transferEquity.transferring") : t("transferEquity.transfer")}
           </button>
