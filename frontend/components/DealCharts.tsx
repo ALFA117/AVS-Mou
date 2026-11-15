@@ -1,10 +1,6 @@
 "use client";
 
 import {
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
   ResponsiveContainer,
   Tooltip,
   BarChart,
@@ -13,42 +9,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { PieLabelRenderProps } from "recharts";
 import { Lock, CircleCheck } from "lucide-react";
 import { formatTokenAmount } from "@/lib/format";
 import { useTranslation } from "@/lib/LanguageContext";
 import type { Bid, Deal } from "@/lib/types";
-
-// CSS custom properties resolve fine as SVG fill values, so these charts
-// stay theme-aware without a JS-side dark-mode branch.
-// Raised = brand plum; remaining capacity = a quiet neutral, not a second
-// "success" colour competing with it.
-const COLORS = ["var(--primary)", "var(--muted-foreground)", "var(--border-strong)"];
-
-// Pie slices rely on color alone unless paired with a direct % label — this
-// draws that label outside the donut so it stays legible for colorblind users.
-function renderPercentLabel(props: PieLabelRenderProps) {
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
-  if (cx == null || cy == null || midAngle == null || innerRadius == null || outerRadius == null) {
-    return null;
-  }
-  const RADIAN = Math.PI / 180;
-  const radius = Number(innerRadius) + (Number(outerRadius) - Number(innerRadius)) * 1.4;
-  const x = Number(cx) + radius * Math.cos(-midAngle * RADIAN);
-  const y = Number(cy) + radius * Math.sin(-midAngle * RADIAN);
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="var(--muted-foreground)"
-      fontSize={12}
-      textAnchor={x > Number(cx) ? "start" : "end"}
-      dominantBaseline="central"
-    >
-      {`${Math.round((percent ?? 0) * 100)}%`}
-    </text>
-  );
-}
 
 export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
   const { t } = useTranslation();
@@ -84,35 +48,37 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <div className="avs-elevate rounded-xl border border-border bg-card p-4">
+      <div className="avs-elevate flex flex-col rounded-xl border border-border bg-card p-4">
         <h3 className="text-sm font-medium text-card-foreground">{t("dealCharts.raiseProgress")}</h3>
-        <div className="h-56" role="img" aria-label={raiseProgressSummary}>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={raiseData}
-                dataKey="value"
-                nameKey="name"
-                innerRadius={45}
-                outerRadius={70}
-                paddingAngle={2}
-                label={renderPercentLabel}
-                labelLine={{ stroke: "var(--border)" }}
-              >
-                {raiseData.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Legend
-                verticalAlign="bottom"
-                height={28}
-                iconType="circle"
-                iconSize={8}
-                wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }}
-              />
-              <Tooltip formatter={(v) => formatTokenAmount(Number(v ?? 0))} />
-            </PieChart>
-          </ResponsiveContainer>
+        {/* A ruled progress bar instead of a donut: one figure, one bar, one
+            remainder — readable at a glance and honest when raised is 0. */}
+        <div className="flex flex-1 flex-col justify-center py-4" role="img" aria-label={raiseProgressSummary}>
+          <p className="font-heading text-4xl font-normal leading-none text-foreground">
+            {raisedPercent}
+            <span className="text-2xl text-muted-foreground">%</span>
+          </p>
+          <div className="mt-4 h-2.5 w-full overflow-hidden rounded-sm bg-muted ring-1 ring-inset ring-border">
+            <div
+              className="h-full bg-primary transition-[width] duration-700 ease-out"
+              style={{ width: `${Math.min(Math.max(raisedPercent, raisedAmount > 0 ? 1 : 0), 100)}%` }}
+            />
+          </div>
+          <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt className="flex items-center gap-1.5 text-muted-foreground">
+                <span className="h-2 w-2 rounded-sm bg-primary" aria-hidden="true" />
+                {t("dealCharts.raised")}
+              </dt>
+              <dd className="mt-0.5 font-mono-avs text-foreground">{formatTokenAmount(raisedAmount)}</dd>
+            </div>
+            <div>
+              <dt className="flex items-center gap-1.5 text-muted-foreground">
+                <span className="h-2 w-2 rounded-sm bg-muted ring-1 ring-inset ring-border-strong" aria-hidden="true" />
+                {t("dealCharts.remainingToCap")}
+              </dt>
+              <dd className="mt-0.5 font-mono-avs text-foreground">{formatTokenAmount(raiseData[1].value)}</dd>
+            </div>
+          </dl>
         </div>
       </div>
 

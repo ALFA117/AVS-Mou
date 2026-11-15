@@ -99,7 +99,13 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
               awaitingReveal ? STATUS_STYLES.revealed : STATUS_STYLES[deal.status]
             }`}
           >
-            {awaitingReveal ? t("dealCard.awaitingReveal") : deal.status}
+            {awaitingReveal
+              ? t("dealCard.awaitingReveal")
+              : deal.status === "open"
+                ? t("dealCard.statusOpen")
+                : deal.status === "revealed"
+                  ? t("dealCard.statusRevealed")
+                  : t("dealCard.statusSettled")}
           </span>
           <h1 className="mt-3 break-words font-heading text-3xl font-normal leading-tight text-foreground sm:text-4xl">
             Deal #{deal.dealId}
@@ -128,8 +134,13 @@ export default function DealDetailPage({ params }: { params: { id: string } }) {
               <Stat label={t("dealDetail.maxCap")} value={<AnimatedNumber value={Number(deal.maxCap)} format={formatTokenAmount} />} />
               <Stat label={t("dealDetail.bidders")} value={<AnimatedNumber value={deal.bidCount} format={formatInt} />} />
               <Stat
-                label={t("dealDetail.vesting")}
-                value={t("dealDetail.vestingValue", { cliff: deal.cliffMonths, vesting: deal.vestingMonths })}
+                label={t("dealDetail.vestingLabel")}
+                value={
+                  <span className="whitespace-nowrap">
+                    {deal.cliffMonths} / {deal.vestingMonths}
+                    <span className="ml-1 font-body text-xs text-muted-foreground">{t("dealDetail.months")}</span>
+                  </span>
+                }
               />
               <Stat
                 label={
