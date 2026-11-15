@@ -168,11 +168,16 @@ export function VoteCard({ milestone, onVoted }: { milestone: Milestone; onVoted
           <Countdown deadlineTs={milestone.deadlineTs} />
         </span>
       </div>
-      <p className="mt-3 font-mono-avs text-sm text-muted-foreground">
-        {t("voteCard.rewardPool", { amount: formatTokenAmount(milestone.rewardPool, 9) })}
+      <p className="mt-3 text-sm text-muted-foreground">
+        {t("voteCard.rewardPool")}:{" "}
+        <span className="font-mono-avs font-medium text-foreground">
+          {formatTokenAmount(milestone.rewardPool, 9)} SOL
+        </span>
       </p>
-      <p className="mt-1 text-xs text-muted-foreground">
-        {t("voteCard.sealedNotice", { count: milestone.voterCount })}
+      <p className="mt-1 text-sm text-muted-foreground">
+        {milestone.voterCount === 1
+          ? t("voteCard.sealedNoticeOne")
+          : t("voteCard.sealedNotice", { count: milestone.voterCount })}
       </p>
       {milestone.status !== "open" ? (
         <p className="mt-4 flex items-center gap-1.5 text-sm text-muted-foreground">
