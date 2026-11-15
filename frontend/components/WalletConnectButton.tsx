@@ -14,7 +14,7 @@ import { useTranslation } from "@/lib/LanguageContext";
  * to whichever one happened to register first, and lets a connected user
  * switch to a different detected wallet without a separate disconnect step.
  */
-export function WalletConnectButton() {
+export function WalletConnectButton({ compact = false }: { compact?: boolean } = {}) {
   const { wallets, wallet, select, connect, disconnect, connecting, connected, publicKey } =
     useWallet();
   const { t } = useTranslation();
@@ -66,11 +66,15 @@ export function WalletConnectButton() {
         rel="noopener noreferrer"
         title={t("walletConnect.getWalletTitle")}
         aria-label={`${t("walletConnect.noWallet")} — ${t("walletConnect.getWallet")}`}
-        className="flex h-11 min-w-11 items-center justify-center gap-1 whitespace-nowrap rounded-md border border-primary px-2.5 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued sm:h-9 sm:px-3"
+        className={
+          compact
+            ? "flex h-11 min-w-11 items-center justify-center gap-1 whitespace-nowrap rounded-md border border-primary px-2.5 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued sm:h-9 sm:px-3"
+            : "inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep"
+        }
       >
-        <WalletIcon className="h-4 w-4 sm:hidden" strokeWidth={2} aria-hidden="true" />
-        <span className="hidden sm:inline">{t("walletConnect.getWallet")}</span>
-        <ExternalLink className="hidden h-3.5 w-3.5 sm:inline" strokeWidth={2} aria-hidden="true" />
+        <WalletIcon className={compact ? "h-4 w-4 sm:hidden" : "hidden"} strokeWidth={2} aria-hidden="true" />
+        <span className={compact ? "hidden sm:inline" : ""}>{t("walletConnect.getWallet")}</span>
+        <ExternalLink className={compact ? "hidden h-3.5 w-3.5 sm:inline" : "h-3.5 w-3.5"} strokeWidth={2} aria-hidden="true" />
       </a>
     );
   }
@@ -117,7 +121,7 @@ export function WalletConnectButton() {
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
             role="menu"
-            className="absolute right-0 top-full z-50 mt-2 min-w-56 overflow-hidden rounded-md border border-border bg-surface-elevated p-1 shadow-lg"
+            className="absolute right-0 top-full z-50 mt-2 min-w-56 overflow-hidden rounded-md border border-border bg-surface-elevated p-1 shadow-[3px_3px_0_0_var(--border-strong)]"
           >
             {connected && publicKey && (
               <p className="truncate px-3 py-2 font-mono text-xs text-muted-foreground">

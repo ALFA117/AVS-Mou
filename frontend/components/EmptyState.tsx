@@ -32,8 +32,8 @@ export function EmptyState({
       >
         <Icon className="h-6 w-6 text-primary" strokeWidth={2} />
       </motion.div>
-      <h2 className="mt-4 font-heading text-lg font-normal text-foreground">{title}</h2>
-      <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">{description}</p>
+      <h2 className="mt-4 font-heading text-xl font-normal text-foreground">{title}</h2>
+      <p className="mt-2 max-w-md text-base text-muted-foreground">{description}</p>
       {action && <div className="mt-5">{action}</div>}
     </motion.div>
   );

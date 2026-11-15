@@ -80,9 +80,11 @@ export function NavBar() {
         </nav>
 
         <div className="flex items-center gap-1">
-          <LanguageToggle />
-          <ThemeToggle />
-          <WalletConnectButton />
+          <div className="hidden items-center gap-1 md:flex">
+            <LanguageToggle />
+            <ThemeToggle />
+          </div>
+          <WalletConnectButton compact />
           <button
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
@@ -106,9 +108,8 @@ export function NavBar() {
         </div>
       </div>
 
-      {/* Mobile menu — the 4 page links only; language/theme/wallet stay in
-          the top row since they're compact icon controls, not the thing
-          overflowing on narrow viewports. */}
+      {/* Mobile menu — page links plus language/theme, so the top row on a
+          phone holds only the logo, the devnet tag, the wallet and this toggle. */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.nav
@@ -137,6 +138,13 @@ export function NavBar() {
                   </Link>
                 );
               })}
+            </div>
+            <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+              <span className="text-sm text-muted-foreground">{t("nav.preferences")}</span>
+              <div className="flex items-center gap-1">
+                <LanguageToggle />
+                <ThemeToggle />
+              </div>
             </div>
           </motion.nav>
         )}
