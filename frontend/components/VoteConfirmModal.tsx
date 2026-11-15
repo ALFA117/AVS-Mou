@@ -27,7 +27,7 @@ export function VoteConfirmModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.15 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 p-4"
     >
       <motion.div
         ref={dialogRef}
@@ -37,7 +37,7 @@ export function VoteConfirmModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="vote-confirm-title"
-        className="w-full max-w-sm rounded-xl border border-border bg-surface-elevated p-6 shadow-lg"
+        className="w-full max-w-sm rounded-xl border border-border bg-surface-elevated p-6 shadow-[4px_4px_0_0_var(--border-strong)]"
       >
         <h3
           id="vote-confirm-title"
