@@ -12,6 +12,12 @@ export const alt = "AVS deal card";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+const PAPER = "#F8F6F1";
+const INK = "#17141F";
+const RULE = "#E2DDD3";
+const MUTED = "#5E5868";
+const PLUM = "#4A2C82";
+
 const RPC_URL = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl("devnet");
 
 const READONLY_WALLET = {
@@ -41,6 +47,16 @@ export default async function Image({ params }: { params: { id: string } }) {
     new Promise<null>((resolve) => setTimeout(() => resolve(null), 3500)),
   ]);
 
+  const statusLabel = !deal
+    ? ""
+    : deal.status === "open" && deal.deadlineTs * 1000 < Date.now()
+      ? "Awaiting reveal"
+      : deal.status === "open"
+        ? "Open for bids"
+        : deal.status === "revealed"
+          ? "Revealed"
+          : "Settled";
+
   return new ImageResponse(
     (
       <div
@@ -51,56 +67,64 @@ export default async function Image({ params }: { params: { id: string } }) {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 64,
-          background: "linear-gradient(135deg, #f4f2ff 0%, #ffffff 55%, #fef1f6 100%)",
+          background: PAPER,
           fontFamily: "sans-serif",
+          color: INK,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div
-            style={{
-              width: 56,
-              height: 56,
-              borderRadius: 28,
-              background: "#533afd",
-              display: "flex",
-            }}
-          />
-          <div style={{ fontSize: 32, fontWeight: 600, color: "#0f0a2e" }}>AVS</div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingBottom: 24,
+            borderBottom: `2px solid ${INK}`,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 6, background: PLUM, display: "flex" }} />
+            <div style={{ fontSize: 32, fontWeight: 600 }}>AVS</div>
+          </div>
+          <div style={{ display: "flex", fontSize: 20, color: MUTED, letterSpacing: 2 }}>SOLANA DEVNET</div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ fontSize: 64, fontWeight: 300, color: "#0f0a2e", letterSpacing: -1 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+          <div style={{ fontSize: 68, fontWeight: 400, letterSpacing: -1.5 }}>
             {deal ? `Deal #${deal.dealId}` : "Anonymous Venture Syndicate"}
           </div>
           {deal ? (
-            <div style={{ display: "flex", gap: 40 }}>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ fontSize: 20, color: "#6b6480" }}>Valuation</div>
-                <div style={{ fontSize: 32, color: "#0f0a2e", fontWeight: 500 }}>
-                  {formatTokenAmount(deal.valuation)}
+            <div style={{ display: "flex", border: `1px solid ${RULE}`, background: "#FFFFFF" }}>
+              {[
+                ["Valuation", formatTokenAmount(deal.valuation), INK],
+                ["Equity offered", formatBps(deal.equityBps), INK],
+                ["Status", statusLabel, PLUM],
+              ].map(([label, value, color], i) => (
+                <div
+                  key={label}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 1,
+                    padding: "20px 24px",
+                    borderLeft: i === 0 ? "none" : `1px solid ${RULE}`,
+                  }}
+                >
+                  <div style={{ fontSize: 20, color: MUTED }}>{label}</div>
+                  <div style={{ fontSize: 34, color, fontWeight: 500, marginTop: 6 }}>{value}</div>
                 </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ fontSize: 20, color: "#6b6480" }}>Equity offered</div>
-                <div style={{ fontSize: 32, color: "#0f0a2e", fontWeight: 500 }}>
-                  {formatBps(deal.equityBps)}
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <div style={{ fontSize: 20, color: "#6b6480" }}>Status</div>
-                <div style={{ fontSize: 32, color: "#533afd", fontWeight: 500, textTransform: "capitalize" }}>
-                  {deal.status}
-                </div>
-              </div>
+              ))}
             </div>
           ) : (
-            <div style={{ fontSize: 28, color: "#6b6480" }}>
-              Sealed-bid deal syndicates on Solana — bid or vote in secret.
+            <div style={{ fontSize: 28, color: MUTED }}>
+              Sealed-bid deal syndicates on Solana. Bid or vote in secret.
             </div>
           )}
         </div>
 
-        <div style={{ fontSize: 22, color: "#6b6480" }}>avs-mou.vercel.app</div>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 22, color: MUTED }}>
+          <div style={{ display: "flex" }}>Sealed bids and private votes on MagicBlock Ephemeral Rollups</div>
+          <div style={{ display: "flex" }}>avs-mou.vercel.app</div>
+        </div>
       </div>
     ),
     { ...size },

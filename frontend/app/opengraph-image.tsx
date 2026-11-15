@@ -9,6 +9,15 @@ export const contentType = "image/png";
 // prerender step crashes on Windows paths (fileURLToPath) in local builds.
 export const dynamic = "force-dynamic";
 
+// Same "private placement memorandum" palette as the site: ivory paper,
+// ink, hairline rules, one plum accent and brass only for what is sealed.
+const PAPER = "#F8F6F1";
+const INK = "#17141F";
+const RULE = "#E2DDD3";
+const MUTED = "#5E5868";
+const PLUM = "#4A2C82";
+const BRASS = "#86651F";
+
 export default function Image() {
   return new ImageResponse(
     (
@@ -19,45 +28,60 @@ export default function Image() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: 72,
-          background: "linear-gradient(135deg, #0f0a2e 0%, #1c1457 55%, #533afd 130%)",
+          padding: 64,
+          background: PAPER,
           fontFamily: "sans-serif",
-          color: "#ffffff",
+          color: INK,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 26, background: "#665efd", display: "flex" }} />
-          <div style={{ fontSize: 34, fontWeight: 600 }}>AVS</div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingBottom: 24,
+            borderBottom: `2px solid ${INK}`,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 6, background: PLUM, display: "flex" }} />
+            <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: -0.5 }}>AVS</div>
+          </div>
           <div
             style={{
-              marginLeft: 12,
               display: "flex",
-              fontSize: 20,
-              padding: "6px 14px",
-              borderRadius: 999,
-              background: "rgba(251, 191, 36, 0.18)",
-              color: "#fcd34d",
-              textTransform: "uppercase",
+              fontSize: 18,
+              padding: "6px 12px",
+              borderRadius: 3,
+              border: "1px solid #D9B45A",
+              background: "#FBF3DF",
+              color: "#6B4E12",
               letterSpacing: 2,
             }}
           >
-            Solana devnet
+            SOLANA DEVNET
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          <div style={{ fontSize: 76, fontWeight: 300, letterSpacing: -2, lineHeight: 1.05 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+          <div style={{ fontSize: 72, fontWeight: 400, letterSpacing: -2, lineHeight: 1.05 }}>
             Anonymous Venture Syndicate
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 30, color: "#c9c3ff" }}>
-            <div style={{ display: "flex" }}>Your bid:</div>
-            <div style={{ display: "flex", width: 210, height: 34, borderRadius: 6, background: "#8b84ff" }} />
-            <div style={{ display: "flex" }}>· sealed until the reveal</div>
+          <div style={{ display: "flex", flexDirection: "column", border: `1px solid ${RULE}`, background: "#FFFFFF" }}>
+            <div style={{ display: "flex", alignItems: "center", padding: "16px 24px", borderBottom: `1px solid ${RULE}`, fontSize: 26 }}>
+              <div style={{ display: "flex", width: 260, color: MUTED }}>Your bid</div>
+              <div style={{ display: "flex", color: PLUM, fontWeight: 600 }}>readable only by you and the startup</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", padding: "16px 24px", fontSize: 26 }}>
+              <div style={{ display: "flex", width: 260, color: MUTED }}>Other bids</div>
+              <div style={{ display: "flex", width: 220, height: 26, background: INK, borderRadius: 2 }} />
+              <div style={{ display: "flex", marginLeft: 16, color: BRASS }}>sealed</div>
+            </div>
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#a9a3d9" }}>
-          <div style={{ display: "flex" }}>Sealed bids & private votes on MagicBlock Ephemeral Rollups</div>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 22, color: MUTED }}>
+          <div style={{ display: "flex" }}>Sealed bids and private votes on MagicBlock Ephemeral Rollups</div>
           <div style={{ display: "flex" }}>avs-mou.vercel.app</div>
         </div>
       </div>
