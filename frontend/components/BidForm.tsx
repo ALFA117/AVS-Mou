@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Lock, CircleCheck, CircleAlert, Link2, Droplet } from "lucide-react";
+import { Lock, CircleCheck, CircleAlert, Link2, Droplet, Wallet, type LucideIcon } from "lucide-react";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
@@ -189,33 +189,28 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
 
   if (deal.status !== "open") {
     return (
-      <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
-        {t("dealDetail.biddingClosed")}
-      </p>
+      <Notice icon={Lock}>{t("dealDetail.biddingClosed")}</Notice>
     );
   }
 
   if (deal.deadlineTs * 1000 < Date.now()) {
     return (
-      <p className="flex items-center gap-1.5 rounded-md bg-muted p-4 text-sm text-muted-foreground">
-        <Lock className="h-4 w-4 shrink-0" strokeWidth={2} />
-        {t("dealDetail.awaitingReveal")}
-      </p>
+      <Notice icon={Lock}>{t("dealDetail.awaitingReveal")}</Notice>
     );
   }
 
   if (!publicKey) {
     return (
-      <p className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
+      <Notice icon={Wallet} title={t("bidForm.title")}>
         {t("dealDetail.connectToBid")}
-      </p>
+      </Notice>
     );
   }
 
   return (
     <div className="avs-elevate relative overflow-hidden rounded-xl border border-border bg-card p-5">
       <SuccessFlash trigger={status.kind === "success"} />
-      <h3 className="flex items-center gap-2.5 font-heading font-light tracking-tight text-card-foreground">
+      <h3 className="flex items-center gap-2.5 font-heading text-xl font-normal text-card-foreground">
         <span className="avs-icon-badge h-8 w-8">
           <Lock className="h-4 w-4 text-primary" strokeWidth={2} />
         </span>
@@ -236,7 +231,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
           type="button"
           disabled={faucetLoading}
           onClick={() => void requestTestTokens()}
-          className="cursor-pointer whitespace-nowrap rounded-full border border-primary px-3 py-1 text-xs font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-50"
+          className="cursor-pointer whitespace-nowrap rounded-md border border-primary px-3 min-h-11 py-1.5 text-xs font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued disabled:cursor-not-allowed disabled:opacity-50"
         >
           {faucetLoading ? t("bidForm.faucetLoading") : t("bidForm.faucetButton")}
         </button>
@@ -262,7 +257,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder={t("bidForm.minPlaceholder", { amount: minInvestment })}
-          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+          className="w-full rounded-md border border-border-strong bg-card px-3 py-2.5 text-base text-foreground"
         />
         <motion.button
           type="button"
@@ -270,7 +265,7 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
           onClick={() => setConfirming(true)}
           whileTap={amountValid && !submitting ? { scale: 0.96 } : undefined}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="cursor-pointer whitespace-nowrap avs-glow-primary rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="cursor-pointer whitespace-nowrap avs-glow-primary rounded-md bg-primary px-4 min-h-11 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep disabled:cursor-not-allowed disabled:opacity-40"
         >
           {submitting ? t("bidForm.placingBid") : t("bidForm.placeBid")}
         </motion.button>
@@ -313,6 +308,31 @@ export function BidForm({ deal, onBidPlaced }: { deal: Deal; onBidPlaced?: () =>
           onConfirm={() => void submitBid()}
         />
       )}
+    </div>
+  );
+}
+
+/** Quiet state panel for the bid column (closed, awaiting reveal, no wallet). */
+function Notice({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: LucideIcon;
+  title?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-5">
+      <div className="flex items-start gap-3">
+        <span className="avs-icon-badge h-9 w-9">
+          <Icon className="h-4 w-4 text-brass" strokeWidth={2} />
+        </span>
+        <div>
+          {title && <p className="font-heading text-xl text-card-foreground">{title}</p>}
+          <p className={`${title ? "mt-1 " : "mt-1.5 "}text-sm text-muted-foreground`}>{children}</p>
+        </div>
+      </div>
     </div>
   );
 }

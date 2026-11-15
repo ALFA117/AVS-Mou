@@ -32,7 +32,7 @@ export function PlatformActivityChart({
           <XAxis dataKey="date" fontSize={12} stroke="var(--muted-foreground)" />
           <YAxis fontSize={12} allowDecimals={false} stroke="var(--muted-foreground)" />
           <Tooltip />
-          <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]}>
+          <Bar dataKey="count" fill="var(--primary)" radius={[2, 2, 0, 0]}>
             <LabelList dataKey="count" position="top" fontSize={12} fill="var(--muted-foreground)" />
           </Bar>
         </BarChart>

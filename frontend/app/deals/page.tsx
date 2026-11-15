@@ -188,16 +188,16 @@ export default function DealsPage() {
   const noSearchOrRange = search.trim() === "" && !rangeFiltersActive;
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-10">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading text-2xl font-light tracking-tight text-foreground">{t("deals.title")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t("deals.subtitle")}</p>
+    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
+        <div className="max-w-2xl">
+          <h1 className="font-heading text-3xl font-normal leading-tight text-foreground sm:text-4xl">{t("deals.title")}</h1>
+          <p className="mt-2 text-base text-muted-foreground">{t("deals.subtitle")}</p>
         </div>
-        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
+        <motion.div whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 24 }}>
           <Link
             href="/deals/new"
-            className="flex items-center gap-1.5 avs-glow-primary rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90"
+            className="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep"
           >
             <Rocket className="h-3.5 w-3.5" strokeWidth={2} />
             {t("deals.createDeal")}
@@ -213,10 +213,10 @@ export default function DealsPage() {
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
-              className={`flex min-h-11 cursor-pointer items-center rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
+              className={`flex min-h-11 cursor-pointer items-center rounded-md px-3 text-sm font-medium transition-colors duration-200 ${
                 statusFilter === s
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-border"
+                  ? "bg-ink text-ink-foreground"
+                  : "border border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground"
               }`}
             >
               {STATUS_LABELS[s]}
@@ -231,14 +231,14 @@ export default function DealsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("deals.searchPlaceholder")}
-              className="w-full rounded-md border border-border bg-background py-1 pl-8 pr-3 text-sm text-foreground placeholder:text-muted-foreground"
+              className="w-full rounded-md border border-border bg-card py-2.5 pl-8 pr-3 text-base text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           <select
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
-            className="rounded-md border border-border bg-background px-2 py-1 text-sm text-foreground"
+            className="rounded-md border border-border bg-card px-2 py-2.5 text-base text-foreground"
           >
             <option value="deadline">{t("deals.sortDeadline")}</option>
             <option value="valuation">{t("deals.sortValuation")}</option>
@@ -248,10 +248,10 @@ export default function DealsPage() {
           <button
             onClick={() => setFiltersOpen((v) => !v)}
             aria-expanded={filtersOpen}
-            className={`flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-3 text-sm font-medium transition-colors duration-200 ${
+            className={`flex min-h-11 cursor-pointer items-center gap-1.5 rounded-md px-3 text-sm font-medium transition-colors duration-200 ${
               filtersOpen || rangeFiltersActive
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-border"
+                ? "bg-ink text-ink-foreground"
+                : "border border-border bg-card text-muted-foreground hover:border-border-strong hover:text-foreground"
             }`}
           >
             <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={2} />
@@ -285,7 +285,7 @@ export default function DealsPage() {
                   min={0}
                   value={minValuation}
                   onChange={(e) => setMinValuation(e.target.value)}
-                  className="w-28 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+                  className="w-28 rounded-md border border-border bg-card px-2 py-2.5 text-base text-foreground"
                 />
               </label>
               <label className="text-sm">
@@ -295,7 +295,7 @@ export default function DealsPage() {
                   min={0}
                   value={maxValuation}
                   onChange={(e) => setMaxValuation(e.target.value)}
-                  className="w-28 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+                  className="w-28 rounded-md border border-border bg-card px-2 py-2.5 text-base text-foreground"
                 />
               </label>
               <label className="text-sm">
@@ -307,7 +307,7 @@ export default function DealsPage() {
                   step="0.1"
                   value={minEquity}
                   onChange={(e) => setMinEquity(e.target.value)}
-                  className="w-24 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+                  className="w-24 rounded-md border border-border bg-card px-2 py-2.5 text-base text-foreground"
                 />
               </label>
               <label className="text-sm">
@@ -319,7 +319,7 @@ export default function DealsPage() {
                   step="0.1"
                   value={maxEquity}
                   onChange={(e) => setMaxEquity(e.target.value)}
-                  className="w-24 rounded-md border border-border bg-background px-2 py-1.5 text-sm text-foreground"
+                  className="w-24 rounded-md border border-border bg-card px-2 py-2.5 text-base text-foreground"
                 />
               </label>
               {rangeFiltersActive && (
@@ -343,9 +343,21 @@ export default function DealsPage() {
         </div>
       )}
       {error && (
-        <p role="alert" className="mt-10 text-center text-red-600 dark:text-red-400">
-          {t("deals.loadError")}: {error}
-        </p>
+        <div
+          role="alert"
+          className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-red-300 bg-red-50 p-5 text-red-900 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
+        >
+          <p className="text-base">
+            {t("deals.loadError")}: <span className="font-mono-avs text-sm">{error}</span>
+          </p>
+          <button
+            onClick={() => void refresh()}
+            className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-md border border-red-300 bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted dark:border-red-500/30"
+          >
+            <RefreshCw className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+            {t("common.refresh")}
+          </button>
+        </div>
       )}
       {!loading && !error && filtered.length === 0 && (
         <EmptyState
@@ -368,7 +380,7 @@ export default function DealsPage() {
                   setStatusFilter("all");
                   clearRangeFilters();
                 }}
-                className="cursor-pointer rounded-full border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued"
+                className="cursor-pointer rounded-md border border-primary px-4 min-h-11 py-2 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued"
               >
                 {t("common.clearFilters")}
               </button>
@@ -384,7 +396,7 @@ export default function DealsPage() {
         className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
         {visible.map((deal) => (
-          <motion.div key={deal.publicKey} variants={reducedMotion ? undefined : item}>
+          <motion.div key={deal.publicKey} variants={reducedMotion ? undefined : item} className="h-full">
             <DealCard deal={deal} />
           </motion.div>
         ))}
@@ -394,7 +406,7 @@ export default function DealsPage() {
         <div className="mt-6 flex justify-center">
           <button
             onClick={() => setVisibleCount((v) => v + PAGE_SIZE)}
-            className="cursor-pointer rounded-full border border-border px-5 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+            className="inline-flex h-11 cursor-pointer items-center rounded-md border border-border-strong bg-card px-5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
           >
             {t("deals.showMore", { remaining: filtered.length - visibleCount })}
           </button>

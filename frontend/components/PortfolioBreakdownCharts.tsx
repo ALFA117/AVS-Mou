@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, Legend, ResponsiveContainer, Tooltip, LineChart, L
 import type { PieLabelRenderProps } from "recharts";
 import { formatTokenAmount } from "@/lib/format";
 
-const COLORS = ["var(--primary)", "var(--accent)", "#0EA5E9", "#F59E0B", "#64748B", "#94A3B8"];
+const COLORS = ["var(--primary)", "var(--brass)", "var(--accent)", "var(--muted-foreground)", "var(--border-strong)", "var(--primary-deep)"];
 
 // Pie slices rely on color alone unless paired with a direct % label — this
 // draws that label outside the donut so it stays legible for colorblind users.

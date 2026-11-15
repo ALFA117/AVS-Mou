@@ -21,7 +21,9 @@ import type { Bid, Deal } from "@/lib/types";
 
 // CSS custom properties resolve fine as SVG fill values, so these charts
 // stay theme-aware without a JS-side dark-mode branch.
-const COLORS = ["var(--primary)", "var(--accent)", "var(--muted-foreground)"];
+// Raised = brand plum; remaining capacity = a quiet neutral, not a second
+// "success" colour competing with it.
+const COLORS = ["var(--primary)", "var(--muted-foreground)", "var(--border-strong)"];
 
 // Pie slices rely on color alone unless paired with a direct % label — this
 // draws that label outside the donut so it stays legible for colorblind users.
@@ -143,7 +145,7 @@ export function DealCharts({ deal, bids }: { deal: Deal; bids: Bid[] }) {
                 <XAxis dataKey="name" fontSize={12} stroke="var(--muted-foreground)" />
                 <YAxis fontSize={12} stroke="var(--muted-foreground)" />
                 <Tooltip />
-                <Bar dataKey="amount" fill="var(--primary)" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="amount" fill="var(--primary)" radius={[2, 2, 0, 0]}>
                   <LabelList
                     dataKey="amount"
                     position="top"
