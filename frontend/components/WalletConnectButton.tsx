@@ -66,7 +66,7 @@ export function WalletConnectButton() {
         rel="noopener noreferrer"
         title={t("walletConnect.getWalletTitle")}
         aria-label={`${t("walletConnect.noWallet")} — ${t("walletConnect.getWallet")}`}
-        className="flex h-11 min-w-11 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-primary px-2.5 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued sm:h-auto sm:px-3 sm:py-1.5"
+        className="flex h-11 min-w-11 items-center justify-center gap-1 whitespace-nowrap rounded-md border border-primary px-2.5 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary-subdued sm:h-9 sm:px-3"
       >
         <WalletIcon className="h-4 w-4 sm:hidden" strokeWidth={2} aria-hidden="true" />
         <span className="hidden sm:inline">{t("walletConnect.getWallet")}</span>
@@ -87,8 +87,8 @@ export function WalletConnectButton() {
         transition={{ type: "spring", stiffness: 400, damping: 20 }}
         className={
           connected && publicKey
-            ? "flex cursor-pointer items-center gap-1 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
-            : "flex cursor-pointer items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            ? "flex cursor-pointer items-center gap-1 rounded-md border border-border bg-card px-3 h-11 sm:h-9 font-mono-avs text-sm font-medium text-foreground transition-colors duration-200 hover:bg-muted"
+            : "flex cursor-pointer items-center gap-1 rounded-md bg-primary px-3 h-11 sm:h-9 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary-deep disabled:cursor-not-allowed disabled:opacity-50"
         }
       >
         {connected && publicKey

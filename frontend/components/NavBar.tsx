@@ -33,31 +33,28 @@ export function NavBar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-3 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-border bg-background">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">
         <Link
           href="/"
-          className="flex items-center gap-2 font-heading text-lg font-medium tracking-tight text-foreground"
+          aria-label="AVS — Anonymous Venture Syndicate"
+          className="flex min-h-11 items-center gap-2.5 text-foreground"
         >
-          <motion.span
-            className="avs-glow-primary relative h-9 w-9 shrink-0 overflow-hidden rounded-full"
-            whileHover={{ scale: 1.06 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          >
-            <Image src="/avs-logo-mark.jpg" alt="" fill sizes="36px" className="object-cover" priority />
-          </motion.span>
-          AVS
+          <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-border">
+            <Image src="/avs-logo-mark.jpg" alt="" fill sizes="32px" className="object-cover" priority />
+          </span>
+          <span className="font-display text-xl font-medium leading-none tracking-tight">AVS</span>
           <span
             title={t("nav.devnetBadgeTitle")}
-            className="inline-flex shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-amber-800 dark:bg-amber-500/15 dark:text-amber-400"
+            className="hidden shrink-0 items-center gap-1.5 rounded-sm border border-amber-300 bg-amber-50 px-1.5 py-0.5 font-mono-avs text-[11px] font-medium uppercase tracking-wider text-amber-900 min-[360px]:inline-flex dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300"
           >
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden="true" />
             {t("nav.devnetBadge")}
           </span>
         </Link>
 
         {/* Desktop nav — collapses behind the hamburger below `md` */}
-        <nav className="relative hidden items-center gap-1 text-sm md:flex">
+        <nav className="relative hidden items-center text-sm md:flex">
           {LINKS.map((link) => {
             const active = pathname?.startsWith(link.href);
             return (
@@ -65,14 +62,14 @@ export function NavBar() {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? "page" : undefined}
-                className={`relative rounded-full px-3 py-2 transition-colors duration-200 ${
-                  active ? "font-medium text-primary" : "text-muted-foreground hover:text-foreground"
+                className={`relative flex h-16 items-center px-3 transition-colors duration-200 ${
+                  active ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {active && (
                   <motion.span
                     layoutId="nav-active-pill"
-                    className="absolute inset-0 rounded-full bg-primary-subdued"
+                    className="absolute inset-x-3 bottom-0 h-0.5 bg-primary"
                     transition={{ type: "spring", stiffness: 380, damping: 32 }}
                   />
                 )}
@@ -119,7 +116,7 @@ export function NavBar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            className="border-t border-border bg-background px-4 py-2 md:hidden"
+            className="border-t border-border bg-background px-4 py-3 md:hidden"
           >
             <div className="flex flex-col gap-1">
               {LINKS.map((link) => {
@@ -130,10 +127,10 @@ export function NavBar() {
                     href={link.href}
                     onClick={() => setMobileOpen(false)}
                     aria-current={active ? "page" : undefined}
-                    className={`rounded-md px-3 py-2.5 text-sm transition-colors duration-200 ${
+                    className={`flex min-h-12 items-center border-l-2 px-3 text-base transition-colors duration-200 ${
                       active
-                        ? "bg-primary-subdued font-medium text-primary"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "border-primary bg-muted font-medium text-foreground"
+                        : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     {link.label}

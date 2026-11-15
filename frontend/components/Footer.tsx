@@ -15,17 +15,23 @@ export function Footer() {
   ];
 
   return (
-    <footer className="mt-16 border-t border-border">
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-6 py-12 text-sm text-muted-foreground">
-        {LINKS.map((link) => (
-          <Link
-            key={link.href}
-            href={link.href}
-            className="inline-flex min-h-11 items-center px-1 transition-colors duration-200 hover:text-foreground"
-          >
-            {link.label}
-          </Link>
-        ))}
+    <footer className="mt-24 border-t border-border">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-[1fr_auto] md:items-start">
+        <div className="max-w-md">
+          <p className="font-display text-xl text-foreground">Anonymous Venture Syndicate</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("nav.devnetBadgeTitle")}</p>
+        </div>
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
+          {LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="inline-flex min-h-11 items-center transition-colors duration-200 hover:text-foreground"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
       </div>
     </footer>
   );
