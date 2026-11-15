@@ -32,9 +32,9 @@ const mono = IBM_Plex_Mono({
   display: "swap",
 });
 
-const TITLE = "AVS â€” Anonymous Venture Syndicate";
+const TITLE = "AVS — Anonymous Venture Syndicate";
 const DESCRIPTION =
-  "Sealed-bid deal syndicates on Solana devnet. Bid or vote in secret â€” the outcome reveals at once. Powered by MagicBlock Ephemeral Rollups.";
+  "Sealed-bid deal syndicates on Solana devnet. Bid or vote in secret — the outcome reveals at once. Powered by MagicBlock Ephemeral Rollups.";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -45,8 +45,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://avs-mou.vercel.app"),
-  // Each route's layout.tsx sets its own short title ("Deals", "FAQ", â€¦).
-  title: { default: TITLE, template: "%s Â· AVS" },
+  // Each route's layout.tsx sets its own short title ("Deals", "FAQ", …).
+  title: { default: TITLE, template: "%s · AVS" },
   description: DESCRIPTION,
   manifest: "/manifest.json",
   // The share image itself comes from app/opengraph-image.tsx (1200×630);
@@ -77,7 +77,7 @@ export default function RootLayout({
           <WalletContextProvider>
             <SkipLink />
             <NavBar />
-            {/* Every page's own root element is already a <main> â€” this id
+            {/* Every page's own root element is already a <main> — this id
                 is just the skip-link's landing target, not a second
                 landmark, so it stays a plain div. */}
             <div id="main-content">{children}</div>
